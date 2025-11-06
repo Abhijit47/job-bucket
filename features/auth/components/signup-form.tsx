@@ -230,7 +230,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
             </FieldGroup>
             <FieldGroup>
               <Field>
-                <Button type='submit'>
+                <Button type='submit' disabled={isPending}>
                   {isPending ? (
                     <span className={'inline-flex items-center gap-2'}>
                       Creating Account... <Spinner />
