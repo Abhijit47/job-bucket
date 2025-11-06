@@ -2,6 +2,7 @@ import Footer from '@/components/shared/footer';
 import Navbar from '@/components/shared/navbar';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/providers/theme-provider';
+import { TRPCReactProvider } from '@/trpc/client';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
@@ -30,16 +31,18 @@ export default function RootLayout({
     <html lang='en' suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange>
-          <Navbar />
-          {children}
-          <Footer />
-          <Toaster position='top-center' closeButton richColors />
-        </ThemeProvider>
+        <TRPCReactProvider>
+          <ThemeProvider
+            attribute='class'
+            defaultTheme='system'
+            enableSystem
+            disableTransitionOnChange>
+            <Navbar />
+            {children}
+            <Footer />
+            <Toaster position='top-center' closeButton richColors />
+          </ThemeProvider>
+        </TRPCReactProvider>
       </body>
     </html>
   );
