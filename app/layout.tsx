@@ -1,3 +1,4 @@
+import Footer from '@/components/shared/footer';
 import Navbar from '@/components/shared/navbar';
 import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/providers/theme-provider';
@@ -36,6 +37,7 @@ export default function RootLayout({
           disableTransitionOnChange>
           <Navbar />
           {children}
+          <Footer />
           <Toaster position='top-center' closeButton richColors />
         </ThemeProvider>
       </body>

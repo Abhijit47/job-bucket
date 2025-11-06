@@ -25,6 +25,15 @@ import {
   InputGroupButton,
   InputGroupInput,
 } from '@/components/ui/input-group';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { signUp } from '@/lib/auth/client';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -32,7 +41,7 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useFormContext } from 'react-hook-form';
 import { toast } from 'sonner';
 import z from 'zod';
 
@@ -40,6 +49,9 @@ const signUpFormSchema = z
   .object({
     name: z.string().min(2, 'Name must be at least 2 characters long'),
     email: z.email('Invalid email address'),
+    role: z.enum(['candidate', 'employer'], {
+      error: 'Please select a role',
+    }),
     password: z.string().min(8, 'Password must be at least 8 characters long'),
     confirmPassword: z.string().min(8, 'Please confirm your password'),
   })
@@ -63,6 +75,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     defaultValues: {
       name: '',
       email: '',
+      role: undefined,
       password: '',
       confirmPassword: '',
     },
@@ -141,6 +154,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                   </FormItem>
                 )}
               />
+              <RoleSelect />
               <FormField
                 control={form.control}
                 name='password'
@@ -251,5 +265,42 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
         </Form>
       </CardContent>
     </Card>
+  );
+}
+
+function RoleSelect() {
+  const form = useFormContext<Pick<SignUpFormValues, 'role'>>();
+
+  return (
+    <FormField
+      control={form.control}
+      name='role'
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Role</FormLabel>
+          <FormControl>
+            <Select onValueChange={field.onChange} value={field.value}>
+              <SelectTrigger className='w-full'>
+                <SelectValue placeholder='Choose an approprieate role' />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Role</SelectLabel>
+                  <SelectItem value='candidate'>Candidate</SelectItem>
+                  <SelectItem value='employer'>Employer</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </FormControl>
+          {!form.formState.errors.role?.message ? (
+            <FormDescription className={'text-xs'}>
+              Must be at least 8 characters long.
+            </FormDescription>
+          ) : (
+            <FormMessage />
+          )}
+        </FormItem>
+      )}
+    />
   );
 }
