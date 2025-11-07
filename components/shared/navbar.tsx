@@ -1,3 +1,5 @@
+'use client';
+
 import Logo from '@/components/shared/logo';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,7 +13,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { signOut, useSession } from '@/lib/auth/client';
+import { LogOutIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useTransition } from 'react';
+import { Skeleton } from '../ui/skeleton';
+import { Spinner } from '../ui/spinner';
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
@@ -19,9 +27,22 @@ const navigationLinks = [
   { href: '#', label: 'Features' },
   { href: '#', label: 'Pricing' },
   { href: '#', label: 'About' },
+  { href: '/users', label: 'Users' },
+  { href: '/job', label: 'Job' },
 ];
 
 export default function Navbar() {
+  const [isTransition, startTransition] = useTransition();
+  const router = useRouter();
+  const session = useSession();
+
+  const handleLogout = () => {
+    startTransition(async () => {
+      await signOut();
+      router.push('/');
+    });
+  };
+
   return (
     <header className='border-b px-4 md:px-6'>
       <div className='flex h-16 justify-between gap-4'>
@@ -100,12 +121,40 @@ export default function Navbar() {
         </div>
         {/* Right side */}
         <div className='flex items-center gap-2'>
-          <Button asChild variant='ghost' size='sm' className='text-sm'>
-            <Link href='/login'>Sign In</Link>
-          </Button>
-          <Button asChild size='sm' className='text-sm'>
-            <Link href='/signup'>Get Started</Link>
-          </Button>
+          {session.isPending || session.isPending ? (
+            <>
+              <Skeleton className='h-8 w-20 rounded-md' />
+              <Skeleton className='h-8 w-24 rounded-md' />
+            </>
+          ) : !session.data ? (
+            <>
+              <Button asChild variant='ghost' size='sm' className='text-sm'>
+                <Link href='/login'>Sign In</Link>
+              </Button>
+              <Button asChild size='sm' className='text-sm'>
+                <Link href='/signup'>Get Started</Link>
+              </Button>
+            </>
+          ) : (
+            <Button
+              className='text-sm'
+              size='sm'
+              variant={'destructive'}
+              disabled={isTransition}
+              onClick={handleLogout}>
+              {isTransition ? (
+                <span className={'inline-flex items-center gap-2'}>
+                  Signing Out...
+                  <Spinner />
+                </span>
+              ) : (
+                <span className={'inline-flex items-center gap-2'}>
+                  Sign Out
+                  <LogOutIcon className='h-4 w-4' />
+                </span>
+              )}
+            </Button>
+          )}
         </div>
       </div>
     </header>
