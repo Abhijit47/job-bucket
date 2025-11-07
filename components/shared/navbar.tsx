@@ -14,12 +14,16 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { signOut, useSession } from '@/lib/auth/client';
+import { cn } from '@/lib/utils';
 import { LogOutIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useTransition } from 'react';
+import { toast } from 'sonner';
+import { Badge } from '../ui/badge';
 import { Skeleton } from '../ui/skeleton';
 import { Spinner } from '../ui/spinner';
+import ThemeToggler from './theme-toggler';
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
@@ -33,13 +37,24 @@ const navigationLinks = [
 
 export default function Navbar() {
   const [isTransition, startTransition] = useTransition();
+  const pathname = usePathname();
   const router = useRouter();
   const session = useSession();
 
   const handleLogout = () => {
     startTransition(async () => {
-      await signOut();
-      router.push('/');
+      await signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            toast.success('Successfully signed out.');
+            router.push('/');
+          },
+
+          onError: () => {
+            toast.error('Error signing out. Please try again.');
+          },
+        },
+      });
     });
   };
 
@@ -108,10 +123,13 @@ export default function Navbar() {
                 {navigationLinks.map((link, index) => (
                   <NavigationMenuItem key={index} className='h-full'>
                     <NavigationMenuLink
-                      active={link.active}
-                      href={link.href}
-                      className='h-full justify-center rounded-none border-y-2 border-transparent border-b-primary py-1.5 font-medium text-muted-foreground hover:border-b-primary hover:bg-transparent hover:text-primary data-active:border-b-primary data-active:bg-transparent!'>
-                      {link.label}
+                      active={pathname === link.href}
+                      className={cn(
+                        pathname === link.href ? 'border-b-primary' : '',
+                        'h-full justify-center rounded-none border-y-2 border-transparent py-1.5 font-medium text-muted-foreground hover:border-b-primary hover:bg-transparent hover:text-primary data-active:border-b-primary data-active:bg-transparent!'
+                      )}
+                      asChild>
+                      <Link href={link.href}>{link.label}</Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
                 ))}
@@ -121,6 +139,7 @@ export default function Navbar() {
         </div>
         {/* Right side */}
         <div className='flex items-center gap-2'>
+          <ThemeToggler />
           {session.isPending || session.isPending ? (
             <>
               <Skeleton className='h-8 w-20 rounded-md' />
@@ -136,24 +155,29 @@ export default function Navbar() {
               </Button>
             </>
           ) : (
-            <Button
-              className='text-sm'
-              size='sm'
-              variant={'destructive'}
-              disabled={isTransition}
-              onClick={handleLogout}>
-              {isTransition ? (
-                <span className={'inline-flex items-center gap-2'}>
-                  Signing Out...
-                  <Spinner />
-                </span>
-              ) : (
-                <span className={'inline-flex items-center gap-2'}>
-                  Sign Out
-                  <LogOutIcon className='h-4 w-4' />
-                </span>
-              )}
-            </Button>
+            <>
+              <Badge variant={'secondary'} className={'capitalize'}>
+                {session.data.user.role}
+              </Badge>
+              <Button
+                className='text-sm'
+                size='sm'
+                variant={'destructive'}
+                disabled={isTransition}
+                onClick={handleLogout}>
+                {isTransition ? (
+                  <span className={'inline-flex items-center gap-2'}>
+                    Signing Out...
+                    <Spinner />
+                  </span>
+                ) : (
+                  <span className={'inline-flex items-center gap-2'}>
+                    Sign Out
+                    <LogOutIcon className='h-4 w-4' />
+                  </span>
+                )}
+              </Button>
+            </>
           )}
         </div>
       </div>
