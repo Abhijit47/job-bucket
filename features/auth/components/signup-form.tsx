@@ -36,6 +36,11 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { signUp } from '@/lib/auth/client';
+import { encodeRoleObject } from '@/lib/utils';
+import {
+  signUpFormSchema,
+  SignUpFormValues,
+} from '@/lib/zodSchemas/signup-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -43,24 +48,6 @@ import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { useForm, useFormContext } from 'react-hook-form';
 import { toast } from 'sonner';
-import z from 'zod';
-
-const signUpFormSchema = z
-  .object({
-    name: z.string().min(2, 'Name must be at least 2 characters long'),
-    email: z.email('Invalid email address'),
-    role: z.enum(['candidate', 'employer'], {
-      error: 'Please select a role',
-    }),
-    password: z.string().min(8, 'Password must be at least 8 characters long'),
-    confirmPassword: z.string().min(8, 'Please confirm your password'),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
-
-type SignUpFormValues = z.infer<typeof signUpFormSchema>;
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -84,11 +71,14 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
   const handleSubmit = (data: SignUpFormValues) => {
     startTransition(async () => {
-      await signUp.email({
-        name: data.name,
-        email: data.email,
-        password: data.password,
-        fetchOptions: {
+      await signUp.email(
+        {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+        },
+        {
+          query: { r: encodeRoleObject({ r: data.role }) },
           onSuccess: () => {
             router.push('/');
             toast.success('Sign-Up successfully!');
@@ -97,8 +87,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
           onError: ({ error }) => {
             toast.error(error.message || 'Sign up failed');
           },
-        },
-      });
+        }
+      );
     });
   };
 

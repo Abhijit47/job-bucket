@@ -28,6 +28,10 @@ import {
 import { Spinner } from '@/components/ui/spinner';
 import { signIn } from '@/lib/auth/client';
 import { cn } from '@/lib/utils';
+import {
+  loginFormSchema,
+  LoginFormValues,
+} from '@/lib/zodSchemas/login-schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -35,14 +39,6 @@ import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
-import z from 'zod';
-
-const loginFormSchema = z.object({
-  email: z.email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters long'),
-});
-
-type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export function LoginForm({
   className,
