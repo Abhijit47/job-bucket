@@ -1,9 +1,10 @@
-import { db } from '@/drizzle/db';
-import { user } from '@/drizzle/schemas';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { nextCookies } from 'better-auth/next-js';
 import { admin as adminPlugin } from 'better-auth/plugins/admin';
+
+import { db } from '@/drizzle/db';
+import * as schemas from '@/drizzle/schemas';
 import { eq } from 'drizzle-orm';
 import { decodeRoleObject } from '../utils';
 import { ac, admin, candidate, employer } from './permissions';
@@ -11,6 +12,9 @@ import { ac, admin, candidate, employer } from './permissions';
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg', // or "mysql", "sqlite"
+    transaction: true,
+    schema: schemas,
+    debugLogs: false,
   }),
 
   databaseHooks: {
@@ -21,9 +25,9 @@ export const auth = betterAuth({
           const role = decodeRoleObject(value.r);
           if (role) {
             await db
-              .update(user)
+              .update(schemas.user)
               .set({ role: role.r })
-              .where(eq(user.id, oldData.id));
+              .where(eq(schemas.user.id, oldData.id));
           }
           return;
         },
@@ -56,4 +60,10 @@ export const auth = betterAuth({
     }),
     nextCookies(),
   ],
+
+  user: {
+    additionalFields: {
+      role: { type: 'string', fieldName: 'role', input: false },
+    },
+  },
 });
