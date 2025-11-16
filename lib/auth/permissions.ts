@@ -8,6 +8,7 @@ const statement = {
   ...defaultStatements,
   jobCreate: ['create', 'share', 'update', 'delete', 'publish'],
   jobApply: ['apply', 'withdraw'],
+  job: ['delete', 'publish'],
 } as const;
 
 export const ac = createAccessControl(statement);
@@ -21,6 +22,6 @@ export const employer = ac.newRole({
 });
 
 export const admin = ac.newRole({
-  jobCreate: ['create', 'share', 'update', 'delete', 'publish'],
+  job: ['delete', 'publish'],
   ...adminAc.statements,
 });
