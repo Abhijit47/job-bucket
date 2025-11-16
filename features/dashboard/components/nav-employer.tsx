@@ -50,7 +50,7 @@ export function NavEmployer() {
                   tooltip={item.title}
                   asChild
                   isActive={isCurrentPath}>
-                  <Link href={item.url}>
+                  <Link href={item.url} prefetch>
                     {item.icon && (
                       <item.icon
                         className={cn(
