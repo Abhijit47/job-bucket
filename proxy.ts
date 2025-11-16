@@ -20,13 +20,20 @@ export async function proxy(request: NextRequest) {
   }
 
   // Allow access to admin pages for admin users
-  if (pathname.startsWith('/users') && session.user.role !== 'admin') {
+  if (pathname.startsWith('/admin') && session.user.role !== 'admin') {
     return NextResponse.redirect(new URL('/unauthorized', request.url));
   }
   // Allow access to employer pages for employer users
-  if (pathname.startsWith('/job') && session.user.role !== 'employer') {
+  if (pathname.startsWith('/employer') && session.user.role !== 'employer') {
     return NextResponse.redirect(new URL('/unauthorized', request.url));
   }
+  // Allow access to job seeker pages for job seeker users
+  if (pathname.startsWith('/candidate') && session.user.role !== 'candidate') {
+    return NextResponse.redirect(new URL('/unauthorized', request.url));
+  }
+
+  // Redirect based on roles
+  // if(session.user.role==='admin')
 
   return NextResponse.next();
 }

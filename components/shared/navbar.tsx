@@ -13,50 +13,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import { signOut, useSession } from '@/lib/auth/client';
+import { navigationLinks } from '@/constants';
 import { cn } from '@/lib/utils';
-import { LogOutIcon } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useTransition } from 'react';
-import { toast } from 'sonner';
-import { Badge } from '../ui/badge';
-import { Skeleton } from '../ui/skeleton';
-import { Spinner } from '../ui/spinner';
+import { usePathname } from 'next/navigation';
 import ThemeToggler from './theme-toggler';
-
-// Navigation links array to be used in both desktop and mobile menus
-const navigationLinks = [
-  { href: '/', label: 'Home', active: true },
-  { href: '#', label: 'Features' },
-  { href: '#', label: 'Pricing' },
-  { href: '#', label: 'About' },
-  { href: '/users', label: 'Users' },
-  { href: '/job', label: 'Job' },
-];
+import UserButton from './user-button';
 
 export default function Navbar() {
-  const [isTransition, startTransition] = useTransition();
   const pathname = usePathname();
-  const router = useRouter();
-  const session = useSession();
-
-  const handleLogout = () => {
-    startTransition(async () => {
-      await signOut({
-        fetchOptions: {
-          onSuccess: () => {
-            toast.success('Successfully signed out.');
-            router.push('/');
-          },
-
-          onError: () => {
-            toast.error('Error signing out. Please try again.');
-          },
-        },
-      });
-    });
-  };
 
   return (
     <header className='border-b px-4 md:px-6'>
@@ -97,16 +62,20 @@ export default function Navbar() {
               <PopoverContent align='start' className='w-36 p-1 md:hidden'>
                 <NavigationMenu className='max-w-none *:w-full'>
                   <NavigationMenuList className='flex-col items-start gap-0 md:gap-2'>
-                    {navigationLinks.map((link, index) => (
-                      <NavigationMenuItem key={index} className='w-full'>
-                        <NavigationMenuLink
-                          href={link.href}
-                          className='py-1.5'
-                          active={link.active}>
-                          {link.label}
-                        </NavigationMenuLink>
-                      </NavigationMenuItem>
-                    ))}
+                    {navigationLinks.map((link, index) => {
+                      const isCurrentPath = pathname === link.href;
+
+                      return (
+                        <NavigationMenuItem key={index} className='w-full'>
+                          <NavigationMenuLink
+                            href={link.href}
+                            className='py-1.5'
+                            active={isCurrentPath}>
+                            {link.label}
+                          </NavigationMenuLink>
+                        </NavigationMenuItem>
+                      );
+                    })}
                   </NavigationMenuList>
                 </NavigationMenu>
               </PopoverContent>
@@ -140,45 +109,7 @@ export default function Navbar() {
         {/* Right side */}
         <div className='flex items-center gap-2'>
           <ThemeToggler />
-          {session.isPending || session.isPending ? (
-            <>
-              <Skeleton className='h-8 w-20 rounded-md' />
-              <Skeleton className='h-8 w-24 rounded-md' />
-            </>
-          ) : !session.data ? (
-            <>
-              <Button asChild variant='ghost' size='sm' className='text-sm'>
-                <Link href='/login'>Sign In</Link>
-              </Button>
-              <Button asChild size='sm' className='text-sm'>
-                <Link href='/signup'>Get Started</Link>
-              </Button>
-            </>
-          ) : (
-            <>
-              <Badge variant={'secondary'} className={'capitalize'}>
-                {session.data.user.role}
-              </Badge>
-              <Button
-                className='text-sm'
-                size='sm'
-                variant={'destructive'}
-                disabled={isTransition}
-                onClick={handleLogout}>
-                {isTransition ? (
-                  <span className={'inline-flex items-center gap-2'}>
-                    Signing Out...
-                    <Spinner />
-                  </span>
-                ) : (
-                  <span className={'inline-flex items-center gap-2'}>
-                    Sign Out
-                    <LogOutIcon className='h-4 w-4' />
-                  </span>
-                )}
-              </Button>
-            </>
-          )}
+          <UserButton />
         </div>
       </div>
     </header>
