@@ -17,6 +17,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import { formatSegmentForDisplay } from '@/lib/utils';
 
 export function SiteHeader() {
   const segments = useSelectedLayoutSegments();
@@ -61,7 +62,7 @@ export function SiteHeader() {
                   {isLast ? (
                     <BreadcrumbItem>
                       <BreadcrumbPage>
-                        {segment.replace(/-/g, ' ')}
+                        {formatSegmentForDisplay(segment)}
                       </BreadcrumbPage>
                     </BreadcrumbItem>
                   ) : (
@@ -73,7 +74,7 @@ export function SiteHeader() {
                             ('/' +
                               segments.slice(0, index + 1).join('/')) as Route
                           }>
-                          {segment.replace(/-/g, ' ')}
+                          {formatSegmentForDisplay(segment)}
                         </Link>
                       </BreadcrumbLink>
                     </BreadcrumbItem>

@@ -1,15 +1,8 @@
-import { checkEmployerPermissions } from '@/lib/auth/checkPermissions';
-import { requireAuth } from '@/lib/auth/requireAuth';
-import { redirect } from 'next/navigation';
+import { withEmployerAuth } from '@/lib/auth/withEmployerAuth';
 
 export default async function MyJobsPage() {
-  const { user } = await requireAuth();
+  await withEmployerAuth();
 
-  const canCreateJob = await checkEmployerPermissions(user.id);
-
-  if (!canCreateJob.success) {
-    redirect('/login');
-  }
   return (
     <div className='flex flex-col gap-4 px-6 py-4 md:gap-6 md:py-6'>
       <h1 className={'text-4xl'}>MyJobsPage</h1>

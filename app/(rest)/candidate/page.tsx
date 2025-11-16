@@ -10,7 +10,7 @@ export default async function CanditatePage() {
   console.log('canApplyJob', canApplyJob);
 
   if (!canApplyJob.success) {
-    redirect('/login');
+    redirect('/unauthorized');
   }
 
   return (

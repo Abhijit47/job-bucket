@@ -254,7 +254,7 @@ export const dashboardLinks: DashboardNavItem<Route> = {
     },
     {
       title: 'Saved Candidates',
-      url: '/employer/saved-canditates',
+      url: '/employer/saved-candidates',
       icon: IconBookmarkPlus,
     },
     {

@@ -1,6 +1,4 @@
-import { checkEmployerPermissions } from '@/lib/auth/checkPermissions';
-import { requireAuth } from '@/lib/auth/requireAuth';
-import { redirect } from 'next/navigation';
+import { withEmployerAuth } from '@/lib/auth/withEmployerAuth';
 
 type PageProps = {
   params: Promise<{ jobId: string }>;
@@ -8,13 +6,7 @@ type PageProps = {
 };
 
 export default async function JobPage({ params }: PageProps) {
-  const { user } = await requireAuth();
-
-  const canCreateJob = await checkEmployerPermissions(user.id);
-
-  if (!canCreateJob.success) {
-    redirect('/login');
-  }
+  await withEmployerAuth();
   const jobId = (await params).jobId;
 
   return (
