@@ -1,24 +1,25 @@
-import { ChartAreaInteractive } from '@/features/dashboard/components/chart-area-interactive';
-import { SectionCards } from '@/features/dashboard/components/section-cards';
 import { checkEmployerPermissions } from '@/lib/auth/checkPermissions';
 import { requireAuth } from '@/lib/auth/requireAuth';
 import { redirect } from 'next/navigation';
 
-export default async function EmployerPage() {
+type PageProps = {
+  params: Promise<{ jobId: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function JobPage({ params }: PageProps) {
   const { user } = await requireAuth();
 
   const canCreateJob = await checkEmployerPermissions(user.id);
-  console.log('canCreateJob', canCreateJob);
 
   if (!canCreateJob.success) {
     redirect('/login');
   }
+  const jobId = (await params).jobId;
 
   return (
     <div className='flex flex-col gap-4 px-6 py-4 md:gap-6 md:py-6'>
-      <SectionCards />
-
-      <ChartAreaInteractive />
+      <h1 className={'text-4xl'}>JobPage {jobId}</h1>
     </div>
   );
 }
