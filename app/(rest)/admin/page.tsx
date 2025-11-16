@@ -9,7 +9,7 @@ export default async function AdminPage() {
   const canManageUsers = await checkAdminPermissions(user.id);
   console.log('canManageUsers', canManageUsers);
   if (!canManageUsers.success) {
-    redirect('/login');
+    redirect('/unauthorized');
   }
 
   return (

@@ -33,3 +33,9 @@ export function decodeRoleObject(
     return null; // Handle potential bad input
   }
 }
+
+export const formatSegmentForDisplay = (segment: string): string => {
+  return segment
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase()); // Optional: title case
+};
