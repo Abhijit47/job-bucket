@@ -14,6 +14,7 @@ import {
 import { NavSecondary } from '@/features/dashboard/components/nav-secondary';
 import { NavUser } from '@/features/dashboard/components/nav-user';
 // import { authClient } from '@/lib/auth/client';
+import { NavCandidate } from '@/features/candidate/components/nav-candidate';
 import {
   checkAdminPermissions,
   checkCandidatePermissions,
@@ -22,7 +23,6 @@ import {
 import { requireAuth } from '@/lib/auth/requireAuth';
 import Link from 'next/link';
 import { NavAdmin } from './nav-admin';
-import { NavCandidate } from './nav-candidate';
 import { NavEmployer } from './nav-employer';
 
 export async function AppSidebar({
