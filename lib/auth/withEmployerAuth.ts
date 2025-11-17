@@ -1,5 +1,3 @@
-'use server';
-
 import { redirect } from 'next/navigation';
 import { checkEmployerPermissions } from './checkPermissions';
 import { requireAuth } from './requireAuth';

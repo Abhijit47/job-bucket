@@ -2,7 +2,7 @@ import { SectionCards } from '@/features/candidate/components/section-cards';
 import { ChartAreaInteractive } from '@/features/dashboard/components/chart-area-interactive';
 import { withCandidateAuth } from '@/lib/auth/withCandidateAuth';
 
-export default async function CanditatePage() {
+export default async function CandidatePage() {
   await withCandidateAuth();
 
   return (

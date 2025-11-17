@@ -1,10 +1,10 @@
 import { withCandidateAuth } from '@/lib/auth/withCandidateAuth';
 
 export default async function CandidatePlansPage() {
-  await withCandidateAuth();
+  const { user } = await withCandidateAuth();
   return (
     <div className='flex flex-col gap-4 px-6 py-4 md:gap-6 md:py-6'>
-      <h1 className={'text-4xl'}>CandidatePlansPage</h1>
+      <h1 className={'text-4xl'}>Plans & Billing - {user.name}</h1>
     </div>
   );
 }
