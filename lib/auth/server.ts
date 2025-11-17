@@ -63,7 +63,43 @@ export const auth = betterAuth({
 
   user: {
     additionalFields: {
-      role: { type: 'string', fieldName: 'role', input: false },
+      username: {
+        type: 'string',
+        required: false,
+        unique: true,
+        fieldName: 'username',
+        input: false,
+      },
+      role: {
+        type: 'string',
+        fieldName: 'role',
+        input: false,
+      },
+      lang: {
+        type: 'string',
+        required: false,
+        defaultValue: 'en',
+        fieldName: 'lang',
+        input: false,
+      },
+      emailVerifiedAt: {
+        type: 'date',
+        required: false,
+        fieldName: 'email_verified_at',
+        input: false,
+      },
+      phoneNumber: {
+        type: 'string',
+        required: false,
+        fieldName: 'phone_number',
+        input: false,
+      },
+      isActive: {
+        type: 'boolean',
+        required: false,
+        defaultValue: false,
+        input: false,
+      },
     },
   },
 });

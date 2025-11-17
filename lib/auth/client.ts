@@ -1,20 +1,14 @@
 import { adminClient, inferAdditionalFields } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 import { ac, admin, candidate, employer } from './permissions';
-import { auth } from './server';
+import { Session } from './types';
 
 // Option 1: Create a single authClient instance and export its methods
 export const authClient = createAuthClient({
   /** The base URL of the server (optional if you're using the same domain) */
   baseURL: 'http://localhost:3000',
   plugins: [
-    inferAdditionalFields<typeof auth>({
-      user: {
-        role: {
-          type: 'string',
-        },
-      },
-    }),
+    inferAdditionalFields<Session>(),
     adminClient({
       ac,
       roles: {
@@ -31,7 +25,7 @@ export const { signIn, signUp, signOut, useSession } = createAuthClient({
   /** The base URL of the server (optional if you're using the same domain) */
   baseURL: 'http://localhost:3000',
   plugins: [
-    inferAdditionalFields<typeof auth>(),
+    inferAdditionalFields<Session>(),
     adminClient({
       ac,
       roles: {

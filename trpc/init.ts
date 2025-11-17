@@ -1,18 +1,15 @@
-import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
+// import type { CreateNextContextOptions } from '@trpc/server/adapters/next';
 
 import { auth } from '@/lib/auth/server';
 import { initTRPC, TRPCError } from '@trpc/server';
 import { headers } from 'next/headers';
 import { cache } from 'react';
 
-export const createTRPCContext = cache(
-  // eslint-disable-next-line
-  async (opts: CreateNextContextOptions) => {
-    const session = await auth.api.getSession({ headers: await headers() });
+export const createTRPCContext = cache(async () => {
+  const session = await auth.api.getSession({ headers: await headers() });
 
-    return session;
-  }
-);
+  return session;
+});
 
 export type TRPCContext = ReturnType<typeof createTRPCContext>;
 // Avoid exporting the entire t-object

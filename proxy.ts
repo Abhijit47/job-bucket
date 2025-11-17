@@ -43,9 +43,9 @@ export const config = {
   runtime: 'nodejs',
   matcher: [
     '/profile/:path*',
-    '/dashboard/:path*',
-    '/job/:path*',
-    '/users/:path*',
+    '/admin/:path*',
+    '/employer/:path*',
+    '/candidates/:path*',
     // Exclude API routes, static files, image optimizations, and .png files
     // '/((?!_next/static|_next/image|.*\\.png$).*)',
   ],
