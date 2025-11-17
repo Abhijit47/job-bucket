@@ -23,6 +23,7 @@ import {
   IconUserCircle,
   IconUserCog,
   IconUsers,
+  IconUserStar,
 } from '@tabler/icons-react';
 import type { Route } from 'next';
 export const roleEnum = ['candidate', 'employer'] as const;
@@ -207,27 +208,32 @@ export const dashboardLinks: DashboardNavItem<Route> = {
     },
     {
       title: 'Manage Users',
-      url: '#',
+      url: '/admin/manage-users',
       icon: IconUsers,
     },
     {
+      title: 'Manage Applicants',
+      url: '/admin/manage-applicants',
+      icon: IconUserStar,
+    },
+    {
       title: 'Manage Jobs',
-      url: '#',
+      url: '/admin/manage-jobs',
       icon: IconBriefcase,
     },
     {
       title: 'Manage Companies',
-      url: '#',
+      url: '/admin/manage-companies',
       icon: IconBuilding,
     },
     {
       title: 'Reports',
-      url: '#',
+      url: '/admin/reports',
       icon: IconReport,
     },
     {
       title: 'Settings',
-      url: '#',
+      url: '/admin/settings',
       icon: IconUserCog,
     },
   ],

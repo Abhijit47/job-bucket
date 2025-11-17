@@ -1,18 +1,9 @@
 import { ChartAreaInteractive } from '@/features/dashboard/components/chart-area-interactive';
-import { SectionCards } from '@/features/dashboard/components/section-cards';
-import { checkEmployerPermissions } from '@/lib/auth/checkPermissions';
-import { requireAuth } from '@/lib/auth/requireAuth';
-import { redirect } from 'next/navigation';
+import { SectionCards } from '@/features/employer/components/section-cards';
+import { withEmployerAuth } from '@/lib/auth/withEmployerAuth';
 
 export default async function EmployerPage() {
-  const { user } = await requireAuth();
-
-  const canCreateJob = await checkEmployerPermissions(user.id);
-  console.log('canCreateJob', canCreateJob);
-
-  if (!canCreateJob.success) {
-    redirect('/login');
-  }
+  await withEmployerAuth();
 
   return (
     <div className='flex flex-col gap-4 px-6 py-4 md:gap-6 md:py-6'>
