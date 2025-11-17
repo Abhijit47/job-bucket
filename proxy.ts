@@ -14,11 +14,6 @@ export async function proxy(request: NextRequest) {
 
   const pathname = request.nextUrl.pathname;
 
-  // Allow access to profile for all authenticated users
-  if (pathname.startsWith('/profile') && !session) {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
-
   // Allow access to admin pages for admin users
   if (pathname.startsWith('/admin') && session.user.role !== 'admin') {
     return NextResponse.redirect(new URL('/unauthorized', request.url));
@@ -42,7 +37,6 @@ export async function proxy(request: NextRequest) {
 export const config = {
   runtime: 'nodejs',
   matcher: [
-    '/profile/:path*',
     '/admin/:path*',
     '/employer/:path*',
     '/candidate/:path*',

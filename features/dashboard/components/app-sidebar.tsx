@@ -11,10 +11,11 @@ import {
 } from '@/components/ui/sidebar';
 // import { NavDocuments } from '@/features/dashboard/components/nav-documents';
 // import { NavMain } from '@/features/dashboard/components/nav-main';
+import { NavAdmin } from '@/features/admin/components/nav-admin';
+import { NavCandidate } from '@/features/candidate/components/nav-candidate';
 import { NavSecondary } from '@/features/dashboard/components/nav-secondary';
 import { NavUser } from '@/features/dashboard/components/nav-user';
-// import { authClient } from '@/lib/auth/client';
-import { NavCandidate } from '@/features/candidate/components/nav-candidate';
+import { NavEmployer } from '@/features/employer/components/nav-employer';
 import {
   checkAdminPermissions,
   checkCandidatePermissions,
@@ -22,8 +23,6 @@ import {
 } from '@/lib/auth/checkPermissions';
 import { requireAuth } from '@/lib/auth/requireAuth';
 import Link from 'next/link';
-import { NavAdmin } from './nav-admin';
-import { NavEmployer } from './nav-employer';
 
 export async function AppSidebar({
   ...props
