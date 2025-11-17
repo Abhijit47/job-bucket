@@ -15,7 +15,7 @@ import {
   genders,
   jobLevels,
   jobTypes,
-  maritialStatus,
+  maritalStatus,
   nationalities,
   qualifications,
   roles,
@@ -110,10 +110,7 @@ export const verification = pgTable('verification', {
 
 export const nationalityEnum = pgEnum('nationality_enum', nationalities);
 export const genderEnum = pgEnum('gender_enum', genders);
-export const maritialStatusEnum = pgEnum(
-  'maritial_status_enum',
-  maritialStatus
-);
+export const maritalStatusEnum = pgEnum('marital_status_enum', maritalStatus);
 export const applicant = pgTable('applicant', {
   userId: text('user_id')
     .primaryKey()
@@ -123,10 +120,10 @@ export const applicant = pgTable('applicant', {
   biography: varchar('biography', { length: 1024 }),
   dateOfBirth: timestamp('date_of_birth', { mode: 'date' }),
   nationality: nationalityEnum('nationality'),
-  maritialStatus: maritialStatusEnum('maritial_status'),
+  maritalStatus: maritalStatusEnum('marital_status'),
   gender: genderEnum('gender'),
   experience: varchar('experience', { length: 2048 }),
-  eduction: varchar('eduction', { length: 2048 }),
+  education: varchar('education', { length: 2048 }),
   websiteUrl: varchar('website_url', { length: 512 }),
   location: varchar('location', { length: 256 }),
 
@@ -181,8 +178,8 @@ export const resume = pgTable('resume', {
 export interface SalaryJSONB {
   min: number;
   max: number;
-  currency: typeof currencies;
-  period: typeof salaryPeriods;
+  currency: (typeof currencies)[number];
+  period: (typeof salaryPeriods)[number];
 }
 export const qualificationsEnum = pgEnum('qualifications', qualifications);
 export const jobLevelEnum = pgEnum('job_level', jobLevels);
@@ -288,7 +285,7 @@ export const sessionsRelations = relations(session, ({ one }) => ({
   user: one(user, {
     fields: [session.userId],
     references: [user.id],
-    relationName: 'user',
+    relationName: 'user_sessions',
   }),
 }));
 
@@ -296,7 +293,7 @@ export const accountsRelations = relations(account, ({ one }) => ({
   user: one(user, {
     fields: [account.userId],
     references: [user.id],
-    relationName: 'user',
+    relationName: 'user_accounts',
   }),
 }));
 
@@ -304,32 +301,39 @@ export const verificationsRelations = relations(verification, ({ one }) => ({
   user: one(user, {
     fields: [verification.identifier],
     references: [user.email],
-    relationName: 'user',
+    relationName: 'user_verifications',
   }),
 }));
 
-export const applicantRelations = relations(applicant, ({ one }) => ({
+export const applicantRelations = relations(applicant, ({ one, many }) => ({
   user: one(user, {
     fields: [applicant.userId],
     references: [user.id],
     relationName: 'user',
   }),
+  resumes: many(resume, { relationName: 'applicant' }),
+  applications: many(application, { relationName: 'applicant' }),
+  savedJobs: many(savedJob, { relationName: 'applicant' }),
+  savedCandidates: many(savedCandidate, { relationName: 'applicant' }),
 }));
 
-export const employerRelations = relations(employer, ({ one }) => ({
+export const employerRelations = relations(employer, ({ one, many }) => ({
   user: one(user, {
     fields: [employer.userId],
     references: [user.id],
     relationName: 'user',
   }),
+  jobs: many(job, { relationName: 'employer' }),
+  savedCandidates: many(savedCandidate, { relationName: 'employer' }),
 }));
 
-export const resumeRelations = relations(resume, ({ one }) => ({
+export const resumeRelations = relations(resume, ({ one, many }) => ({
   applicant: one(applicant, {
     fields: [resume.applicantId],
     references: [applicant.userId],
     relationName: 'applicant',
   }),
+  applications: many(application, { relationName: 'resume' }),
 }));
 
 export const jobRelations = relations(job, ({ one, many }) => ({
@@ -339,6 +343,7 @@ export const jobRelations = relations(job, ({ one, many }) => ({
     relationName: 'employer',
   }),
   applications: many(application, { relationName: 'job' }),
+  savedJobs: many(savedJob, { relationName: 'job' }),
 }));
 
 export const applicationRelations = relations(application, ({ one }) => ({
