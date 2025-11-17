@@ -10,7 +10,7 @@ export const roles = ['admin', 'employer', 'candidate', 'guest'] as const;
 
 export type roleUnion = (typeof roles)[number];
 
-export const maritialStatus = [
+export const maritalStatus = [
   'single',
   'married',
   'divorced',

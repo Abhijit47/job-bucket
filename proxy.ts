@@ -45,7 +45,7 @@ export const config = {
     '/profile/:path*',
     '/admin/:path*',
     '/employer/:path*',
-    '/candidates/:path*',
+    '/candidate/:path*',
     // Exclude API routes, static files, image optimizations, and .png files
     // '/((?!_next/static|_next/image|.*\\.png$).*)',
   ],
