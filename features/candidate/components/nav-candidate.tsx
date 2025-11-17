@@ -45,7 +45,7 @@ export function NavCandidate() {
                   tooltip={item.title}
                   asChild
                   isActive={isCurrentPath}>
-                  <Link href={item.url} prefetch>
+                  <Link href={item.url} prefetch={true}>
                     {item.icon && (
                       <item.icon
                         className={cn(

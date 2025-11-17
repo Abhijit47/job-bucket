@@ -17,7 +17,7 @@ export function SectionCards() {
         <CardHeader>
           <CardDescription>Total Users</CardDescription>
           <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-            1,250.00
+            850
           </CardTitle>
           <CardAction>
             <Badge variant='outline'>
@@ -74,19 +74,21 @@ export function SectionCards() {
           <div className='line-clamp-1 flex gap-2 font-medium'>
             Strong user retention <IconTrendingUp className='size-4' />
           </div>
-          <div className='text-muted-foreground'>Engagement exceed targets</div>
+          <div className='text-muted-foreground'>
+            Engagement exceeds targets
+          </div>
         </CardFooter>
       </Card>
       <Card className='@container/card'>
         <CardHeader>
           <CardDescription>Total Revenue</CardDescription>
           <CardTitle className='text-2xl font-semibold tabular-nums @[250px]/card:text-3xl'>
-            4.5%
+            $1,234,567
           </CardTitle>
           <CardAction>
             <Badge variant='outline'>
               <IconTrendingUp />
-              +4.5%
+              +8.4%
             </Badge>
           </CardAction>
         </CardHeader>
