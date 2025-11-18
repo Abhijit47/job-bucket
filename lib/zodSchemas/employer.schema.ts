@@ -53,7 +53,7 @@ export const updateProfileSchema = z.object({
     .max(100, 'Name should not exceed 100 characters.'),
   username: z
     .string()
-    .min(1, 'Username is required')
+    .min(5, 'Username must be at least 5 characters')
     .max(50, 'Username should not exceed 50 characters.'),
   phoneNumber: z
     .string()
@@ -63,6 +63,7 @@ export const updateProfileSchema = z.object({
   lang: z.enum(locales, {
     error: 'Please select a valid language preference.',
   }),
+  isActive: z.boolean({ error: 'Profile active status is required.' }),
 });
 
 export const myJobSchema = z.object({ id: z.string() });

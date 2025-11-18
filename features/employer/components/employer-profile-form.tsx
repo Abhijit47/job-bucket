@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
+import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { authClient } from '@/lib/auth/client';
 import { establishmentYears } from '@/lib/utils';
@@ -84,6 +85,7 @@ export function EmployerProfileForm() {
       phoneNumber: data.user.phoneNumber || '',
       image: data.user.image || '',
       lang: (data.user.lang as localeUnion) || 'en-US',
+      isActive: data.user.isActive || false,
     },
     mode: 'onChange',
   });
@@ -113,21 +115,19 @@ export function EmployerProfileForm() {
       });
 
       if (response?.available) {
-        console.log('Username is available');
         setIsAvailable(true);
       } else {
-        console.log('Username is not available');
         setIsAvailable(false);
         form.setError('username', {
           type: 'manual',
-          message: error?.message,
+          message: error?.message || 'Username is not available',
         });
       }
     });
   };
 
   const onError: SubmitErrorHandler<UpdateProfileInput> = (errors) => {
-    console.log('Form errors:', errors);
+    // console.log('Form errors:', errors);
     Object.values(errors).forEach((error) => {
       if (error.message) {
         toast.error(error.message);
@@ -212,6 +212,10 @@ export function EmployerProfileForm() {
                       autoComplete='off'
                       aria-invalid={fieldState.invalid}
                       {...field}
+                      onChange={(e) => {
+                        field.onChange(e);
+                        setIsAvailable(false);
+                      }}
                     />
                     <InputGroupAddon align='inline-end'>
                       <InputGroupButton
@@ -233,12 +237,10 @@ export function EmployerProfileForm() {
                         }}>
                         {isPendingUsername ? (
                           <Spinner className='size-4' />
-                        ) : !isPendingUsername ? (
-                          <IconHandClick className='size-4' />
                         ) : isAvailable ? (
                           <IconCheck className='size-4' />
                         ) : (
-                          <IconRestore className='size-4' />
+                          <IconHandClick className='size-4' />
                         )}
                       </InputGroupButton>
                     </InputGroupAddon>
@@ -767,6 +769,32 @@ export function EmployerProfileForm() {
               )}
             />
             <FieldSeparator />
+
+            <Controller
+              control={form.control}
+              name='isActive'
+              render={({ field, fieldState }) => (
+                <Field
+                  orientation='horizontal'
+                  data-invalid={fieldState.invalid}
+                  aria-invalid={fieldState.invalid}>
+                  <FieldContent>
+                    <FieldLabel htmlFor='activeProfile'>
+                      Active Profile
+                    </FieldLabel>
+                    <FieldDescription>
+                      Toggle to activate or deactivate your employer profile.
+                    </FieldDescription>
+                  </FieldContent>
+                  <Switch
+                    id='activeProfile'
+                    aria-invalid={fieldState.invalid}
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </Field>
+              )}
+            />
 
             <Field orientation='responsive'>
               <Button type='submit' disabled={isUpdatePending}>

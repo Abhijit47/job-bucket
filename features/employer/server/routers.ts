@@ -120,8 +120,8 @@ export const employersRouter = createTRPCRouter({
 
       if (!updatedJob) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to update job posting.',
+          code: 'NOT_FOUND',
+          message: 'Job not found for this employer.',
         });
       }
 
@@ -140,7 +140,7 @@ export const employersRouter = createTRPCRouter({
 
       if (!deleteJob) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
+          code: 'NOT_FOUND',
           message: 'Failed to delete job posting.',
         });
       }
@@ -161,7 +161,7 @@ export const employersRouter = createTRPCRouter({
 
       if (!publishedJob) {
         throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
+          code: 'NOT_FOUND',
           message: 'Failed to publish job posting.',
         });
       }
@@ -289,6 +289,7 @@ export const employersRouter = createTRPCRouter({
         const [updateUser] = await tx
           .update(userTable)
           .set({
+            name: input.name,
             image: input.image,
             username: input.username,
             displayUsername: input.username,
@@ -305,7 +306,6 @@ export const employersRouter = createTRPCRouter({
           .returning();
 
         if (!updatedEmployer || !updateUser) {
-          tx.rollback();
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to update employer profile.',
