@@ -21,13 +21,21 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (oldData, context) => {
-          const value = context?.query as { r: string };
+          const value = context?.query as { r: 'employer' | 'candidate' };
           const role = decodeRoleObject(value.r);
           if (role) {
             await db
               .update(schemas.user)
               .set({ role: role.r })
               .where(eq(schemas.user.id, oldData.id));
+
+            if (role.r === 'employer') {
+              await db.insert(schemas.employer).values({ userId: oldData.id });
+            }
+
+            if (role.r === 'candidate') {
+              await db.insert(schemas.applicant).values({ userId: oldData.id });
+            }
           }
           return;
         },

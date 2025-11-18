@@ -54,7 +54,6 @@ export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
   });
 
   if (data.error) {
-    console.error('Admin permission check failed:', data.error);
     throw new TRPCError({
       code: 'FORBIDDEN',
       message:
@@ -74,12 +73,12 @@ export const employerProcedure = protectedProcedure.use(
         role: 'employer', // server-only
         permissions: {
           jobCreate: ['create', 'delete', 'update', 'publish'],
+          user: ['get', 'update', 'set-password'],
         },
       },
     });
 
     if (data.error) {
-      console.error('Admin permission check failed:', data.error);
       throw new TRPCError({
         code: 'FORBIDDEN',
         message:
@@ -99,6 +98,7 @@ export const candidateProcedure = protectedProcedure.use(
         role: 'candidate', // server-only
         permissions: {
           jobApply: ['apply', 'withdraw'],
+          user: ['get', 'update', 'set-password'],
         },
       },
     });

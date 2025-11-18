@@ -39,3 +39,29 @@ export const formatSegmentForDisplay = (segment: string): string => {
     .replace(/-/g, ' ')
     .replace(/\b\w/g, (char) => char.toUpperCase()); // Optional: title case
 };
+
+// generate year from 2000 to current year
+const currentYear = new Date().getFullYear();
+export const establishmentYears = Array.from(
+  { length: currentYear - 1999 },
+  (_, i) => currentYear - i
+);
+
+export function generateTimezones() {
+  const timezones = new Set<string>();
+
+  for (const timeshop of Intl.supportedValuesOf('timeZone')) {
+    timezones.add(timeshop);
+  }
+  return Array.from(timezones);
+}
+
+export function generateCurrencies() {
+  const currencySet = new Set<string>();
+
+  for (const currency of Intl.supportedValuesOf('currency')) {
+    currencySet.add(currency);
+  }
+
+  return Array.from(currencySet);
+}
