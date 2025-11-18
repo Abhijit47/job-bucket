@@ -1,3 +1,4 @@
+import { employersRouter } from '@/features/employer/server/routers';
 import { auth } from '@/lib/auth/server';
 import { headers } from 'next/headers';
 import { z } from 'zod';
@@ -55,6 +56,8 @@ export const appRouter = createTRPCRouter({
     });
     return newUser.user;
   }),
+
+  employers: employersRouter,
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;

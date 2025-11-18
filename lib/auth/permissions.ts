@@ -15,10 +15,12 @@ export const ac = createAccessControl(statement);
 
 export const candidate = ac.newRole({
   jobApply: ['apply', 'withdraw'],
+  user: ['get', 'update', 'set-password'],
 });
 
 export const employer = ac.newRole({
   jobCreate: ['create', 'share', 'update', 'publish'],
+  user: ['get', 'update', 'set-password'],
 });
 
 export const admin = ac.newRole({
