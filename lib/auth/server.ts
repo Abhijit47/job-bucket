@@ -39,7 +39,6 @@ export const auth = betterAuth({
                       .insert(schemas.employer)
                       .values({ userId: oldData.id });
                   } catch (error) {
-                    tx.rollback();
                     throw error;
                   }
                 }
@@ -50,13 +49,17 @@ export const auth = betterAuth({
                       .insert(schemas.applicant)
                       .values({ userId: oldData.id });
                   } catch (error) {
-                    tx.rollback();
                     throw error;
                   }
                 }
               }
-            } catch {
-              throw new Error('Failed to sign up user');
+            } catch (error) {
+              console.error('Error during user signup:', error);
+              throw new Error(
+                `Failed to sign up user: ${
+                  error instanceof Error ? error.message : String(error)
+                }`
+              );
             }
           });
         },
