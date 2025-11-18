@@ -1,4 +1,8 @@
-import { adminClient, inferAdditionalFields } from 'better-auth/client/plugins';
+import {
+  adminClient,
+  inferAdditionalFields,
+  usernameClient,
+} from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 import { ac, admin, candidate, employer } from './permissions';
 import { Session } from './types';
@@ -17,6 +21,7 @@ export const authClient = createAuthClient({
         employer,
       },
     }),
+    usernameClient(),
   ],
 });
 
@@ -34,5 +39,6 @@ export const { signIn, signUp, signOut, useSession } = createAuthClient({
         employer,
       },
     }),
+    usernameClient(),
   ],
 });
