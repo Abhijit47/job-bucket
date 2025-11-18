@@ -47,12 +47,22 @@ export const updateProfileSchema = z.object({
   companyWebsite: z.url(),
   location: z.string().min(1, 'Location is required.').max(256),
 
-  name: z.string().max(100),
-  // email: z.email().max(100),
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(100, 'Name should not exceed 100 characters.'),
+  username: z
+    .string()
+    .min(1, 'Username is required')
+    .max(50, 'Username should not exceed 50 characters.'),
+  phoneNumber: z
+    .string()
+    .min(1, 'Phone number is required')
+    .max(20, 'Phone number should not exceed 20 characters.'),
   image: z.url(),
-  username: z.string().max(50),
-  phoneNumber: z.string().max(20),
-  lang: z.enum(locales),
+  lang: z.enum(locales, {
+    error: 'Please select a valid language preference.',
+  }),
 });
 
 export const myJobSchema = z.object({ id: z.string() });

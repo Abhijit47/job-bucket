@@ -50,8 +50,8 @@ export const establishmentYears = Array.from(
 export function generateTimezones() {
   const timezones = new Set<string>();
 
-  for (const timeshop of Intl.supportedValuesOf('timeZone')) {
-    timezones.add(timeshop);
+  for (const timezone of Intl.supportedValuesOf('timeZone')) {
+    timezones.add(timezone);
   }
   return Array.from(timezones);
 }

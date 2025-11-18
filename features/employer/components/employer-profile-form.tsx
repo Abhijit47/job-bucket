@@ -15,6 +15,12 @@ import {
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput,
+} from '@/components/ui/input-group';
+import {
   Select,
   SelectContent,
   SelectGroup,
@@ -25,6 +31,7 @@ import {
 } from '@/components/ui/select';
 import { Spinner } from '@/components/ui/spinner';
 import { Textarea } from '@/components/ui/textarea';
+import { authClient } from '@/lib/auth/client';
 import { establishmentYears } from '@/lib/utils';
 import {
   locales,
@@ -35,8 +42,9 @@ import {
   updateProfileSchema,
 } from '@/lib/zodSchemas/employer.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { IconRestore } from '@tabler/icons-react';
+import { IconCheck, IconHandClick, IconRestore } from '@tabler/icons-react';
 import { FileEdit } from 'lucide-react';
+import { useState, useTransition } from 'react';
 import {
   Controller,
   SubmitErrorHandler,
@@ -51,6 +59,9 @@ import {
 } from '../hooks/use-employers';
 
 export function EmployerProfileForm() {
+  const [isAvailable, setIsAvailable] = useState<boolean>(false);
+  const [isPendingUsername, startUsernameTransition] = useTransition();
+
   const { data, isPending, isLoading } = useGetEmployerProfile();
   const { mutateAsync, isPending: isUpdatePending } =
     useUpdateEmployerProfile();
@@ -68,12 +79,10 @@ export function EmployerProfileForm() {
       yearOfEstablishment: data.employer.yearOfEstablishment || '',
       companyWebsite: data.employer.companyWebsite || '',
       location: data.employer.location || '',
-
       name: data.user.name || '',
-      // email: data.user.email || '',
-      image: data.user.image || '',
       username: data.user.username || '',
       phoneNumber: data.user.phoneNumber || '',
+      image: data.user.image || '',
       lang: (data.user.lang as localeUnion) || 'en-US',
     },
     mode: 'onChange',
@@ -89,8 +98,36 @@ export function EmployerProfileForm() {
     },
   });
 
+  const handleCheckUserName = (username: string) => {
+    if (!username) {
+      form.setError('username', {
+        type: 'manual',
+        message: 'Username cannot be empty',
+      });
+      setIsAvailable(false);
+      return;
+    }
+    startUsernameTransition(async () => {
+      const { data: response, error } = await authClient.isUsernameAvailable({
+        username: username,
+      });
+
+      if (response?.available) {
+        console.log('Username is available');
+        setIsAvailable(true);
+      } else {
+        console.log('Username is not available');
+        setIsAvailable(false);
+        form.setError('username', {
+          type: 'manual',
+          message: error?.message,
+        });
+      }
+    });
+  };
+
   const onError: SubmitErrorHandler<UpdateProfileInput> = (errors) => {
-    // console.log('Form errors:', errors);
+    console.log('Form errors:', errors);
     Object.values(errors).forEach((error) => {
       if (error.message) {
         toast.error(error.message);
@@ -99,7 +136,11 @@ export function EmployerProfileForm() {
   };
 
   const onSubmit: SubmitHandler<UpdateProfileInput> = (data) => {
-    mutateAsync(data);
+    mutateAsync(data, {
+      onSuccess: () => {
+        setIsAvailable(false);
+      },
+    });
   };
 
   return (
@@ -126,7 +167,7 @@ export function EmployerProfileForm() {
                         errors={[fieldState.error]}
                       />
                     ) : (
-                      <FieldDescription>
+                      <FieldDescription className={'text-xs'}>
                         Provide name for identification
                       </FieldDescription>
                     )}
@@ -135,9 +176,73 @@ export function EmployerProfileForm() {
                     id='name'
                     placeholder='John Doe'
                     autoComplete='name'
-                    area-invalid={String(fieldState.invalid)}
+                    aria-invalid={fieldState.invalid}
                     {...field}
                   />
+                </Field>
+              )}
+            />
+            <FieldSeparator />
+
+            <Controller
+              control={form.control}
+              name='username'
+              render={({ field, fieldState }) => (
+                <Field
+                  orientation='responsive'
+                  data-invalid={fieldState.invalid}
+                  aria-invalid={fieldState.invalid}>
+                  <FieldContent>
+                    <FieldLabel htmlFor='username'>Username</FieldLabel>
+                    {fieldState.error ? (
+                      <FieldError
+                        className={'text-xs'}
+                        errors={[fieldState.error]}
+                      />
+                    ) : (
+                      <FieldDescription className={'text-xs'}>
+                        Provide a username for your profile
+                      </FieldDescription>
+                    )}
+                  </FieldContent>
+                  <InputGroup>
+                    <InputGroupInput
+                      id='username'
+                      placeholder='johndoe07'
+                      autoComplete='off'
+                      aria-invalid={fieldState.invalid}
+                      {...field}
+                    />
+                    <InputGroupAddon align='inline-end'>
+                      <InputGroupButton
+                        type='button'
+                        aria-invalid={fieldState.invalid}
+                        aria-label='Check username'
+                        title='Check username'
+                        size='icon-xs'
+                        variant={
+                          isPendingUsername
+                            ? 'secondary'
+                            : isAvailable
+                            ? 'default'
+                            : 'outline'
+                        }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleCheckUserName(field.value);
+                        }}>
+                        {isPendingUsername ? (
+                          <Spinner className='size-4' />
+                        ) : !isPendingUsername ? (
+                          <IconHandClick className='size-4' />
+                        ) : isAvailable ? (
+                          <IconCheck className='size-4' />
+                        ) : (
+                          <IconRestore className='size-4' />
+                        )}
+                      </InputGroupButton>
+                    </InputGroupAddon>
+                  </InputGroup>
                 </Field>
               )}
             />
@@ -155,7 +260,7 @@ export function EmployerProfileForm() {
                 id='email'
                 placeholder='someone@example.com'
                 autoComplete='off'
-                defaultValue={data.user.email}
+                defaultValue={data?.user?.email ?? 'N/A'}
                 readOnly
               />
             </Field>
@@ -173,7 +278,7 @@ export function EmployerProfileForm() {
                 id='role'
                 placeholder='user'
                 autoComplete='off'
-                defaultValue={data.user.role ?? 'N/A'}
+                defaultValue={data?.user?.role ?? 'N/A'}
                 readOnly
               />
             </Field>
@@ -204,7 +309,7 @@ export function EmployerProfileForm() {
                     id='image'
                     placeholder='https://example.com'
                     autoComplete='off'
-                    area-invalid={String(fieldState.invalid)}
+                    aria-invalid={fieldState.invalid}
                     {...field}
                   />
                 </Field>
@@ -228,7 +333,7 @@ export function EmployerProfileForm() {
                         errors={[fieldState.error]}
                       />
                     ) : (
-                      <FieldDescription>
+                      <FieldDescription className={'text-xs'}>
                         Provide your phone number
                       </FieldDescription>
                     )}
@@ -237,7 +342,7 @@ export function EmployerProfileForm() {
                     id='phoneNumber'
                     placeholder='+91 99999 11111'
                     autoComplete='tel'
-                    area-invalid={String(fieldState.invalid)}
+                    aria-invalid={fieldState.invalid}
                     {...field}
                   />
                 </Field>
@@ -267,7 +372,10 @@ export function EmployerProfileForm() {
                     )}
                   </FieldContent>
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className='min-w-[200px]' id='lang'>
+                    <SelectTrigger
+                      className='min-w-[200px]'
+                      id='lang'
+                      aria-invalid={fieldState.invalid}>
                       {field.value ? (
                         <SelectValue>{field.value}</SelectValue>
                       ) : (
@@ -276,7 +384,7 @@ export function EmployerProfileForm() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectLabel>Preffered Locale</SelectLabel>
+                        <SelectLabel>Preferred Locale</SelectLabel>
                         {locales.map((type) => (
                           <SelectItem value={type} key={type}>
                             {type}
@@ -315,7 +423,7 @@ export function EmployerProfileForm() {
                     id='companyName'
                     placeholder='XYZ Company'
                     autoComplete='organization'
-                    area-invalid={String(fieldState.invalid)}
+                    aria-invalid={fieldState.invalid}
                     {...field}
                   />
                 </Field>
@@ -352,7 +460,7 @@ export function EmployerProfileForm() {
                     id='companyDescription'
                     placeholder='Hello, world!'
                     className='max-h-[100px] overflow-y-auto resize-none sm:min-w-[300px] md:min-w-[400px] w-full relative'
-                    area-invalid={String(fieldState.invalid)}
+                    aria-invalid={fieldState.invalid}
                     {...field}
                   />
                   <Badge
@@ -392,7 +500,7 @@ export function EmployerProfileForm() {
                     id='companyLogoUrl'
                     placeholder='https://example.com'
                     autoComplete='off'
-                    area-invalid={String(fieldState.invalid)}
+                    aria-invalid={fieldState.invalid}
                     {...field}
                   />
                 </Field>
@@ -427,7 +535,7 @@ export function EmployerProfileForm() {
                     id='companyBannerUrl'
                     placeholder='https://example.com'
                     autoComplete='off'
-                    area-invalid={String(fieldState.invalid)}
+                    aria-invalid={fieldState.invalid}
                     {...field}
                   />
                 </Field>
@@ -461,7 +569,8 @@ export function EmployerProfileForm() {
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger
                       className='min-w-[200px]'
-                      id='organizationType'>
+                      id='organizationType'
+                      aria-invalid={fieldState.invalid}>
                       {field.value ? (
                         <SelectValue>{field.value}</SelectValue>
                       ) : (
@@ -509,7 +618,10 @@ export function EmployerProfileForm() {
                     )}
                   </FieldContent>
                   <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className='min-w-[200px]' id='teamSize'>
+                    <SelectTrigger
+                      className='min-w-[200px]'
+                      id='teamSize'
+                      aria-invalid={fieldState.invalid}>
                       {field.value ? (
                         <SelectValue>{field.value}</SelectValue>
                       ) : (
@@ -561,7 +673,8 @@ export function EmployerProfileForm() {
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger
                       className='min-w-[200px]'
-                      id='yearOfEstablishment'>
+                      id='yearOfEstablishment'
+                      aria-invalid={fieldState.invalid}>
                       {field.value ? (
                         <SelectValue>{field.value}</SelectValue>
                       ) : (
@@ -614,7 +727,7 @@ export function EmployerProfileForm() {
                     id='companyWebsite'
                     placeholder='https://example.com'
                     autoComplete='off'
-                    area-invalid={String(fieldState.invalid)}
+                    aria-invalid={fieldState.invalid}
                     {...field}
                   />
                 </Field>
@@ -645,9 +758,9 @@ export function EmployerProfileForm() {
                   </FieldContent>
                   <Input
                     id='location'
-                    placeholder='ex: Camac steet, Kolkata'
+                    placeholder='ex: Camac street, Kolkata'
                     autoComplete='address-level1'
-                    area-invalid={String(fieldState.invalid)}
+                    aria-invalid={fieldState.invalid}
                     {...field}
                   />
                 </Field>
@@ -656,7 +769,7 @@ export function EmployerProfileForm() {
             <FieldSeparator />
 
             <Field orientation='responsive'>
-              <Button type='submit'>
+              <Button type='submit' disabled={isUpdatePending}>
                 {isUpdatePending ? (
                   <span className={'inline-flex items-center gap-2'}>
                     Updating...
@@ -669,6 +782,7 @@ export function EmployerProfileForm() {
                 )}
               </Button>
               <Button
+                disabled={isUpdatePending}
                 type='reset'
                 variant='outline'
                 onClick={() => form.reset()}>

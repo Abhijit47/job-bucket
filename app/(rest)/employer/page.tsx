@@ -7,7 +7,7 @@ import { caller } from '@/trpc/server';
 export default async function EmployerPage() {
   await withEmployerAuth();
 
-  const isCompleteProfile = await caller.employers.getProfieStatus();
+  const isCompleteProfile = await caller.employers.getProfileStatus();
 
   return (
     <div className='flex flex-col gap-4 px-6 py-4 md:gap-6 md:py-6'>

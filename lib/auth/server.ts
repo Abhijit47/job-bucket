@@ -5,6 +5,7 @@ import { admin as adminPlugin } from 'better-auth/plugins/admin';
 
 import { db } from '@/drizzle/db';
 import * as schemas from '@/drizzle/schemas';
+import { username } from 'better-auth/plugins';
 import { eq } from 'drizzle-orm';
 import { decodeRoleObject } from '../utils';
 import { ac, admin, candidate, employer } from './permissions';
@@ -21,23 +22,43 @@ export const auth = betterAuth({
     user: {
       create: {
         after: async (oldData, context) => {
-          const value = context?.query as { r: 'employer' | 'candidate' };
-          const role = decodeRoleObject(value.r);
-          if (role) {
-            await db
-              .update(schemas.user)
-              .set({ role: role.r })
-              .where(eq(schemas.user.id, oldData.id));
+          const role = context?.query?.r
+            ? decodeRoleObject(context.query.r as 'employer' | 'candidate')
+            : null;
+          await db.transaction(async (tx) => {
+            try {
+              if (role) {
+                await tx
+                  .update(schemas.user)
+                  .set({ role: role.r })
+                  .where(eq(schemas.user.id, oldData.id));
 
-            if (role.r === 'employer') {
-              await db.insert(schemas.employer).values({ userId: oldData.id });
-            }
+                if (role.r === 'employer') {
+                  try {
+                    await tx
+                      .insert(schemas.employer)
+                      .values({ userId: oldData.id });
+                  } catch (error) {
+                    tx.rollback();
+                    throw error;
+                  }
+                }
 
-            if (role.r === 'candidate') {
-              await db.insert(schemas.applicant).values({ userId: oldData.id });
+                if (role.r === 'candidate') {
+                  try {
+                    await tx
+                      .insert(schemas.applicant)
+                      .values({ userId: oldData.id });
+                  } catch (error) {
+                    tx.rollback();
+                    throw error;
+                  }
+                }
+              }
+            } catch {
+              throw new Error('Failed to sign up user');
             }
-          }
-          return;
+          });
         },
       },
     },
@@ -65,6 +86,35 @@ export const auth = betterAuth({
         candidate,
         employer,
       },
+    }),
+    username({
+      minUsernameLength: 5,
+      maxUsernameLength: 50,
+      usernameValidator: (username) => {
+        if (username === 'admin') {
+          return false;
+        }
+        if (username === 'employer') {
+          return false;
+        }
+        if (username === 'candidate') {
+          return false;
+        }
+        return true;
+      },
+      displayUsernameValidator: (displayUsername) => {
+        // Allow only alphanumeric characters, underscores, and hyphens
+        return /^[a-zA-Z0-9_-]+$/.test(displayUsername);
+      },
+      usernameNormalization: (username) => {
+        return username
+          .toLowerCase()
+          .replaceAll('0', 'o')
+          .replaceAll('3', 'e')
+          .replaceAll('4', 'a');
+      },
+      displayUsernameNormalization: (displayUsername) =>
+        displayUsername.toLowerCase(),
     }),
     nextCookies(),
   ],

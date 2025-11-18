@@ -51,10 +51,11 @@ export const user = pgTable('user', {
   banned: boolean('banned').default(false),
   banReason: varchar('ban_reason'),
   banExpires: timestamp('ban_expires'),
+  username: varchar('username').unique(),
+  displayUsername: text('display_username'),
 
   // Additional fields can be added here
   emailVerifiedAt: timestamp('email_verified_at', { mode: 'date' }),
-  username: varchar('username').unique(),
   lang: varchar('lang').default('en'),
   phoneNumber: varchar('phone_number', { length: 20 }).unique(),
   isActive: boolean('is_active').default(false),

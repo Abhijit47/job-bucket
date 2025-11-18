@@ -50,7 +50,7 @@ export const employersRouter = createTRPCRouter({
         employer.yearOfEstablishment &&
         employer.companyWebsite &&
         employer.location &&
-        user.emailVerifiedAt &&
+        // user.emailVerifiedAt &&
         user.username &&
         user.phoneNumber
     );
@@ -77,8 +77,8 @@ export const employersRouter = createTRPCRouter({
           experience: input.experience,
           qualifications: input.qualifications,
           responsibilities: input.responsibilities,
-          isFeatured: true,
-          isActive: true,
+          isFeatured: input.isFeatured,
+          isActive: input.isActive,
           employerId: user.id,
         })
         .returning({ id: jobTable.id });
@@ -93,24 +93,80 @@ export const employersRouter = createTRPCRouter({
     }),
 
   updateJob: employerProcedure
-    .input(createJobSchema.extend({ id: myJobSchema.shape.id }))
+    .input(createJobSchema.extend({ jobId: myJobSchema.shape.id }))
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx.auth;
-      const { id, ...updateData } = input;
+      const { jobId } = input;
+      const [updatedJob] = await db
+        .update(jobTable)
+        .set({
+          title: input.title,
+          description: input.description,
+          tags: JSON.stringify(input.tags),
+          salary: { ...input.salary },
+          location: input.location,
+          jobType: input.jobType,
+          workType: input.workType,
+          jobLevel: input.jobLevel,
+          experience: input.experience,
+          qualifications: input.qualifications,
+          responsibilities: input.responsibilities,
+          isFeatured: input.isFeatured,
+          isActive: input.isActive,
+          employerId: user.id,
+        })
+        .where(and(eq(jobTable.id, jobId), eq(jobTable.employerId, user.id)))
+        .returning({ id: jobTable.id, title: jobTable.title });
+
+      if (!updatedJob) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to update job posting.',
+        });
+      }
+
+      return updatedJob.title;
     }),
 
-  deleteJob: employerProcedure
+  removeJob: employerProcedure
     .input(myJobSchema)
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx.auth;
-      const { id } = input;
+
+      const [deleteJob] = await db
+        .delete(jobTable)
+        .where(and(eq(jobTable.id, input.id), eq(jobTable.employerId, user.id)))
+        .returning({ id: jobTable.id, title: jobTable.title });
+
+      if (!deleteJob) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to delete job posting.',
+        });
+      }
+
+      return deleteJob.title;
     }),
 
   publishJob: employerProcedure
     .input(myJobSchema)
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx.auth;
-      const { id } = input;
+
+      const [publishedJob] = await db
+        .update(jobTable)
+        .set({ isActive: true })
+        .where(and(eq(jobTable.id, input.id), eq(jobTable.employerId, user.id)))
+        .returning({ id: jobTable.id, title: jobTable.title });
+
+      if (!publishedJob) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to publish job posting.',
+        });
+      }
+
+      return publishedJob.title;
     }),
 
   getJobs: employerProcedure.query(async ({ ctx }) => {
@@ -195,27 +251,13 @@ export const employersRouter = createTRPCRouter({
       const { user: employerAuth } = ctx.auth;
 
       const result = await db.transaction(async (tx) => {
-        // join user table to employer table to verify user ownership
-        // const prepareInnerJoinStatement = tx
-        //   .select()
-        //   .from(employerTable)
-        //   .innerJoin(userTable, eq(employerTable.userId, userTable.id))
-        //   .where((table) =>
-        //     and(
-        //       eq(table.user.id, employerAuth.id),
-        //       eq(table.employer.userId, employerAuth.id)
-        //     )
-        //   )
-        //   .prepare('update-employer-profile-inner-join');
-
-        // console.log('Join Result:', await prepareInnerJoinStatement.execute());
-
         // find the employer
         const existingEmployer = await tx.query.employer.findFirst({
           where(table, { and, eq }) {
             return and(eq(table.userId, employerAuth.id));
           },
         });
+
         if (!existingEmployer) {
           throw new TRPCError({
             code: 'NOT_FOUND',
@@ -244,7 +286,26 @@ export const employersRouter = createTRPCRouter({
           )
           .returning();
 
-        if (!updatedEmployer) {
+        const [updateUser] = await tx
+          .update(userTable)
+          .set({
+            image: input.image,
+            username: input.username,
+            displayUsername: input.username,
+            lang: input.lang,
+            phoneNumber: input.phoneNumber,
+            isActive: true,
+          })
+          .where(
+            and(
+              eq(userTable.id, employerAuth.id),
+              eq(userTable.id, existingEmployer.userId)
+            )
+          )
+          .returning();
+
+        if (!updatedEmployer || !updateUser) {
+          tx.rollback();
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
             message: 'Failed to update employer profile.',
