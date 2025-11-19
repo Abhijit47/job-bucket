@@ -172,7 +172,7 @@ const SelectBox = React.forwardRef<HTMLInputElement, SelectBoxProps>(
                             className={cn(
                               'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
                               isSelected
-                                ? 'bg-primary text-primary-foregroundd'
+                                ? 'bg-primary text-primary-foreground'
                                 : 'opacity-50 [&_svg]:invisible'
                             )}>
                             <CheckIcon className={'size-4'} />

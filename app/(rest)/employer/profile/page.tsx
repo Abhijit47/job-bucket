@@ -77,7 +77,7 @@ export default async function EmployerProfile() {
         <CardContent>
           <Collapsible className={'space-y-2'}>
             <div className='flex items-center justify-between gap-4 px-4'>
-              <h1 className='text-2xl font-bold'>User Infomation</h1>
+              <h1 className='text-2xl font-bold'>User Information</h1>
               <CollapsibleTrigger asChild>
                 <Button variant='ghost' size='icon' className='size-8'>
                   <ChevronsUpDown />

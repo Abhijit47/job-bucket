@@ -34,7 +34,7 @@ export default function DescriptionInput() {
             {...field}
             aria-invalid={fieldState.invalid}
           />
-          {fieldState.error ? (
+          {fieldState.error?.message ? (
             <FieldError errors={[fieldState.error]} className={'text-xs'} />
           ) : (
             <div className={'inline-flex items-center justify-between'}>

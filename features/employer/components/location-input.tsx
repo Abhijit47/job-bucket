@@ -26,7 +26,7 @@ export default function LocationInput() {
             {...field}
             aria-invalid={fieldState.invalid}
           />
-          {fieldState.error ? (
+          {fieldState.error?.message ? (
             <FieldError errors={[fieldState.error]} className={'text-xs'} />
           ) : (
             <FieldDescription className={'text-xs'}>
