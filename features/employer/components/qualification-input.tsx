@@ -20,11 +20,11 @@ import { qualifications } from '@/drizzle/db-constants';
 import { capitalizeFirstLetter } from '@/lib/utils';
 
 export default function QualificationInput() {
-  const form = useFormContext<Pick<CreateJobInput, 'qualifications'>>();
+  const form = useFormContext<Pick<CreateJobInput, 'qualification'>>();
 
   return (
     <Controller
-      name='qualifications'
+      name='qualification'
       control={form.control}
       render={({ field, fieldState }) => (
         <Field

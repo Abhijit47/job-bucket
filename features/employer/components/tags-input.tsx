@@ -25,15 +25,14 @@ export default function TagsInput() {
           <MultiSelect
             id='tags'
             options={jobTags}
-            value={field.value}
-            onChange={field.onChange}
             placeholder='Select tags...'
             inputPlaceholder='Select tags'
             emptyPlaceholder='No tags found.'
             multiple
-            aria-invalid={true}
+            aria-invalid={fieldState.invalid}
+            {...field}
           />
-          {fieldState.error ? (
+          {fieldState.error?.message ? (
             <FieldError errors={[fieldState.error]} className={'text-xs'} />
           ) : (
             <FieldDescription className={'text-xs'}>

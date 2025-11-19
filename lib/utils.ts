@@ -67,7 +67,7 @@ export function generateCurrencies() {
 }
 
 export function capitalizeFirstLetter(string: string) {
-  const newString = string.replace(/_/g, ' '); // it does not remove underscores
+  const newString = string.replace(/_/g, ' '); // Replace underscores with spaces
 
   return newString.charAt(0).toUpperCase() + newString.slice(1);
 }

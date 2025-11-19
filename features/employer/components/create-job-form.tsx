@@ -36,25 +36,29 @@ import TagsInput from './tags-input';
 import TitleInput from './title-input';
 import WorkTypeInput from './work-type-input';
 
+const isDev = process.env.NODE_ENV === 'development' ? false : true;
+
 export default function CreateJobForm() {
   const { mutate, isPending } = useCreateJob();
 
   const form = useForm<CreateJobInput>({
     resolver: zodResolver(createJobSchema),
     defaultValues: {
-      title: 'frontend developer',
-      description: 'This is a job description',
+      title: isDev ? 'frontend developer' : '',
+      description: isDev ? 'This is a job description' : '',
       tags: undefined,
       salaryRange: [15000, 350000],
-      salaryCurrency: 'USD',
-      salaryPeriod: 'hourly',
-      location: 'Kolkata, India',
-      jobType: 'on_site',
-      workType: 'contract',
-      jobLevel: 'associate',
-      experience: 'Here goes some experience details',
-      qualifications: 'associate_degree',
-      responsibilities: 'Here goes some responsibilities details',
+      salaryCurrency: isDev ? 'USD' : undefined,
+      salaryPeriod: isDev ? 'hourly' : undefined,
+      location: isDev ? 'Kolkata, India' : undefined,
+      jobType: isDev ? 'on_site' : undefined,
+      workType: isDev ? 'contract' : undefined,
+      jobLevel: isDev ? 'associate' : undefined,
+      experience: isDev ? 'Here goes some experience details' : undefined,
+      qualification: isDev ? 'associate_degree' : undefined,
+      responsibilities: isDev
+        ? 'Here goes some responsibilities details'
+        : undefined,
       isFeatured: undefined,
       isActive: undefined,
     },
@@ -70,8 +74,8 @@ export default function CreateJobForm() {
       //   }`
       // );
       toast.error(
-        <pre className='text-xs overflow-y-auto text-wrap'>
-          Error in ${fieldName}:
+        <pre className='text-xs overflow-y-auto max-h-20 text-wrap'>
+          {`Error in ${fieldName}:`}{' '}
           {errors[fieldName as keyof typeof errors]?.message}
         </pre>
       );

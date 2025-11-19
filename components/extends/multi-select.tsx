@@ -16,6 +16,11 @@ import { cn } from '@/lib/utils';
 import { CheckIcon, ChevronsUpDownIcon, XCircleIcon } from 'lucide-react';
 import * as React from 'react';
 import { buttonVariants } from '../ui/button';
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+} from '../ui/input-group';
 
 // Option interface
 interface Option {
@@ -25,8 +30,8 @@ interface Option {
 
 type MultiSelectV1Props = {
   options: readonly Option[];
-  value?: string[];
-  onChange?: (values: string[]) => void;
+  value?: string | string[];
+  onChange?: (values: string | string[]) => void;
   placeholder?: string;
   inputPlaceholder?: string;
   emptyPlaceholder?: string;
@@ -59,11 +64,10 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectV1Props>(
           ? values.filter((v) => v !== selectedValue)
           : [...values, selectedValue];
         onChange?.(newValue);
+      } else {
+        onChange?.(selectedValue);
+        setIsOpen(false);
       }
-      // else {
-      //   onChange?.(selectedValue);
-      //   setIsOpen(false);
-      // }
     };
 
     const handleClear = (e: React.MouseEvent) => {
@@ -71,79 +75,85 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectV1Props>(
       if (multiple) {
         onChange?.([]);
       } else {
-        // onChange?.('');
-        onChange?.([]);
+        onChange?.('');
       }
     };
 
+    function customPopoverTrigger() {
+      const isValue = value && value.length > 0;
+      return (
+        <InputGroup
+          onClick={() => setIsOpen((open) => !open)}
+          ref={ref}
+          {...props}
+          className={cn(
+            buttonVariants({ variant: 'outline' }),
+            'flex cursor-pointer items-center justify-between px-2',
+            className
+          )}>
+          <div
+            className={cn(
+              'items-center gap-1 overflow-hidden text-sm',
+              multiple
+                ? 'flex grow flex-wrap '
+                : 'inline-flex whitespace-nowrap'
+            )}>
+            {value && value.length > 0 ? (
+              multiple ? (
+                options
+                  .filter(
+                    (option) =>
+                      Array.isArray(value) && value.includes(option.value)
+                  )
+                  .map((option) => (
+                    <span
+                      key={option.value}
+                      className='inline-flex items-center gap-1 rounded-md border py-0.5 pl-2 pr-1 text-xs font-medium text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'>
+                      <span>{option.label}</span>
+                      <span
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleSelect(option.value);
+                        }}
+                        className='flex items-center rounded-sm px-px text-muted-foreground/60 hover:bg-accent hover:text-muted-foreground'>
+                        <XCircleIcon className={'size-4'} />
+                      </span>
+                    </span>
+                  ))
+              ) : (
+                options.find((opt) => opt.value === value)?.label
+              )
+            ) : (
+              <span className='mr-auto text-muted-foreground'>
+                {placeholder}
+              </span>
+            )}
+          </div>
+          <InputGroupAddon align='inline-end'>
+            <InputGroupButton
+              variant='secondary'
+              {...(isValue
+                ? {
+                    onClick: (e) => {
+                      e.preventDefault();
+                      handleClear(e);
+                    },
+                  }
+                : null)}>
+              {isValue ? (
+                <XCircleIcon className='size-4' />
+              ) : (
+                <ChevronsUpDownIcon className='size-4' />
+              )}
+            </InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+      );
+    }
+
     return (
       <Popover open={isOpen} onOpenChange={setIsOpen}>
-        <PopoverTrigger asChild>
-          <div
-            tabIndex={0}
-            role='button'
-            onClick={() => setIsOpen((open) => !open)}
-            ref={ref}
-            {...props}
-            className={cn(
-              buttonVariants({ variant: 'outline' }),
-              'flex cursor-pointer items-center justify-between',
-              className
-            )}>
-            <div
-              className={cn(
-                'items-center gap-1 overflow-hidden text-sm',
-                multiple
-                  ? 'flex grow flex-wrap '
-                  : 'inline-flex whitespace-nowrap'
-              )}>
-              {value && value.length > 0 ? (
-                multiple ? (
-                  options
-                    .filter(
-                      (option) =>
-                        Array.isArray(value) && value.includes(option.value)
-                    )
-                    .map((option) => (
-                      <span
-                        key={option.value}
-                        className='inline-flex items-center gap-1 rounded-md border py-0.5 pl-2 pr-1 text-xs font-medium text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2'>
-                        <span>{option.label}</span>
-                        <span
-                          onClick={(e) => {
-                            e.preventDefault();
-                            handleSelect(option.value);
-                          }}
-                          className='flex items-center rounded-sm px-px text-muted-foreground/60 hover:bg-accent hover:text-muted-foreground'>
-                          <XCircleIcon className={'size-4'} />
-                        </span>
-                      </span>
-                    ))
-                ) : // options.find((opt) => opt.value === value)?.label
-                null
-              ) : (
-                <span className='mr-auto text-muted-foreground'>
-                  {placeholder}
-                </span>
-              )}
-            </div>
-            <div className='flex items-center self-stretch pl-1 text-muted-foreground/60 hover:text-foreground [&>div]:flex [&>div]:items-center [&>div]:self-stretch'>
-              {value && value.length > 0 ? (
-                <div
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleClear(e);
-                  }}>
-                  <XCircleIcon className='size-4' />
-                </div>
-              ) : (
-                <div>
-                  <ChevronsUpDownIcon className='size-4' />
-                </div>
-              )}
-            </div>
-          </div>
-        </PopoverTrigger>
+        <PopoverTrigger asChild>{customPopoverTrigger()}</PopoverTrigger>
         <PopoverContent
           className='w-(--radix-popover-trigger-width) p-0'
           align='start'>
@@ -182,14 +192,14 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectV1Props>(
                             className={cn(
                               'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
                               isSelected
-                                ? 'bg-primary text-primary-foreground'
+                                ? 'bg-accent text-primary-foreground'
                                 : 'opacity-50 [&_svg]:invisible'
                             )}>
                             <CheckIcon className={'size-4'} />
                           </div>
                         )}
                         <span>{option.label}</span>
-                        {/* {!multiple && option.value === value && (
+                        {!multiple && option.value === value && (
                           <CheckIcon
                             className={cn(
                               'ml-auto',
@@ -198,7 +208,7 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectV1Props>(
                                 : 'opacity-0'
                             )}
                           />
-                        )} */}
+                        )}
                       </CommandItem>
                     );
                   })}

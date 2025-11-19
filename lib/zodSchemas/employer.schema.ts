@@ -79,6 +79,7 @@ export const createJobSchema = z.object({
     .max(4096, 'Description should not exceed 4096 characters.'),
   tags: z
     .array(z.string().min(1, 'Tag cannot be empty.'))
+    .min(1, 'Please select at least one tag.')
     .max(10, 'You can add up to 10 tags only.'),
   salaryRange: z
     .array(
@@ -92,20 +93,22 @@ export const createJobSchema = z.object({
   salaryPeriod: z.enum(salaryPeriods, 'Please select a valid salary period.'),
   location: z
     .string()
-    .min(1, 'Location is required.')
-    .max(256, 'Location should not exceed 256 characters.'),
+    .min(1, { error: 'Location is required.' })
+    .max(256, { error: 'Location should not exceed 256 characters.' }),
   jobType: z.enum(jobTypes, 'Please select a valid job type.'),
   workType: z.enum(workTypes, 'Please select a valid work type.'),
   jobLevel: z.enum(jobLevels, 'Please select a valid job level.'),
   experience: z
     .string()
-    .min(1, 'Experience is required.')
-    .max(100, 'Experience should not exceed 100 characters.'),
-  qualifications: z.enum(
-    qualifications,
-    'Please select a valid qualification.'
-  ),
-  responsibilities: z.string().max(2048).optional(),
+    .min(1, { error: 'Experience is required.' })
+    .max(100, { error: 'Experience should not exceed 100 characters.' }),
+  qualification: z.enum(qualifications, 'Please select a valid qualification.'),
+  responsibilities: z
+    .string()
+    .max(2048, {
+      error: 'Responsibilities should not exceed 2048 characters.',
+    })
+    .optional(),
   isFeatured: z.boolean('Featured status is required.'),
   isActive: z.boolean('Active status is required.'),
 });

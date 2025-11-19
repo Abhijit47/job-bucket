@@ -17,8 +17,8 @@ import {
 } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 import { currencies, salaryPeriods } from '@/drizzle/db-constants';
+import { capitalizeFirstLetter } from '@/lib/utils';
 import { CreateJobInput } from '@/lib/zodSchemas/employer.schema';
-import { capitalizeFirstLetter } from 'better-auth';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
 export default function SalaryInputs() {
@@ -80,6 +80,7 @@ export default function SalaryInputs() {
               onValueChange={field.onChange}
               min={min_price}
               max={max_price}
+              step={5000}
               aria-label='Salary range slider'
               aria-invalid={fieldState.invalid}
             />
@@ -135,7 +136,10 @@ export default function SalaryInputs() {
                 <SelectTrigger
                   id='salaryPeriods'
                   aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder='YYYY' className={'capitalize'} />
+                  <SelectValue
+                    placeholder='Select a period'
+                    className={'capitalize'}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -152,7 +156,7 @@ export default function SalaryInputs() {
                 </SelectContent>
               </Select>
 
-              {fieldState.error ? (
+              {fieldState.error?.message ? (
                 <FieldError errors={[fieldState.error]} className={'text-xs'} />
               ) : (
                 <FieldDescription className={'text-xs'}>
