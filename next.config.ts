@@ -5,6 +5,16 @@ const nextConfig: NextConfig = {
   experimental: {
     globalNotFound: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
   typedRoutes: true,
   reactCompiler: { compilationMode: 'annotation' },
 };

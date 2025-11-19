@@ -6,6 +6,8 @@
  * Ensure to review dependencies before making modifications.
  */
 
+import { generateCurrencies } from '@/lib/utils';
+
 export const roles = ['admin', 'employer', 'candidate', 'guest'] as const;
 
 export type roleUnion = (typeof roles)[number];
@@ -216,19 +218,7 @@ export const nationalities = [
   'Zimbabwean',
 ] as const;
 
-export const currencies = [
-  'USD',
-  'EUR',
-  'GBP',
-  'JPY',
-  'AUD',
-  'CAD',
-  'CHF',
-  'CNY',
-  'INR',
-  'BRL',
-  'ZAR',
-] as const; // later can be extended
+export const currencies = generateCurrencies();
 
 export const salaryPeriods = ['yearly', 'monthly', 'hourly'] as const;
 
@@ -240,6 +230,33 @@ export const qualifications = [
   'master_degree',
   'doctorate_degree',
 ] as const;
+
+export const jobTags = [
+  { value: 'JavaScript', label: 'JavaScript' },
+  { value: 'React', label: 'React' },
+  { value: 'Node.js', label: 'Node.js' },
+  { value: 'TypeScript', label: 'TypeScript' },
+  { value: 'CSS', label: 'CSS' },
+  { value: 'HTML', label: 'HTML' },
+  { value: 'Python', label: 'Python' },
+  { value: 'Django', label: 'Django' },
+  { value: 'Ruby on Rails', label: 'Ruby on Rails' },
+  { value: 'Java', label: 'Java' },
+  { value: 'Spring', label: 'Spring' },
+  { value: 'C#', label: 'C#' },
+  { value: '.NET', label: '.NET' },
+  { value: 'PHP', label: 'PHP' },
+  { value: 'Laravel', label: 'Laravel' },
+  { value: 'Go', label: 'Go' },
+  { value: 'Rust', label: 'Rust' },
+  { value: 'Kubernetes', label: 'Kubernetes' },
+  { value: 'Docker', label: 'Docker' },
+  { value: 'AWS', label: 'AWS' },
+  { value: 'Azure', label: 'Azure' },
+  { value: 'GCP', label: 'GCP' },
+] as const;
+
+export type JobTag = (typeof jobTags)[number]['value'];
 
 export const jobLevels = [
   'internship',

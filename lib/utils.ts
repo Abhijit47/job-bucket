@@ -65,3 +65,9 @@ export function generateCurrencies() {
 
   return Array.from(currencySet);
 }
+
+export function capitalizeFirstLetter(string: string) {
+  const newString = string.replace(/_/g, ' '); // it does not remove underscores
+
+  return newString.charAt(0).toUpperCase() + newString.slice(1);
+}
