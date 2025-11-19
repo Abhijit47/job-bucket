@@ -63,13 +63,20 @@ export const employersRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx.auth;
 
+      const salaryInfo = {
+        min: input.salaryRange[0],
+        max: input.salaryRange[1],
+        currency: input.salaryCurrency,
+        period: input.salaryPeriod,
+      };
+
       const [newJob] = await db
         .insert(jobTable)
         .values({
           title: input.title,
           description: input.description,
           tags: JSON.stringify(input.tags),
-          salary: { ...input.salary },
+          salary: salaryInfo,
           location: input.location,
           jobType: input.jobType,
           workType: input.workType,
@@ -97,13 +104,21 @@ export const employersRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx.auth;
       const { jobId } = input;
+
+      const updatedSalaryInfo = {
+        min: input.salaryRange[0],
+        max: input.salaryRange[1],
+        currency: input.salaryCurrency,
+        period: input.salaryPeriod,
+      };
+
       const [updatedJob] = await db
         .update(jobTable)
         .set({
           title: input.title,
           description: input.description,
           tags: JSON.stringify(input.tags),
-          salary: { ...input.salary },
+          salary: updatedSalaryInfo,
           location: input.location,
           jobType: input.jobType,
           workType: input.workType,
@@ -141,7 +156,7 @@ export const employersRouter = createTRPCRouter({
       if (!deleteJob) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Failed to delete job posting.',
+          message: 'Job not found for this employer.',
         });
       }
 
@@ -162,7 +177,7 @@ export const employersRouter = createTRPCRouter({
       if (!publishedJob) {
         throw new TRPCError({
           code: 'NOT_FOUND',
-          message: 'Failed to publish job posting.',
+          message: 'Job not found for this employer.',
         });
       }
 
@@ -295,7 +310,7 @@ export const employersRouter = createTRPCRouter({
             displayUsername: input.username,
             lang: input.lang,
             phoneNumber: input.phoneNumber,
-            isActive: true,
+            isActive: input.isActive,
           })
           .where(
             and(

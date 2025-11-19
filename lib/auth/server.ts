@@ -56,9 +56,7 @@ export const auth = betterAuth({
             } catch (error) {
               console.error('Error during user signup:', error);
               throw new Error(
-                `Failed to sign up user: ${
-                  error instanceof Error ? error.message : String(error)
-                }`
+                'Failed to sign up user. Please try again or contact support.'
               );
             }
           });

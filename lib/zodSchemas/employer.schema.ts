@@ -69,24 +69,45 @@ export const updateProfileSchema = z.object({
 export const myJobSchema = z.object({ id: z.string() });
 
 export const createJobSchema = z.object({
-  title: z.string().max(256),
-  description: z.string().max(4096),
-  tags: z.array(z.string().max(50)).max(10),
-  salary: z.object({
-    min: z.number().min(0),
-    max: z.number().min(0),
-    currency: z.enum(currencies),
-    period: z.enum(salaryPeriods),
-  }),
-  location: z.string().max(256),
-  jobType: z.enum(jobTypes),
-  workType: z.enum(workTypes),
-  jobLevel: z.enum(jobLevels),
-  experience: z.string().max(100),
-  qualifications: z.enum(qualifications),
+  title: z
+    .string()
+    .min(1, 'Title is required.')
+    .max(256, 'Title should not exceed 256 characters.'),
+  description: z
+    .string()
+    .min(1, 'Description is required')
+    .max(4096, 'Description should not exceed 4096 characters.'),
+  tags: z
+    .array(z.string().min(1, 'Tag cannot be empty.'))
+    .max(10, 'You can add up to 10 tags only.'),
+  salaryRange: z
+    .array(
+      z
+        .number()
+        .min(0, 'Salary must be a non-negative number.')
+        .max(1000000000, 'Salary exceeds the maximum limit.')
+    )
+    .length(2),
+  salaryCurrency: z.enum(currencies, 'Please select a valid currency.'),
+  salaryPeriod: z.enum(salaryPeriods, 'Please select a valid salary period.'),
+  location: z
+    .string()
+    .min(1, 'Location is required.')
+    .max(256, 'Location should not exceed 256 characters.'),
+  jobType: z.enum(jobTypes, 'Please select a valid job type.'),
+  workType: z.enum(workTypes, 'Please select a valid work type.'),
+  jobLevel: z.enum(jobLevels, 'Please select a valid job level.'),
+  experience: z
+    .string()
+    .min(1, 'Experience is required.')
+    .max(100, 'Experience should not exceed 100 characters.'),
+  qualifications: z.enum(
+    qualifications,
+    'Please select a valid qualification.'
+  ),
   responsibilities: z.string().max(2048).optional(),
-  isFeatured: z.boolean(),
-  isActive: z.boolean(),
+  isFeatured: z.boolean('Featured status is required.'),
+  isActive: z.boolean('Active status is required.'),
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

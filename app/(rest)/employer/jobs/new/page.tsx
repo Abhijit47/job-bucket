@@ -1,3 +1,5 @@
+import { Card, CardContent } from '@/components/ui/card';
+import CreateJobForm from '@/features/employer/components/create-job-form';
 import { withEmployerAuth } from '@/lib/auth/withEmployerAuth';
 
 export default async function CreateJob() {
@@ -5,7 +7,11 @@ export default async function CreateJob() {
 
   return (
     <div className='flex flex-col gap-4 px-6 py-4 md:gap-6 md:py-6'>
-      <h1 className={'text-4xl'}>CreateJob</h1>
+      <Card>
+        <CardContent>
+          <CreateJobForm />
+        </CardContent>
+      </Card>
     </div>
   );
 }
