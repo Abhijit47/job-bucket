@@ -20,6 +20,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import {
+  IconBriefcase2,
   IconChevronDown,
   IconChevronLeft,
   IconChevronRight,
@@ -31,7 +32,8 @@ import {
   IconLayoutColumns,
   IconLoader,
   IconPlus,
-  IconTrendingUp,
+  IconPointFilled,
+  IconReportMoney,
 } from '@tabler/icons-react';
 import {
   ColumnDef,
@@ -49,7 +51,6 @@ import {
   VisibilityState,
 } from '@tanstack/react-table';
 import * as React from 'react';
-import { toast } from 'sonner';
 import { z } from 'zod';
 
 import { Badge } from '@/components/ui/badge';
@@ -73,7 +74,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Input } from '@/components/ui/input';
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemMedia,
+  ItemTitle,
+} from '@/components/ui/item';
 import { Label } from '@/components/ui/label';
 import {
   Select,
@@ -92,45 +100,46 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  experiences,
+  jobBenefits,
+  jobLevels,
+  jobTagValues,
+  jobTypes,
+  qualifications,
+  vacancies,
+  workTypes,
+} from '@/drizzle/db-constants';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { capitalizeFirstLetter, cn } from '@/lib/utils';
+import { salarySchema } from '@/lib/zodSchemas/employer.schema';
+import { format } from 'date-fns';
+import { ChevronRightIcon, TagIcon } from 'lucide-react';
+import Link from 'next/link';
 import { useGetMyJobs } from '../hooks/use-employers';
-// import { CreateJobInput } from '@/lib/zodSchemas/employer.schema';
-// import { SelectJob } from '@/drizzle/types';
-// import { useGetMyJobs } from '../hooks/use-employers';
 
-// export const schema = z.object({
-//   id: z.number(),
-//   header: z.string(),
-//   type: z.string(),
-//   status: z.string(),
-//   target: z.string(),
-//   limit: z.string(),
-//   reviewer: z.string(),
-// });
 export const schema = z.object({
-  id: z.string(),
   title: z.string(),
   description: z.string(),
-  tags: z.string(),
-  salary: z.object({
-    min: z.number(),
-    max: z.number(),
-    currency: z.string(),
-    period: z.string(),
-  }),
-  location: z.string(),
-  jobType: z.string(),
-  workType: z.string(),
-  jobLevel: z.string(),
-  experience: z.string(),
-  qualifications: z.string(),
-  responsibilities: z.string(),
+  tags: z.array(z.enum(jobTagValues)).nullable(),
+  salary: salarySchema,
+  benefits: z.array(z.enum(jobBenefits)).nullable(),
+  city: z.string(),
+  country: z.string(),
+  jobType: z.enum(jobTypes),
+  jobLevel: z.enum(jobLevels),
+  workType: z.enum(workTypes),
+  experience: z.enum(experiences),
+  qualification: z.enum(qualifications),
+  vacancy: z.enum(vacancies),
+  expiryDate: z.string().nullable(),
+  responsibilities: z.string().nullable(),
   isFeatured: z.boolean(),
   isActive: z.boolean(),
-  employerId: z.string(),
+  id: z.string(),
   createdAt: z.string(),
+  updatedAt: z.string().nullable(),
   deletedAt: z.string().nullable(),
-  updatedAt: z.string(),
 });
 
 type SchemaValues = z.infer<typeof schema>;
@@ -187,20 +196,42 @@ const columns: ColumnDef<SchemaValues>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'header',
-    header: 'Header',
+    accessorKey: 'title',
+    header: 'Title',
     cell: ({ row }) => {
       return <TableCellViewer item={row.original} />;
     },
     enableHiding: false,
   },
   {
+    accessorKey: 'description',
+    header: 'Description',
+    cell: ({ row }) => (
+      <p className='w-fit'>
+        {row.original.description.length > 30
+          ? `${row.original.description.slice(0, 30)}...`
+          : row.original.description}
+      </p>
+    ),
+  },
+  {
     accessorKey: 'type',
     header: 'Job Type',
     cell: ({ row }) => (
-      <div className='w-32'>
+      <div className='w-fit'>
         <Badge variant='outline' className='text-muted-foreground px-1.5'>
-          {row.original.jobType}
+          {capitalizeFirstLetter(row.original.jobType)}
+        </Badge>
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'level',
+    header: 'Job Level',
+    cell: ({ row }) => (
+      <div className='w-fit'>
+        <Badge variant='outline' className='text-muted-foreground px-1.5'>
+          {capitalizeFirstLetter(row.original.jobLevel)}
         </Badge>
       </div>
     ),
@@ -220,51 +251,61 @@ const columns: ColumnDef<SchemaValues>[] = [
     ),
   },
   {
-    accessorKey: 'workType',
-    header: () => <div className='w-full text-right'>Work Type</div>,
+    accessorKey: 'active',
+    header: 'Active',
     cell: ({ row }) => (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.workType}`,
-            success: 'Done',
-            error: 'Error',
-          });
-        }}>
-        <Label htmlFor={`${row.original.id}-target`} className='sr-only'>
-          Work Type
-        </Label>
-        <Input
-          className='hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-16 border-transparent bg-transparent text-right shadow-none focus-visible:border dark:bg-transparent'
-          defaultValue={row.original.workType}
-          id={`${row.original.id}-target`}
-        />
-      </form>
+      <Badge variant='outline' className='text-muted-foreground px-1.5'>
+        {row.original.isActive ? (
+          <IconCircleCheckFilled className='fill-green-500 dark:fill-green-400' />
+        ) : (
+          <IconLoader />
+        )}
+        {row.original.isActive ? 'Active' : 'Inactive'}
+      </Badge>
     ),
   },
   {
-    accessorKey: 'limit',
-    header: () => <div className='w-full text-right'>Job Level</div>,
+    accessorKey: 'workType',
+    header: () => <div className='w-full'>Work Type</div>,
     cell: ({ row }) => (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.jobLevel}`,
-            success: 'Done',
-            error: 'Error',
-          });
-        }}>
-        <Label htmlFor={`${row.original.id}-limit`} className='sr-only'>
-          Job Level
-        </Label>
-        <Input
-          className='hover:bg-input/30 focus-visible:bg-background dark:hover:bg-input/30 dark:focus-visible:bg-input/30 h-8 w-16 border-transparent bg-transparent text-right shadow-none focus-visible:border dark:bg-transparent'
-          defaultValue={row.original.jobLevel}
-          id={`${row.original.id}-limit`}
-        />
-      </form>
+      <div className='w-fit'>
+        <Badge variant='outline' className='text-muted-foreground px-1.5'>
+          {capitalizeFirstLetter(row.original.workType)}
+        </Badge>
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'experience',
+    header: () => <div className='w-full'>Experience</div>,
+    cell: ({ row }) => (
+      <div className='w-fit'>
+        <Badge variant='outline' className='text-muted-foreground px-1.5'>
+          {capitalizeFirstLetter(row.original.experience)}
+        </Badge>
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'qualification',
+    header: () => <div className='w-full'>Qualification</div>,
+    cell: ({ row }) => (
+      <div className='w-fit'>
+        <Badge variant='outline' className='text-muted-foreground px-1.5'>
+          {capitalizeFirstLetter(row.original.qualification)}
+        </Badge>
+      </div>
+    ),
+  },
+  {
+    accessorKey: 'vacancy',
+    header: () => <div className='w-full'>Vacancy</div>,
+    cell: ({ row }) => (
+      <div className='w-fit'>
+        <Badge variant='outline' className='text-muted-foreground px-1.5'>
+          {capitalizeFirstLetter(row.original.vacancy)}
+        </Badge>
+      </div>
     ),
   },
   // {
@@ -349,11 +390,8 @@ function DraggableRow({ row }: { row: Row<SchemaValues> }) {
   );
 }
 
-export function JobsTable({ initialData }: { initialData: SchemaValues[] }) {
-  const { data: initialData2, isLoading, isPending } = useGetMyJobs();
-
-  // const validation = schema.safeParse(initialData2);
-  // console.log(validation);
+export function JobsTable() {
+  const { data: initialData } = useGetMyJobs();
 
   const [data, setData] = React.useState(() => initialData);
   const [rowSelection, setRowSelection] = React.useState({});
@@ -379,6 +417,7 @@ export function JobsTable({ initialData }: { initialData: SchemaValues[] }) {
     [data]
   );
 
+  // eslint-disable-next-line
   const table = useReactTable({
     data,
     columns,
@@ -628,114 +667,146 @@ export function JobsTable({ initialData }: { initialData: SchemaValues[] }) {
 }
 
 function TableCellViewer({ item }: { item: SchemaValues }) {
+  const [isOpen, setIsOpen] = React.useState(false);
   const isMobile = useIsMobile();
 
   return (
-    <Drawer direction={isMobile ? 'bottom' : 'right'}>
+    <Drawer
+      direction={isMobile ? 'bottom' : 'right'}
+      open={isOpen}
+      onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
         <Button variant='link' className='text-foreground w-fit px-0 text-left'>
-          {item.title}
+          {capitalizeFirstLetter(item.title)}
         </Button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className='gap-1'>
-          <DrawerTitle>{item.description}</DrawerTitle>
+          <DrawerTitle>
+            Job Details - {capitalizeFirstLetter(item.title)}
+          </DrawerTitle>
           <DrawerDescription>
-            Showing total visitors for the last 6 months
+            Detailed information about the job posting.
           </DrawerDescription>
         </DrawerHeader>
         <div className='flex flex-col gap-4 overflow-y-auto px-4 text-sm'>
           <Separator />
-          <div className='grid gap-2'>
-            <div className='flex gap-2 leading-none font-medium'>
-              Trending up by 5.2% this month{' '}
-              <IconTrendingUp className='size-4' />
-            </div>
-            <div className='text-muted-foreground'>
-              Showing total visitors for the last 6 months. This is just some
-              random text to test the layout. It spans multiple lines and should
-              wrap around.
-            </div>
+          <div className='grid gap-4'>
+            <h2 className={'text-2xl font-medium'}>{item.title}</h2>
+            <p className={'text-sm text-muted-foreground'}>
+              {item.description}
+            </p>
           </div>
           <Separator />
+          <p>
+            Expiry date :{' '}
+            <Badge>
+              {format(item.expiryDate || new Date(), 'MMMM dd, yyyy')}
+            </Badge>
+          </p>
+          <div className='grid gap-2'>
+            <Item variant='outline' size='sm'>
+              <ItemMedia variant='icon'>
+                <IconReportMoney className='size-5' />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>Salary</ItemTitle>
+                <ItemDescription>
+                  {item.salary.min} - {item.salary.max} {item.salary.currency}{' '}
+                  per {item.salary.period}
+                </ItemDescription>
+              </ItemContent>
+            </Item>
 
-          {/* <form className='flex flex-col gap-4'>
-            <div className='flex flex-col gap-3'>
-              <Label htmlFor='header'>Header</Label>
-              <Input id='header' defaultValue={item.header} />
-            </div>
-            <div className='grid grid-cols-2 gap-4'>
-              <div className='flex flex-col gap-3'>
-                <Label htmlFor='type'>Type</Label>
-                <Select defaultValue={item.type}>
-                  <SelectTrigger id='type' className='w-full'>
-                    <SelectValue placeholder='Select a type' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='Table of Contents'>
-                      Table of Contents
-                    </SelectItem>
-                    <SelectItem value='Executive Summary'>
-                      Executive Summary
-                    </SelectItem>
-                    <SelectItem value='Technical Approach'>
-                      Technical Approach
-                    </SelectItem>
-                    <SelectItem value='Design'>Design</SelectItem>
-                    <SelectItem value='Capabilities'>Capabilities</SelectItem>
-                    <SelectItem value='Focus Documents'>
-                      Focus Documents
-                    </SelectItem>
-                    <SelectItem value='Narrative'>Narrative</SelectItem>
-                    <SelectItem value='Cover Page'>Cover Page</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className='flex flex-col gap-3'>
-                <Label htmlFor='status'>Status</Label>
-                <Select defaultValue={item.status}>
-                  <SelectTrigger id='status' className='w-full'>
-                    <SelectValue placeholder='Select a status' />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value='Done'>Done</SelectItem>
-                    <SelectItem value='In Progress'>In Progress</SelectItem>
-                    <SelectItem value='Not Started'>Not Started</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div className='grid grid-cols-2 gap-4'>
-              <div className='flex flex-col gap-3'>
-                <Label htmlFor='target'>Target</Label>
-                <Input id='target' defaultValue={item.target} />
-              </div>
-              <div className='flex flex-col gap-3'>
-                <Label htmlFor='limit'>Limit</Label>
-                <Input id='limit' defaultValue={item.limit} />
-              </div>
-            </div>
-            <div className='flex flex-col gap-3'>
-              <Label htmlFor='reviewer'>Reviewer</Label>
-              <Select defaultValue={item.reviewer}>
-                <SelectTrigger id='reviewer' className='w-full'>
-                  <SelectValue placeholder='Select a reviewer' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='Eddie Lake'>Eddie Lake</SelectItem>
-                  <SelectItem value='Jamik Tashpulatov'>
-                    Jamik Tashpulatov
-                  </SelectItem>
-                  <SelectItem value='Emily Whalen'>Emily Whalen</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </form> */}
+            <Item size={'sm'} variant='outline'>
+              <ItemMedia variant='icon'>
+                <TagIcon />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>Featured</ItemTitle>
+                <ItemDescription>
+                  {item.isFeatured
+                    ? 'This job is marked as featured.'
+                    : 'This job is not featured.'}
+                </ItemDescription>
+              </ItemContent>
+            </Item>
+            <Item size={'sm'} variant='outline'>
+              <ItemMedia variant='icon'>
+                <IconPointFilled
+                  className={cn(
+                    'size-4 animate-pulse',
+                    item.isActive
+                      ? 'text-green-500 dark:text-green-400'
+                      : 'text-amber-500 dark:text-amber-400'
+                  )}
+                />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>Active</ItemTitle>
+                <ItemDescription>
+                  {item.isActive
+                    ? 'This job is currently active.'
+                    : 'This job is not active.'}
+                </ItemDescription>
+              </ItemContent>
+            </Item>
+
+            <Item variant='outline'>
+              <ItemContent>
+                <ItemTitle>Tags</ItemTitle>
+                <div className={'flex flex-wrap items-center gap-2'}>
+                  {item.tags?.map((tag) => (
+                    <Badge
+                      key={tag}
+                      variant='outline'
+                      className='text-muted-foreground px-1.5 mr-1 mt-1'>
+                      {capitalizeFirstLetter(tag)}
+                    </Badge>
+                  ))}
+                </div>
+              </ItemContent>
+            </Item>
+            <Item variant='outline'>
+              <ItemContent>
+                <ItemTitle>Benefits</ItemTitle>
+                <div className={'flex flex-wrap items-center gap-2'}>
+                  {item.benefits?.map((benefit) => (
+                    <Badge
+                      key={benefit}
+                      variant='outline'
+                      className='text-muted-foreground px-1.5 mr-1 mt-1'>
+                      {capitalizeFirstLetter(benefit)}
+                    </Badge>
+                  ))}
+                </div>
+              </ItemContent>
+            </Item>
+
+            <Item variant='outline' size='sm' asChild>
+              <Link href={`/employer/jobs/${item.id}/update`} prefetch={true}>
+                <ItemMedia>
+                  <IconBriefcase2 className='size-5' />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>Update job</ItemTitle>
+                </ItemContent>
+                <ItemActions>
+                  <ChevronRightIcon className='size-4' />
+                </ItemActions>
+              </Link>
+            </Item>
+            <Separator />
+          </div>
         </div>
         <DrawerFooter>
-          <Button>Submit</Button>
           <DrawerClose asChild>
-            <Button variant='outline'>Done</Button>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => setIsOpen((prev) => !prev)}>
+              Done
+            </Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

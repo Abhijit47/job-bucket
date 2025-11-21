@@ -30,7 +30,7 @@ import ApplyJobInput from './apply-job-input';
 import DescriptionInput from './description-input';
 import ExperienceInput from './experience-input';
 import ExpiryJobInput from './expiry-job-input';
-import JobBenifits from './job-benifits';
+import JobBenifits from './job-benefits';
 import JobLevelInput from './job-level-input';
 import JobTypeInput from './job-type-input';
 import LocationInput from './location-input';

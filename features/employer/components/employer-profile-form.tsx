@@ -358,7 +358,7 @@ export function EmployerProfileForm() {
                   data-invalid={fieldState.invalid}
                   aria-invalid={fieldState.invalid}>
                   <FieldContent>
-                    <FieldLabel htmlFor='lang'>Preferred Locale</FieldLabel>
+                    <FieldLabel htmlFor='locale'>Preferred Locale</FieldLabel>
                     {fieldState.error ? (
                       <FieldError
                         className={'text-xs'}
@@ -373,12 +373,15 @@ export function EmployerProfileForm() {
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger
                       className='min-w-[200px]'
-                      id='lang'
+                      id='locale'
                       aria-invalid={fieldState.invalid}>
                       {field.value ? (
                         <SelectValue>{field.value}</SelectValue>
                       ) : (
-                        <SelectValue id='lang' placeholder='Select a locale' />
+                        <SelectValue
+                          id='locale'
+                          placeholder='Select a locale'
+                        />
                       )}
                     </SelectTrigger>
                     <SelectContent>

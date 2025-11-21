@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label';
 import { jobBenefits } from '@/drizzle/db-constants';
 import { capitalizeFirstLetter } from '@/lib/utils';
 
-export default function JobBenifits() {
+export default function JobBenefits() {
   const form = useFormContext<Pick<CreateJobInput, 'benefits'>>();
 
   return (
@@ -24,8 +24,8 @@ export default function JobBenifits() {
         <Field
           data-invalid={fieldState.invalid}
           aria-invalid={fieldState.invalid}>
-          <FieldLabel htmlFor='benifits'>Job Benifits</FieldLabel>
-          <div className={'flex flex-wrap gap-4'} id='benifits'>
+          <FieldLabel htmlFor='benefits'>Job Benefits</FieldLabel>
+          <div className={'flex flex-wrap gap-4'} id='benefits'>
             {jobBenefits.map((benifit) => (
               <Badge
                 key={benifit}
@@ -57,7 +57,7 @@ export default function JobBenifits() {
             <FieldError errors={[fieldState.error]} className={'text-xs'} />
           ) : (
             <FieldDescription className={'text-xs'}>
-              Select some benifits.
+              Select some benefits.
             </FieldDescription>
           )}
         </Field>
