@@ -70,6 +70,7 @@ export default function UpdateJobForm({ jobId }: { jobId: string }) {
       vacancy: data.vacancy,
       responsibilities: data.responsibilities || '',
       // expiryDate: new Date(data.expiryDate),
+      expiryDate: data.expiryDate ? new Date(data.expiryDate) : undefined,
       isFeatured: data.isFeatured,
       isActive: data.isActive,
     },
@@ -93,6 +94,10 @@ export default function UpdateJobForm({ jobId }: { jobId: string }) {
     });
   };
 
+  // useEffect(() => {
+  //   form.setValue('id', jobId);
+  // }, [jobId, form]);
+
   form.setValue('id', jobId);
   const onSubmit: SubmitHandler<UpdateJobInput> = (values) => {
     if (values?.tags?.length === 0) {
@@ -103,9 +108,8 @@ export default function UpdateJobForm({ jobId }: { jobId: string }) {
       toast.error('Please select at least one tag.');
       return;
     }
-    const valuesWithId = { ...values, id: jobId };
 
-    mutate(valuesWithId);
+    mutate(values);
   };
 
   return (

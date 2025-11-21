@@ -121,7 +121,9 @@ export function useUpdateEmployerProfile() {
       onSuccess: (data, variables) => {
         toast.success(`${variables.companyName} profile updated successfully.`);
         queryClient.invalidateQueries(trpc.employers.myProfile.queryOptions());
-        // router.push('/employer/profile');
+        queryClient.invalidateQueries(
+          trpc.employers.getProfileStatus.queryOptions()
+        );
       },
       onError: () => {
         toast.error('Failed to update employer profile.');
