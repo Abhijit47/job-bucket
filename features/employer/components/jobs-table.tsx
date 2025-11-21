@@ -392,8 +392,8 @@ function DraggableRow({ row }: { row: Row<SchemaValues> }) {
 
 export function JobsTable() {
   const { data: initialData } = useGetMyJobs();
+  const [data, setData] = React.useState(() => initialData ?? []);
 
-  const [data, setData] = React.useState(() => initialData);
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -701,7 +701,9 @@ function TableCellViewer({ item }: { item: SchemaValues }) {
           <p>
             Expiry date :{' '}
             <Badge>
-              {format(item.expiryDate || new Date(), 'MMMM dd, yyyy')}
+              {item.expiryDate
+                ? format(item.expiryDate, 'MMMM dd, yyyy')
+                : 'No expiry date set'}
             </Badge>
           </p>
           <div className='grid gap-2'>

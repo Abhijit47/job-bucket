@@ -127,10 +127,12 @@ export const jobModelSchema = createJobSchemaBase.extend({
 
 export const updateJobSchema = createJobSchemaBase.partial().extend({
   id: z.string().min(1, 'Job ID is required.'),
-  expiryDate: z.preprocess((val) => {
-    if (val === undefined || val === null) return undefined;
-    return val instanceof Date ? val : new Date(val as string);
-  }, z.date().optional()),
+  expiryDate: z
+    .preprocess((val) => {
+      if (val === undefined || val === null) return undefined;
+      return val instanceof Date ? val : new Date(val as string);
+    }, z.date())
+    .optional(),
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

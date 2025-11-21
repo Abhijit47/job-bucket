@@ -14,8 +14,8 @@ export function prefetchJobs(params: Input) {
 /**
  * Prefetch a single job by ID
  */
-export function prefetchJob(executionId: string) {
-  return prefetch(trpc.employers.getJob.queryOptions({ id: executionId }));
+export function prefetchJob(jobId: string) {
+  return prefetch(trpc.employers.getJob.queryOptions({ id: jobId }));
 }
 
 /**

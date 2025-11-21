@@ -304,7 +304,7 @@ export const employersRouter = createTRPCRouter({
             image: input.image,
             username: input.username,
             displayUsername: input.username,
-            lang: input.lang,
+            locale: input.locale,
             phoneNumber: input.phoneNumber,
             isActive: input.isActive,
           })

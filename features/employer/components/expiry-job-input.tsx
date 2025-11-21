@@ -80,7 +80,9 @@ export default function ExpiryJobInput() {
                   <div className={'text-center'}>
                     <Separator className={'my-2'} />
                     <Badge variant={'outline'} className='text-xs'>
-                      {format(field.value, 'eeee, MMMM do, yyyy')}
+                      {field.value
+                        ? format(field.value, 'eeee, MMMM do, yyyy')
+                        : format(new Date(), 'eeee, MMMM do, yyyy')}
                     </Badge>
                   </div>
                 }
