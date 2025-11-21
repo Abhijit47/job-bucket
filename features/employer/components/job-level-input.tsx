@@ -28,6 +28,7 @@ export default function JobLevelInput() {
       control={form.control}
       render={({ field, fieldState }) => (
         <Field
+          className={'col-span-full lg:col-span-1'}
           data-invalid={fieldState.invalid}
           aria-invalid={fieldState.invalid}>
           <FieldLabel htmlFor='level'>Job Level</FieldLabel>

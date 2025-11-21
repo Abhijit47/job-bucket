@@ -1,13 +1,4 @@
 import {
-  Field,
-  FieldDescription,
-  FieldError,
-  FieldLabel,
-} from '@/components/ui/field';
-import { CreateJobInput } from '@/lib/zodSchemas/employer.schema';
-import { Controller, useFormContext } from 'react-hook-form';
-
-import {
   Select,
   SelectContent,
   SelectGroup,
@@ -16,33 +7,42 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { experiences } from '@/drizzle/db-constants';
 
-export default function ExperienceInput() {
-  const form = useFormContext<Pick<CreateJobInput, 'experience'>>();
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldLabel,
+} from '@/components/ui/field';
+import { vacancies } from '@/drizzle/db-constants';
+import { CreateJobInput } from '@/lib/zodSchemas/employer.schema';
+import { Controller, useFormContext } from 'react-hook-form';
+
+export default function VacancyInput() {
+  const form = useFormContext<Pick<CreateJobInput, 'vacancy'>>();
 
   return (
     <Controller
-      name='experience'
+      name='vacancy'
       control={form.control}
       render={({ field, fieldState }) => (
         <Field
           data-invalid={fieldState.invalid}
           aria-invalid={fieldState.invalid}>
-          <FieldLabel htmlFor='experience'>Experience</FieldLabel>
+          <FieldLabel htmlFor='vacancy'>Vacancy</FieldLabel>
           <Select onValueChange={field.onChange} value={field.value}>
             <SelectTrigger
               className='w-full'
-              id='experience'
+              id='vacancy'
               aria-invalid={fieldState.invalid}>
-              <SelectValue placeholder='Ex. 1 year' />
+              <SelectValue placeholder='Ex. 1' />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectLabel>Specify experience</SelectLabel>
-                {experiences.map((exp) => (
-                  <SelectItem key={exp} value={exp}>
-                    {exp}
+                <SelectLabel>Specify vacancy</SelectLabel>
+                {vacancies.map((vacancy) => (
+                  <SelectItem key={vacancy} value={vacancy}>
+                    {vacancy}
                   </SelectItem>
                 ))}
               </SelectGroup>
@@ -52,7 +52,7 @@ export default function ExperienceInput() {
             <FieldError errors={[fieldState.error]} className={'text-xs'} />
           ) : (
             <FieldDescription className={'text-xs'}>
-              Specify experience for the job.
+              Specify vacancy for the job.
             </FieldDescription>
           )}
         </Field>

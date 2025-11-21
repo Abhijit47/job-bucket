@@ -19,6 +19,7 @@ export default function TagsInput() {
       defaultValue={[]}
       render={({ field, fieldState }) => (
         <Field
+          className={'col-span-full lg:col-span-2'}
           data-invalid={fieldState.invalid}
           aria-invalid={fieldState.invalid}>
           <FieldLabel htmlFor='tags'>Tags</FieldLabel>

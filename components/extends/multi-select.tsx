@@ -83,6 +83,8 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectV1Props>(
       const isValue = value && value.length > 0;
       return (
         <InputGroup
+          id={props.id}
+          aria-invalid={props['aria-invalid']}
           onClick={() => setIsOpen((open) => !open)}
           ref={ref}
           {...props}
@@ -92,8 +94,10 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectV1Props>(
             className
           )}>
           <div
+            aria-invalid={props['aria-invalid']}
             className={cn(
               'items-center gap-1 overflow-hidden text-sm',
+
               multiple
                 ? 'flex grow flex-wrap '
                 : 'inline-flex whitespace-nowrap'
@@ -129,7 +133,9 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectV1Props>(
               </span>
             )}
           </div>
-          <InputGroupAddon align='inline-end'>
+          <InputGroupAddon
+            align='inline-end'
+            aria-invalid={props['aria-invalid']}>
             <InputGroupButton
               variant='secondary'
               {...(isValue
@@ -153,7 +159,9 @@ const MultiSelect = React.forwardRef<HTMLDivElement, MultiSelectV1Props>(
 
     return (
       <Popover open={isOpen} onOpenChange={setIsOpen}>
-        <PopoverTrigger asChild>{customPopoverTrigger()}</PopoverTrigger>
+        <PopoverTrigger asChild id={props.id}>
+          {customPopoverTrigger()}
+        </PopoverTrigger>
         <PopoverContent
           className='w-(--radix-popover-trigger-width) p-0'
           align='start'>

@@ -8,10 +8,10 @@
 
 import { generateCurrencies } from '@/lib/utils';
 
+// 1.
 export const roles = ['admin', 'employer', 'candidate', 'guest'] as const;
 
-export type roleUnion = (typeof roles)[number];
-
+// 2.
 export const maritalStatus = [
   'single',
   'married',
@@ -19,8 +19,10 @@ export const maritalStatus = [
   'widowed',
 ] as const;
 
+// 3.
 export const genders = ['male', 'female', 'other'] as const;
 
+// 4.
 export const nationalities = [
   'Afghan',
   'Albanian',
@@ -218,10 +220,13 @@ export const nationalities = [
   'Zimbabwean',
 ] as const;
 
+// 5.
 export const currencies = generateCurrencies();
 
+// 6.
 export const salaryPeriods = ['yearly', 'monthly', 'hourly'] as const;
 
+// 7.
 export const qualifications = [
   'none',
   'high_school',
@@ -231,6 +236,7 @@ export const qualifications = [
   'doctorate_degree',
 ] as const;
 
+// 8.
 export const jobTags = [
   { value: 'JavaScript', label: 'JavaScript' },
   { value: 'React', label: 'React' },
@@ -256,8 +262,12 @@ export const jobTags = [
   { value: 'GCP', label: 'GCP' },
 ] as const;
 
-export type JobTag = (typeof jobTags)[number]['value'];
+// extract the value
+export const jobTagValues = jobTags.map((tag) => tag.value) as ReadonlyArray<
+  (typeof jobTags)[number]['value']
+>;
 
+// 9.
 export const jobLevels = [
   'internship',
   'entry_level',
@@ -271,8 +281,10 @@ export const jobLevels = [
   'executive',
 ] as const;
 
+// 10.
 export const jobTypes = ['on_site', 'remote', 'hybrid'] as const;
 
+// 11.
 export const workTypes = [
   'full_time',
   'part_time',
@@ -283,6 +295,7 @@ export const workTypes = [
   'other',
 ] as const;
 
+// 12.
 export const applicationStatus = [
   'pending',
   'under_review',
@@ -291,3 +304,97 @@ export const applicationStatus = [
   'rejected',
   'hired',
 ] as const;
+
+// 13.
+export const interviewStatuses = [
+  'scheduled',
+  'completed',
+  'canceled',
+  'rescheduled',
+] as const;
+
+// 14.
+export const jobBenifits = [
+  'health_insurance',
+  'dental_insurance',
+  'vision_insurance',
+  'retirement_plan',
+  'paid_time_off',
+  'flexible_schedule',
+  'remote_work_options',
+  'professional_development',
+  'wellness_programs',
+  'commuter_benefits',
+  'childcare_assistance',
+  'employee_assistance_programs',
+  'stock_options',
+  'performance_bonus',
+  'tuition_reimbursement',
+  'life_insurance',
+  'disability_insurance',
+  'learning_budget',
+] as const;
+
+export const organizationTypes = [
+  'Public Company',
+  'Private Company',
+  'Non-Profit',
+  'Government Agency',
+  'Partnership',
+  'Sole Proprietorship',
+] as const; // extend as needed
+
+export const locales = [
+  'en-US',
+  'es-ES',
+  'fr-FR',
+  'de-DE',
+  'zh-CN',
+  'ja-JP',
+  'ru-RU',
+  'ar-SA',
+  'pt-BR',
+  'hi-IN',
+] as const; // extend as needed
+
+export const experiences = [
+  'No experience',
+  '1 year',
+  '2 years',
+  '3 years',
+  '4 years',
+  '5+ years',
+  '10+ years',
+] as const;
+
+export const vacancies = [
+  '1 vacancy',
+  '2 vacancies',
+  '3 vacancies',
+  '4 vacancies',
+  '5 vacancies',
+  '6 vacancies',
+  '7 vacancies',
+  '8 vacancies',
+  '9 vacancies',
+  '10+ vacancies',
+] as const;
+
+// Type Definitions
+export type Role = (typeof roles)[number];
+export type MaritalStatus = (typeof maritalStatus)[number];
+export type Gender = (typeof genders)[number];
+export type Nationality = (typeof nationalities)[number];
+export type SalaryPeriod = (typeof salaryPeriods)[number];
+export type Qualification = (typeof qualifications)[number];
+export type JobTag = (typeof jobTags)[number]['value'];
+export type JobLevel = (typeof jobLevels)[number];
+export type JobType = (typeof jobTypes)[number];
+export type JobBenifit = (typeof jobBenifits)[number];
+export type InterviewStatus = (typeof interviewStatuses)[number];
+export type ApplicationStatus = (typeof applicationStatus)[number];
+export type WorkType = (typeof workTypes)[number];
+export type OrganizationType = (typeof organizationTypes)[number];
+export type Locale = (typeof locales)[number];
+export type Experience = (typeof experiences)[number];
+export type Vacancy = (typeof vacancies)[number];

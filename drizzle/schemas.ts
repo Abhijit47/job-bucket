@@ -12,22 +12,35 @@ import {
 import {
   applicationStatus,
   currencies,
+  experiences,
   genders,
+  type JobBenifit,
   jobLevels,
+  type JobTag,
   jobTypes,
   maritalStatus,
   nationalities,
   qualifications,
   roles,
   salaryPeriods,
+  vacancies,
   workTypes,
 } from './db-constants';
 
-export const createdAt = timestamp('created_at', { mode: 'date' })
+export const createdAt = timestamp('created_at', {
+  mode: 'date',
+  withTimezone: true,
+})
   .defaultNow()
   .notNull();
-export const deletedAt = timestamp('deleted_at', { mode: 'date' });
-export const updatedAt = timestamp('updated_at', { mode: 'date' })
+export const deletedAt = timestamp('deleted_at', {
+  mode: 'date',
+  withTimezone: true,
+});
+export const updatedAt = timestamp('updated_at', {
+  mode: 'date',
+  withTimezone: true,
+})
   .defaultNow()
   .$onUpdate(() => new Date())
   .notNull();
@@ -55,7 +68,10 @@ export const user = pgTable('user', {
   displayUsername: text('display_username'),
 
   // Additional fields can be added here
-  emailVerifiedAt: timestamp('email_verified_at', { mode: 'date' }),
+  emailVerifiedAt: timestamp('email_verified_at', {
+    mode: 'date',
+    withTimezone: true,
+  }),
   lang: varchar('lang').default('en'),
   phoneNumber: varchar('phone_number', { length: 20 }).unique(),
   isActive: boolean('is_active').default(false),
@@ -119,7 +135,7 @@ export const applicant = pgTable('applicant', {
     .notNull(),
 
   biography: varchar('biography', { length: 1024 }),
-  dateOfBirth: timestamp('date_of_birth', { mode: 'date' }),
+  dateOfBirth: timestamp('date_of_birth', { mode: 'date', withTimezone: true }),
   nationality: nationalityEnum('nationality'),
   maritalStatus: maritalStatusEnum('marital_status'),
   gender: genderEnum('gender'),
@@ -186,18 +202,24 @@ export const qualificationsEnum = pgEnum('qualifications', qualifications);
 export const jobLevelEnum = pgEnum('job_level', jobLevels);
 export const jobTypeEnum = pgEnum('job_type', jobTypes);
 export const workTypeEnum = pgEnum('work_type', workTypes);
+export const experiencesEnum = pgEnum('experiences', experiences);
+export const vacancyEnum = pgEnum('vacancy', vacancies);
 export const job = pgTable('job', {
   id: uuid('id').primaryKey().defaultRandom().unique().notNull(),
   title: varchar('title', { length: 256 }).notNull(),
   description: varchar('description', { length: 4096 }).notNull(),
-  tags: varchar('tags', { length: 512 }).notNull(),
+  tags: varchar('tags').array().$type<JobTag[]>(),
   salary: jsonb('salary').$type<SalaryJSONB>().notNull(),
-  location: varchar('location', { length: 256 }).notNull(),
-  jobType: jobTypeEnum('job_type').notNull(), // enum
-  workType: workTypeEnum('work_type').notNull(), // enum
-  jobLevel: jobLevelEnum('job_level').notNull(), // enum
-  experience: varchar('experience', { length: 100 }).notNull(),
-  qualifications: qualificationsEnum('qualifications').notNull(), // enum
+  benifits: varchar('benifits').array().$type<JobBenifit[]>(),
+  city: varchar('city', { length: 50 }).notNull(),
+  country: varchar('country', { length: 50 }).notNull(),
+  jobType: jobTypeEnum('job_type').notNull(),
+  jobLevel: jobLevelEnum('job_level').notNull(),
+  workType: workTypeEnum('work_type').notNull(),
+  experience: experiencesEnum('experience').notNull(),
+  qualification: qualificationsEnum('qualification').notNull(),
+  vacancy: vacancyEnum('vacancy').notNull(),
+  expiryDate: timestamp('expiry_date', { mode: 'date', withTimezone: true }),
   responsibilities: varchar('responsibilities', { length: 2048 }),
   isFeatured: boolean('is_featured').default(false).notNull(),
   isActive: boolean('is_active').default(true).notNull(),
@@ -224,8 +246,13 @@ export const application = pgTable('application', {
     .references(() => resume.id, { onDelete: 'cascade' })
     .notNull(),
   isBookmarked: boolean('is_bookmarked').default(false).notNull(),
-  appliedAt: timestamp('applied_at', { mode: 'date' }).defaultNow().notNull(),
-  statusUpdatedAt: timestamp('status_updated_at', { mode: 'date' })
+  appliedAt: timestamp('applied_at', { mode: 'date', withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  statusUpdatedAt: timestamp('status_updated_at', {
+    mode: 'date',
+    withTimezone: true,
+  })
     .defaultNow()
     .notNull(),
   notes: varchar('notes', { length: 2048 }),

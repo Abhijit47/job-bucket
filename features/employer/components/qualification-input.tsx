@@ -52,7 +52,7 @@ export default function QualificationInput() {
             <FieldError errors={[fieldState.error]} className={'text-xs'} />
           ) : (
             <FieldDescription className={'text-xs'}>
-              Specify the required qualification for the job position.
+              Specify the required qualification.
             </FieldDescription>
           )}
         </Field>
