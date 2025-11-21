@@ -134,11 +134,11 @@ export const auth = betterAuth({
         fieldName: 'role',
         input: false,
       },
-      lang: {
+      locale: {
         type: 'string',
         required: false,
-        defaultValue: 'en',
-        fieldName: 'lang',
+        defaultValue: 'en-US',
+        fieldName: 'locale',
         input: false,
       },
       emailVerifiedAt: {

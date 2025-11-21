@@ -14,12 +14,14 @@ import {
   currencies,
   experiences,
   genders,
-  type JobBenifit,
+  type JobBenefit,
   jobLevels,
   type JobTag,
   jobTypes,
+  locales,
   maritalStatus,
   nationalities,
+  organizationTypes,
   qualifications,
   roles,
   salaryPeriods,
@@ -47,6 +49,7 @@ export const updatedAt = timestamp('updated_at', {
 
 export const roleEnum = pgEnum('role', roles);
 
+export const localesEnum = pgEnum('locales', locales);
 export const user = pgTable('user', {
   id: text('id').primaryKey().unique().notNull(),
   name: varchar('name', { length: 100 }).notNull(),
@@ -72,7 +75,7 @@ export const user = pgTable('user', {
     mode: 'date',
     withTimezone: true,
   }),
-  lang: varchar('lang').default('en'),
+  locale: localesEnum('locale').default('en-US').notNull(),
   phoneNumber: varchar('phone_number', { length: 20 }).unique(),
   isActive: boolean('is_active').default(false),
 });
@@ -149,6 +152,7 @@ export const applicant = pgTable('applicant', {
   updatedAt,
 });
 
+export const organizationEnum = pgEnum('organization_type', organizationTypes);
 export const employer = pgTable('employer', {
   userId: text('user_id')
     .primaryKey()
@@ -165,7 +169,7 @@ export const employer = pgTable('employer', {
   companyBannerUrl: varchar('company_banner_url', { length: 512 }).default(
     'https://placehold.co/1200x300/png?text=Company+Banner'
   ),
-  organizationType: varchar('organization_type', { length: 100 }),
+  organizationType: organizationEnum('organization_type'),
   teamSize: varchar('team_size', { length: 50 }),
   yearOfEstablishment: varchar('year_of_establishment', {
     length: 4,
@@ -210,7 +214,7 @@ export const job = pgTable('job', {
   description: varchar('description', { length: 4096 }).notNull(),
   tags: varchar('tags').array().$type<JobTag[]>(),
   salary: jsonb('salary').$type<SalaryJSONB>().notNull(),
-  benifits: varchar('benifits').array().$type<JobBenifit[]>(),
+  benefits: varchar('benefits').array().$type<JobBenefit[]>(),
   city: varchar('city', { length: 50 }).notNull(),
   country: varchar('country', { length: 50 }).notNull(),
   jobType: jobTypeEnum('job_type').notNull(),

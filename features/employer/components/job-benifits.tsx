@@ -10,15 +10,15 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { jobBenifits } from '@/drizzle/db-constants';
+import { jobBenefits } from '@/drizzle/db-constants';
 import { capitalizeFirstLetter } from '@/lib/utils';
 
 export default function JobBenifits() {
-  const form = useFormContext<Pick<CreateJobInput, 'benifits'>>();
+  const form = useFormContext<Pick<CreateJobInput, 'benefits'>>();
 
   return (
     <Controller
-      name='benifits'
+      name='benefits'
       control={form.control}
       render={({ field, fieldState }) => (
         <Field
@@ -26,7 +26,7 @@ export default function JobBenifits() {
           aria-invalid={fieldState.invalid}>
           <FieldLabel htmlFor='benifits'>Job Benifits</FieldLabel>
           <div className={'flex flex-wrap gap-4'} id='benifits'>
-            {jobBenifits.map((benifit) => (
+            {jobBenefits.map((benifit) => (
               <Badge
                 key={benifit}
                 aria-invalid={fieldState.invalid}
@@ -37,11 +37,6 @@ export default function JobBenifits() {
                   aria-invalid={fieldState.invalid}
                   checked={field.value?.includes(benifit) || false}
                   onCheckedChange={(checked) =>
-                    // setSelected(
-                    //   checked
-                    //     ? [...selected, benifit]
-                    //     : selected.filter((item) => item !== benifit)
-                    // )
                     field.onChange(
                       checked
                         ? [...(field.value || []), benifit]

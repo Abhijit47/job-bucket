@@ -35,10 +35,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { authClient } from '@/lib/auth/client';
 import { establishmentYears } from '@/lib/utils';
 import {
-  locales,
-  localeUnion,
-  organizationTypes,
-  organizationUnion,
   UpdateProfileInput,
   updateProfileSchema,
 } from '@/lib/zodSchemas/employer.schema';
@@ -59,6 +55,8 @@ import {
   useUpdateEmployerProfile,
 } from '../hooks/use-employers';
 
+import { locales, organizationTypes } from '@/drizzle/db-constants';
+
 export function EmployerProfileForm() {
   const [isAvailable, setIsAvailable] = useState<boolean>(false);
   const [isPendingUsername, startUsernameTransition] = useTransition();
@@ -74,8 +72,7 @@ export function EmployerProfileForm() {
       companyDescription: data?.employer.companyDescription || '',
       companyLogoUrl: data.employer.companyLogoUrl || '',
       companyBannerUrl: data.employer.companyBannerUrl || '',
-      organizationType:
-        (data.employer.organizationType as organizationUnion) || 'Partnership',
+      organizationType: data.employer.organizationType || 'Partnership',
       teamSize: data.employer.teamSize || '',
       yearOfEstablishment: data.employer.yearOfEstablishment || '',
       companyWebsite: data.employer.companyWebsite || '',
@@ -84,7 +81,7 @@ export function EmployerProfileForm() {
       username: data.user.username || '',
       phoneNumber: data.user.phoneNumber || '',
       image: data.user.image || '',
-      lang: (data.user.lang as localeUnion) || 'en-US',
+      locale: data.user.locale || 'en-US',
       isActive: data.user.isActive || false,
     },
     mode: 'onChange',
@@ -354,7 +351,7 @@ export function EmployerProfileForm() {
 
             <Controller
               control={form.control}
-              name='lang'
+              name='locale'
               render={({ field, fieldState }) => (
                 <Field
                   orientation='responsive'

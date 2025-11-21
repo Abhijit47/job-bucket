@@ -6,7 +6,7 @@ import { HydrateClient } from '@/trpc/server';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import data from '@/features/employer/components/initial-data.json' assert { type: 'json' };
+import data from '@/features/employer/components/initial-data.json' with { type: 'json' };
 
 export default async function MyJobsPage() {
   await withEmployerAuth();
