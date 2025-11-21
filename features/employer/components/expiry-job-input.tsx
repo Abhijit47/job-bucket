@@ -13,8 +13,10 @@ import { CreateJobInput } from '@/lib/zodSchemas/employer.schema';
 import { format } from 'date-fns';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
+import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -23,7 +25,6 @@ export default function ExpiryJobInput() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const form = useFormContext<Pick<CreateJobInput, 'expiryDate'>>();
 
-  const [date, setDate] = useState<Date | undefined>(undefined);
   const timeZone =
     typeof Intl === 'undefined'
       ? undefined
@@ -68,18 +69,19 @@ export default function ExpiryJobInput() {
                 mode='single'
                 selected={field.value}
                 onSelect={(ev) => {
-                  console.log('Selected date:', ev);
                   field.onChange(ev);
-                  // setIsOpen((prev) => !prev);
+                  setIsOpen(false);
                 }}
-                // onSelect={field.onChange}
                 disabled={(date) =>
                   date < new Date() || date < new Date('1900-01-01')
                 }
                 captionLayout='dropdown'
                 footer={
-                  <div className='p-1 text-center text-sm text-muted-foreground'>
-                    {JSON.stringify(field.value)}
+                  <div className={'text-center'}>
+                    <Separator className={'my-2'} />
+                    <Badge variant={'outline'} className='text-xs'>
+                      {format(field.value, 'eeee, MMMM do, yyyy')}
+                    </Badge>
                   </div>
                 }
               />

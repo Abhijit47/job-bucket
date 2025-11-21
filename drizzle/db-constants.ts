@@ -314,7 +314,7 @@ export const interviewStatuses = [
 ] as const;
 
 // 14.
-export const jobBenifits = [
+export const jobBenefits = [
   'health_insurance',
   'dental_insurance',
   'vision_insurance',
@@ -390,7 +390,7 @@ export type Qualification = (typeof qualifications)[number];
 export type JobTag = (typeof jobTags)[number]['value'];
 export type JobLevel = (typeof jobLevels)[number];
 export type JobType = (typeof jobTypes)[number];
-export type JobBenifit = (typeof jobBenifits)[number];
+export type JobBenefit = (typeof jobBenefits)[number];
 export type InterviewStatus = (typeof interviewStatuses)[number];
 export type ApplicationStatus = (typeof applicationStatus)[number];
 export type WorkType = (typeof workTypes)[number];

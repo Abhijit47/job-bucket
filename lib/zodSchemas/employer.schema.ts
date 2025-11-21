@@ -1,7 +1,7 @@
 import {
   currencies,
   experiences,
-  jobBenifits,
+  jobBenefits,
   jobLevels,
   jobTagValues,
   jobTypes,
@@ -14,9 +14,6 @@ import {
 } from '@/drizzle/db-constants';
 import z from 'zod';
 
-export type organizationUnion = (typeof organizationTypes)[number];
-export type localeUnion = (typeof locales)[number];
-
 export const updateProfileSchema = z.object({
   companyName: z.string().min(1, 'Company name is required.').max(256),
   companyDescription: z
@@ -25,7 +22,10 @@ export const updateProfileSchema = z.object({
     .max(2048, 'Company description should not exceed 2048 characters.'),
   companyLogoUrl: z.url(),
   companyBannerUrl: z.url(),
-  organizationType: z.enum(organizationTypes),
+  organizationType: z.enum(
+    organizationTypes,
+    'Please select a valid organization type.'
+  ),
   teamSize: z.string().min(1, 'Team size is required.'),
   yearOfEstablishment: z.string().min(1, 'Year of establishment is required.'),
   companyWebsite: z.url(),
@@ -44,13 +44,31 @@ export const updateProfileSchema = z.object({
     .min(1, 'Phone number is required')
     .max(20, 'Phone number should not exceed 20 characters.'),
   image: z.url(),
-  lang: z.enum(locales, {
+  locale: z.enum(locales, {
     error: 'Please select a valid language preference.',
   }),
   isActive: z.boolean({ error: 'Profile active status is required.' }),
 });
 
 export const myJobSchema = z.object({ id: z.string() });
+
+export const salarySchema = z
+  .object({
+    min: z
+      .number()
+      .min(0, 'Minimum salary must be a non-negative number.')
+      .max(1000000000, 'Minimum salary exceeds the maximum limit.'),
+    max: z
+      .number()
+      .min(0, 'Maximum salary must be a non-negative number.')
+      .max(1000000000, 'Maximum salary exceeds the maximum limit.'),
+    currency: z.enum(currencies, 'Please select a valid currency.'),
+    period: z.enum(salaryPeriods, 'Please select a valid salary period.'),
+  })
+  .refine((data) => data.min <= data.max, {
+    message: 'Minimum salary must be less than or equal to maximum salary.',
+    path: ['min'],
+  });
 
 export const createJobSchemaBase = z.object({
   title: z
@@ -65,22 +83,11 @@ export const createJobSchemaBase = z.object({
     .array(z.enum(jobTagValues, 'Please select a valid tag.'))
     .min(1, 'Please select at least one tag.')
     .max(10, 'You can add up to 10 tags only.'),
-  salary: z.object({
-    min: z
-      .number()
-      .min(0, 'Minimum salary must be a non-negative number.')
-      .max(1000000000, 'Minimum salary exceeds the maximum limit.'),
-    max: z
-      .number()
-      .min(0, 'Maximum salary must be a non-negative number.')
-      .max(1000000000, 'Maximum salary exceeds the maximum limit.'),
-    currency: z.enum(currencies, 'Please select a valid currency.'),
-    period: z.enum(salaryPeriods, 'Please select a valid salary period.'),
-  }),
-  benifits: z
-    .array(z.enum(jobBenifits, 'Please select a valid benifit.'))
-    .min(1, 'Please select at least one benifit.')
-    .max(20, 'You can add up to 20 benifits only.'),
+  salary: salarySchema,
+  benefits: z
+    .array(z.enum(jobBenefits, 'Please select a valid benefit.'))
+    .min(1, 'Please select at least one benefit.')
+    .max(20, 'You can add up to 20 benefits only.'),
   city: z
     .string()
     .min(1, 'City is required.')

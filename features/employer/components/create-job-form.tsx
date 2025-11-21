@@ -61,7 +61,7 @@ export default function CreateJobForm() {
         currency: isDev ? 'USD' : undefined,
         period: isDev ? 'hourly' : undefined,
       },
-      benifits: isDev ? ['childcare_assistance', 'dental_insurance'] : [],
+      benefits: isDev ? ['childcare_assistance', 'dental_insurance'] : [],
       city: isDev ? 'Kolkata, India' : '',
       country: isDev ? 'India' : '',
       jobType: isDev ? 'on_site' : undefined,

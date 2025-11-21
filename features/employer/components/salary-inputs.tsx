@@ -57,10 +57,6 @@ export default function SalaryInputs() {
             data-invalid={fieldState.invalid}
             aria-invalid={fieldState.invalid}>
             <FieldLabel htmlFor='salary-range'>Salary Range</FieldLabel>
-            {/* {fieldState.error ? (
-              <FieldError errors={[fieldState.error]} className={'text-xs'} />
-            ) : (
-            )} */}
             <FieldDescription className='text-xs'>
               Set your salary range (
               <span className='font-medium tabular-nums'>
@@ -76,15 +72,8 @@ export default function SalaryInputs() {
               id='salary-range'
               value={[watchSalaryMin, watchSalaryMax]}
               onValueChange={(val) => {
-                // console.log('Salary range slider value:', val);
-                // spread the other values and update only min and max
-                // field.onChange({ ...field.value, min, max });
                 field.onChange({ min: val[0], max: val[1] });
-                // but dont trigger validation on every change
-                // form.setFocus('salary.max');
-                // form.setFocus('salary.min');
-                // form.clearErrors('salary.min');
-                // form.clearErrors('salary.max');
+                // Reset related fields when salary range changes
                 form.setValue('salary.currency', '');
                 form.setValue('salary.period', 'hourly');
               }}

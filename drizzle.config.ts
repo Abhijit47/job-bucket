@@ -1,6 +1,8 @@
 import { defineConfig } from 'drizzle-kit';
 import './envConfig';
 
+const isDev = process.env.NODE_ENV === 'development';
+
 export default defineConfig({
   schema: './drizzle/schemas.ts',
   out: './drizzle/migrations',
@@ -8,6 +10,6 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL!,
   },
-  breakpoints: true,
-  verbose: true,
+  breakpoints: isDev ? true : false,
+  verbose: isDev ? true : false,
 });
