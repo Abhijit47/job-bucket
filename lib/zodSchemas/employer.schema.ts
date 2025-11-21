@@ -122,7 +122,7 @@ export const jobModelSchema = createJobSchemaBase.extend({
   id: z.string(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  deletedAt: z.date().nullable().optional(),
+  deletedAt: z.date().nullable(),
 });
 
 export const updateJobSchema = createJobSchemaBase.partial().extend({

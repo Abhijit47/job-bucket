@@ -7,9 +7,7 @@ export default defineConfig({
   schema: './drizzle/schemas.ts',
   out: './drizzle/migrations',
   dialect: 'postgresql',
-  dbCredentials: {
-    url: process.env.DATABASE_URL!,
-  },
-  breakpoints: isDev ? true : false,
-  verbose: isDev ? true : false,
+  dbCredentials: { url: process.env.DATABASE_URL! },
+  breakpoints: isDev,
+  verbose: isDev,
 });
