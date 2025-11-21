@@ -15,6 +15,8 @@ import {
   createJobSchema,
 } from '@/lib/zodSchemas/employer.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { IconReload } from '@tabler/icons-react';
+import type { Resolver } from 'react-hook-form';
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -24,8 +26,11 @@ import {
 import { toast } from 'sonner';
 import { useCreateJob } from '../hooks/use-employers';
 import AdditionalInputs from './additional-inputs';
+import ApplyJobInput from './apply-job-input';
 import DescriptionInput from './description-input';
 import ExperienceInput from './experience-input';
+import ExpiryJobInput from './expiry-job-input';
+import JobBenifits from './job-benifits';
 import JobLevelInput from './job-level-input';
 import JobTypeInput from './job-type-input';
 import LocationInput from './location-input';
@@ -34,33 +39,41 @@ import ResponsibilitiesInput from './responsibilities-input';
 import SalaryInputs from './salary-inputs';
 import TagsInput from './tags-input';
 import TitleInput from './title-input';
+import VacancyInput from './vacancy-input';
 import WorkTypeInput from './work-type-input';
 
-const isDev = process.env.NODE_ENV === 'development' ? false : true;
+const isDev = process.env.NODE_ENV === 'development';
 
 export default function CreateJobForm() {
   const { mutate, isPending } = useCreateJob();
 
   const form = useForm<CreateJobInput>({
-    resolver: zodResolver(createJobSchema),
+    resolver: zodResolver(
+      createJobSchema
+    ) as unknown as Resolver<CreateJobInput>,
     defaultValues: {
       title: isDev ? 'frontend developer' : '',
       description: isDev ? 'This is a job description' : '',
-      tags: undefined,
-      salaryRange: [15000, 350000],
-      salaryCurrency: isDev ? 'USD' : undefined,
-      salaryPeriod: isDev ? 'hourly' : undefined,
-      location: isDev ? 'Kolkata, India' : undefined,
+      tags: isDev ? ['CSS', 'AWS', 'HTML'] : undefined,
+      salary: {
+        min: 15000,
+        max: 350000,
+        currency: isDev ? 'USD' : undefined,
+        period: isDev ? 'hourly' : undefined,
+      },
+      benifits: isDev ? ['childcare_assistance', 'dental_insurance'] : [],
+      city: isDev ? 'Kolkata, India' : '',
+      country: isDev ? 'India' : '',
       jobType: isDev ? 'on_site' : undefined,
-      workType: isDev ? 'contract' : undefined,
       jobLevel: isDev ? 'associate' : undefined,
-      experience: isDev ? 'Here goes some experience details' : undefined,
+      workType: isDev ? 'contract' : undefined,
       qualification: isDev ? 'associate_degree' : undefined,
-      responsibilities: isDev
-        ? 'Here goes some responsibilities details'
-        : undefined,
-      isFeatured: undefined,
-      isActive: undefined,
+      experience: isDev ? '1 year' : undefined,
+      vacancy: isDev ? '1 vacancy' : undefined,
+      responsibilities: isDev ? 'Here goes some responsibilities details' : '',
+      expiryDate: new Date(),
+      isFeatured: false,
+      isActive: false,
     },
     mode: 'onChange',
   });
@@ -91,7 +104,6 @@ export default function CreateJobForm() {
       toast.error('Please select at least one tag.');
       return;
     }
-    console.log('Form values:', values);
 
     mutate(values);
   };
@@ -100,55 +112,70 @@ export default function CreateJobForm() {
     <div className='w-full'>
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onError)}>
-          <FieldGroup>
+          <FieldGroup className={'relative'}>
             <FieldSet>
               <FieldLegend>Create a Job</FieldLegend>
               <FieldDescription>
                 Fill out the form below to create a new job posting.
               </FieldDescription>
+
+              <div className={'absolute top-4 right-4'}>
+                <Button
+                  type='button'
+                  size={'icon-sm'}
+                  onClick={() => form.reset()}>
+                  <IconReload className={'size-4'} />
+                </Button>
+              </div>
               <FieldGroup className={'gap-4'}>
                 <TitleInput />
 
-                <DescriptionInput />
-
-                <TagsInput />
+                <div className={'grid grid-cols-3 gap-4'}>
+                  <TagsInput />
+                  <JobLevelInput />
+                </div>
 
                 <FieldSeparator />
                 <SalaryInputs />
                 <FieldSeparator />
 
+                <div className={'grid grid-cols-1 lg:grid-cols-3 gap-4'}>
+                  <ExperienceInput />
+                  <QualificationInput />
+                  <JobTypeInput />
+                  <VacancyInput />
+                  <ExpiryJobInput />
+                  <WorkTypeInput />
+                </div>
+                <FieldSeparator />
+                <JobBenifits />
+                <FieldSeparator />
                 <LocationInput />
 
-                <div className={'grid grid-cols-1 md:grid-cols-2 gap-4'}>
-                  <JobTypeInput />
-
-                  <JobLevelInput />
-                </div>
-
-                <div className={'grid grid-cols-1 md:grid-cols-2 gap-4'}>
-                  <WorkTypeInput />
-
-                  <QualificationInput />
-                </div>
-
-                <ExperienceInput />
+                <FieldSeparator />
+                <DescriptionInput />
 
                 <ResponsibilitiesInput />
+
+                <FieldSeparator />
+
+                <AdditionalInputs />
+                <FieldSeparator />
+
+                <ApplyJobInput />
+                <FieldSeparator />
               </FieldGroup>
             </FieldSet>
-            <FieldSeparator />
-
-            <AdditionalInputs />
 
             <Field orientation='horizontal'>
               <Button type='submit' disabled={isPending}>
                 {isPending ? (
                   <span className={'inline-flex items-center gap-2'}>
-                    Creating...
+                    Posting...
                     <Spinner />
                   </span>
                 ) : (
-                  <span>Create Job</span>
+                  <span>Post Job</span>
                 )}
               </Button>
               <Button

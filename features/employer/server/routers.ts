@@ -7,6 +7,7 @@ import {
 import {
   createJobSchema,
   myJobSchema,
+  updateJobSchema,
   updateProfileSchema,
 } from '@/lib/zodSchemas/employer.schema';
 import { createTRPCRouter, employerProcedure } from '@/trpc/init';
@@ -63,26 +64,23 @@ export const employersRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx.auth;
 
-      const salaryInfo = {
-        min: input.salaryRange[0],
-        max: input.salaryRange[1],
-        currency: input.salaryCurrency,
-        period: input.salaryPeriod,
-      };
-
       const [newJob] = await db
         .insert(jobTable)
         .values({
           title: input.title,
           description: input.description,
-          tags: JSON.stringify(input.tags),
-          salary: salaryInfo,
-          location: input.location,
+          tags: input.tags,
+          salary: input.salary,
+          benifits: input.benifits,
+          city: input.city,
+          country: input.country,
           jobType: input.jobType,
-          workType: input.workType,
           jobLevel: input.jobLevel,
+          workType: input.workType,
           experience: input.experience,
-          qualifications: input.qualification,
+          qualification: input.qualification,
+          vacancy: input.vacancy,
+          expiryDate: input.expiryDate,
           responsibilities: input.responsibilities,
           isFeatured: input.isFeatured,
           isActive: input.isActive,
@@ -99,32 +97,30 @@ export const employersRouter = createTRPCRouter({
       return newJob.id;
     }),
 
+  // .input(createJobSchema.extend({ jobId: myJobSchema.shape.id }))
   updateJob: employerProcedure
-    .input(createJobSchema.extend({ jobId: myJobSchema.shape.id }))
+    .input(updateJobSchema)
     .mutation(async ({ ctx, input }) => {
       const { user } = ctx.auth;
-      const { jobId } = input;
-
-      const updatedSalaryInfo = {
-        min: input.salaryRange[0],
-        max: input.salaryRange[1],
-        currency: input.salaryCurrency,
-        period: input.salaryPeriod,
-      };
+      const { id: jobId } = input;
 
       const [updatedJob] = await db
         .update(jobTable)
         .set({
           title: input.title,
           description: input.description,
-          tags: JSON.stringify(input.tags),
-          salary: updatedSalaryInfo,
-          location: input.location,
+          tags: input.tags,
+          salary: input.salary,
+          benifits: input.benifits,
+          city: input.city,
+          country: input.country,
           jobType: input.jobType,
-          workType: input.workType,
           jobLevel: input.jobLevel,
+          workType: input.workType,
           experience: input.experience,
-          qualifications: input.qualification,
+          qualification: input.qualification,
+          vacancy: input.vacancy,
+          expiryDate: input.expiryDate,
           responsibilities: input.responsibilities,
           isFeatured: input.isFeatured,
           isActive: input.isActive,

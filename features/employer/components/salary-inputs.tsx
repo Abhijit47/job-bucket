@@ -25,10 +25,7 @@ export default function SalaryInputs() {
   const min_price = 15000;
   const max_price = 2500000;
 
-  const form =
-    useFormContext<
-      Pick<CreateJobInput, 'salaryRange' | 'salaryCurrency' | 'salaryPeriod'>
-    >();
+  const form = useFormContext<Pick<CreateJobInput, 'salary'>>();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -40,44 +37,57 @@ export default function SalaryInputs() {
 
   const watchSalaryMin = useWatch({
     control: form.control,
-    name: 'salaryRange.0',
+    name: 'salary.min',
     compute: (value) => value || 15000,
   });
 
   const watchSalaryMax = useWatch({
     control: form.control,
-    name: 'salaryRange.1',
+    name: 'salary.max',
     compute: (value) => value || 350000,
   });
+
   return (
     <>
       <Controller
-        name='salaryRange'
+        name='salary'
         control={form.control}
         render={({ field, fieldState }) => (
           <Field
             data-invalid={fieldState.invalid}
             aria-invalid={fieldState.invalid}>
             <FieldLabel htmlFor='salary-range'>Salary Range</FieldLabel>
-            {fieldState.error ? (
+            {/* {fieldState.error ? (
               <FieldError errors={[fieldState.error]} className={'text-xs'} />
             ) : (
-              <FieldDescription className='text-xs'>
-                Set your salary range (
-                <span className='font-medium tabular-nums'>
-                  {formatPrice(watchSalaryMin)}
-                </span>{' '}
-                -{' '}
-                <span className='font-medium tabular-nums'>
-                  {formatPrice(watchSalaryMax)}
-                </span>
-                ).
-              </FieldDescription>
-            )}
+            )} */}
+            <FieldDescription className='text-xs'>
+              Set your salary range (
+              <span className='font-medium tabular-nums'>
+                {formatPrice(watchSalaryMin)}
+              </span>{' '}
+              -{' '}
+              <span className='font-medium tabular-nums'>
+                {formatPrice(watchSalaryMax)}
+              </span>
+              ).
+            </FieldDescription>
             <Slider
               id='salary-range'
               value={[watchSalaryMin, watchSalaryMax]}
-              onValueChange={field.onChange}
+              onValueChange={(val) => {
+                // console.log('Salary range slider value:', val);
+                // spread the other values and update only min and max
+                // field.onChange({ ...field.value, min, max });
+                field.onChange({ min: val[0], max: val[1] });
+                // but dont trigger validation on every change
+                // form.setFocus('salary.max');
+                // form.setFocus('salary.min');
+                // form.clearErrors('salary.min');
+                // form.clearErrors('salary.max');
+                form.setValue('salary.currency', '');
+                form.setValue('salary.period', 'hourly');
+              }}
               min={min_price}
               max={max_price}
               step={5000}
@@ -90,14 +100,19 @@ export default function SalaryInputs() {
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <Controller
-          name='salaryCurrency'
+          name='salary.currency'
           control={form.control}
           render={({ field, fieldState }) => (
             <Field
               data-invalid={fieldState.invalid}
               aria-invalid={fieldState.invalid}>
               <FieldLabel htmlFor='currency'>Currency</FieldLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value}
+                onValueChange={(e) => {
+                  field.onChange(e);
+                  form.clearErrors('salary.currency');
+                }}>
                 <SelectTrigger id='currency' aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder='Select a currency' />
                 </SelectTrigger>
@@ -125,14 +140,19 @@ export default function SalaryInputs() {
         />
 
         <Controller
-          name='salaryPeriod'
+          name='salary.period'
           control={form.control}
           render={({ field, fieldState }) => (
             <Field
               data-invalid={fieldState.invalid}
               aria-invalid={fieldState.invalid}>
               <FieldLabel htmlFor='salaryPeriods'>Salary Periods</FieldLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value}
+                onValueChange={(e) => {
+                  field.onChange(e);
+                  form.clearErrors('salary.period');
+                }}>
                 <SelectTrigger
                   id='salaryPeriods'
                   aria-invalid={fieldState.invalid}>

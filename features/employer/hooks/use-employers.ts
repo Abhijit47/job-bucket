@@ -50,8 +50,9 @@ export function useCreateJob() {
         toast.success(`Job ${variables.title} created successfully.`);
         queryClient.invalidateQueries(trpc.employers.getJobs.queryOptions());
       },
-      onError: () => {
-        toast.error('Failed to create job.');
+      onError: (err) => {
+        console.error({ err });
+        toast.error('Failed to create job.', { description: err.message });
       },
     })
   );

@@ -1,34 +1,18 @@
 import {
   currencies,
+  experiences,
+  jobBenifits,
   jobLevels,
+  jobTagValues,
   jobTypes,
+  locales,
+  organizationTypes,
   qualifications,
   salaryPeriods,
+  vacancies,
   workTypes,
 } from '@/drizzle/db-constants';
 import z from 'zod';
-
-export const organizationTypes = [
-  'Public Company',
-  'Private Company',
-  'Non-Profit',
-  'Government Agency',
-  'Partnership',
-  'Sole Proprietorship',
-] as const;
-
-export const locales = [
-  'en-US',
-  'es-ES',
-  'fr-FR',
-  'de-DE',
-  'zh-CN',
-  'ja-JP',
-  'ru-RU',
-  'ar-SA',
-  'pt-BR',
-  'hi-IN',
-] as const;
 
 export type organizationUnion = (typeof organizationTypes)[number];
 export type localeUnion = (typeof locales)[number];
@@ -68,7 +52,7 @@ export const updateProfileSchema = z.object({
 
 export const myJobSchema = z.object({ id: z.string() });
 
-export const createJobSchema = z.object({
+export const createJobSchemaBase = z.object({
   title: z
     .string()
     .min(1, 'Title is required.')
@@ -78,41 +62,72 @@ export const createJobSchema = z.object({
     .min(1, 'Description is required')
     .max(4096, 'Description should not exceed 4096 characters.'),
   tags: z
-    .array(z.string().min(1, 'Tag cannot be empty.'))
+    .array(z.enum(jobTagValues, 'Please select a valid tag.'))
     .min(1, 'Please select at least one tag.')
     .max(10, 'You can add up to 10 tags only.'),
-  salaryRange: z
-    .array(
-      z
-        .number()
-        .min(0, 'Salary must be a non-negative number.')
-        .max(1000000000, 'Salary exceeds the maximum limit.')
-    )
-    .length(2),
-  salaryCurrency: z.enum(currencies, 'Please select a valid currency.'),
-  salaryPeriod: z.enum(salaryPeriods, 'Please select a valid salary period.'),
-  location: z
+  salary: z.object({
+    min: z
+      .number()
+      .min(0, 'Minimum salary must be a non-negative number.')
+      .max(1000000000, 'Minimum salary exceeds the maximum limit.'),
+    max: z
+      .number()
+      .min(0, 'Maximum salary must be a non-negative number.')
+      .max(1000000000, 'Maximum salary exceeds the maximum limit.'),
+    currency: z.enum(currencies, 'Please select a valid currency.'),
+    period: z.enum(salaryPeriods, 'Please select a valid salary period.'),
+  }),
+  benifits: z
+    .array(z.enum(jobBenifits, 'Please select a valid benifit.'))
+    .min(1, 'Please select at least one benifit.')
+    .max(20, 'You can add up to 20 benifits only.'),
+  city: z
     .string()
-    .min(1, { error: 'Location is required.' })
-    .max(256, { error: 'Location should not exceed 256 characters.' }),
+    .min(1, 'City is required.')
+    .max(50, 'City should not exceed 50 characters.'),
+  country: z
+    .string()
+    .min(1, 'Country is required.')
+    .max(50, 'Country should not exceed 50 characters.'),
   jobType: z.enum(jobTypes, 'Please select a valid job type.'),
-  workType: z.enum(workTypes, 'Please select a valid work type.'),
   jobLevel: z.enum(jobLevels, 'Please select a valid job level.'),
-  experience: z
-    .string()
-    .min(1, { error: 'Experience is required.' })
-    .max(100, { error: 'Experience should not exceed 100 characters.' }),
+  workType: z.enum(workTypes, 'Please select a valid work type.'),
+  experience: z.enum(experiences, 'Please select a valid experience level.'),
   qualification: z.enum(qualifications, 'Please select a valid qualification.'),
+  vacancy: z.enum(vacancies, 'Please select a valid number of vacancies.'),
+  expiryDate: z.preprocess((val) => {
+    if (val === undefined || val === null) return val;
+    // If it's already a Date keep it, otherwise try to construct one
+    return val instanceof Date ? val : new Date(val as string);
+  }, z.date('Please provide a valid expiry date.')),
+  // expiryDate: z.date('Please provide a valid expiry date.'),
   responsibilities: z
     .string()
-    .max(2048, {
-      error: 'Responsibilities should not exceed 2048 characters.',
-    })
+    .max(2048, 'Responsibilities should not exceed 2048 characters.')
     .optional(),
   isFeatured: z.boolean('Featured status is required.'),
   isActive: z.boolean('Active status is required.'),
 });
 
+export const createJobSchema = createJobSchemaBase;
+
+export const jobModelSchema = createJobSchemaBase.extend({
+  id: z.string(),
+  createdAt: z.date(),
+  updatedAt: z.date(),
+  deletedAt: z.date().nullable().optional(),
+});
+
+export const updateJobSchema = createJobSchemaBase.partial().extend({
+  id: z.string().min(1, 'Job ID is required.'),
+  expiryDate: z.preprocess((val) => {
+    if (val === undefined || val === null) return undefined;
+    return val instanceof Date ? val : new Date(val as string);
+  }, z.date().optional()),
+});
+
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type MyJobInput = z.infer<typeof myJobSchema>;
 export type CreateJobInput = z.infer<typeof createJobSchema>;
+export type JobModel = z.infer<typeof jobModelSchema>;
+export type UpdateJobInput = z.infer<typeof updateJobSchema>;
