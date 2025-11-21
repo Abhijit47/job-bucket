@@ -11,20 +11,20 @@ import {
 } from '@/components/ui/field';
 import { Spinner } from '@/components/ui/spinner';
 import {
-  CreateJobInput,
-  createJobSchema,
+  UpdateJobInput,
+  updateJobSchema,
 } from '@/lib/zodSchemas/employer.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IconReload } from '@tabler/icons-react';
-import type { Resolver } from 'react-hook-form';
 import {
   FormProvider,
+  type Resolver,
   SubmitErrorHandler,
   SubmitHandler,
   useForm,
 } from 'react-hook-form';
 import { toast } from 'sonner';
-import { useCreateJob } from '../hooks/use-employers';
+import { useGetMyJob, useUpdateJob } from '../hooks/use-employers';
 import AdditionalInputs from './additional-inputs';
 import ApplyJobInput from './apply-job-input';
 import DescriptionInput from './description-input';
@@ -42,43 +42,41 @@ import TitleInput from './title-input';
 import VacancyInput from './vacancy-input';
 import WorkTypeInput from './work-type-input';
 
-const isDev = process.env.NODE_ENV === 'development';
+export default function UpdateJobForm({ jobId }: { jobId: string }) {
+  const {
+    data,
+    isPending: isGetPending,
+    isLoading: isGetLoading,
+  } = useGetMyJob(jobId);
+  const { mutate, isPending: isUpdatePending } = useUpdateJob();
 
-export default function CreateJobForm() {
-  const { mutate, isPending } = useCreateJob();
-
-  const form = useForm<CreateJobInput>({
+  const form = useForm<UpdateJobInput>({
     resolver: zodResolver(
-      createJobSchema
-    ) as unknown as Resolver<CreateJobInput>,
+      updateJobSchema
+    ) as unknown as Resolver<UpdateJobInput>,
     defaultValues: {
-      title: isDev ? 'frontend developer' : '',
-      description: isDev ? 'This is a job description' : '',
-      tags: isDev ? ['CSS', 'AWS', 'HTML'] : undefined,
-      salary: {
-        min: 15000,
-        max: 350000,
-        currency: isDev ? 'USD' : undefined,
-        period: isDev ? 'hourly' : undefined,
-      },
-      benefits: isDev ? ['childcare_assistance', 'dental_insurance'] : [],
-      city: isDev ? 'Kolkata, India' : '',
-      country: isDev ? 'India' : '',
-      jobType: isDev ? 'on_site' : undefined,
-      jobLevel: isDev ? 'associate' : undefined,
-      workType: isDev ? 'contract' : undefined,
-      qualification: isDev ? 'associate_degree' : undefined,
-      experience: isDev ? '1 year' : undefined,
-      vacancy: isDev ? '1 vacancy' : undefined,
-      responsibilities: isDev ? 'Here goes some responsibilities details' : '',
-      expiryDate: new Date(),
-      isFeatured: false,
-      isActive: false,
+      title: data.title || '',
+      description: data.description || '',
+      tags: data.tags || [],
+      salary: data.salary,
+      benefits: data.benefits || [],
+      city: data.city || '',
+      country: data.country || '',
+      jobType: data.jobType,
+      jobLevel: data.jobLevel,
+      workType: data.workType,
+      qualification: data.qualification,
+      experience: data.experience,
+      vacancy: data.vacancy,
+      responsibilities: data.responsibilities || '',
+      // expiryDate: new Date(data.expiryDate),
+      isFeatured: data.isFeatured,
+      isActive: data.isActive,
     },
     mode: 'onChange',
   });
 
-  const onError: SubmitErrorHandler<CreateJobInput> = (errors) => {
+  const onError: SubmitErrorHandler<UpdateJobInput> = (errors) => {
     // console.log('Form Errors:', errors);
     Object.keys(errors).forEach((fieldName) => {
       // console.log(
@@ -95,8 +93,9 @@ export default function CreateJobForm() {
     });
   };
 
-  const onSubmit: SubmitHandler<CreateJobInput> = (values) => {
-    if (values.tags.length === 0) {
+  form.setValue('id', jobId);
+  const onSubmit: SubmitHandler<UpdateJobInput> = (values) => {
+    if (values?.tags?.length === 0) {
       form.setError('tags', {
         type: 'manual',
         message: 'Please select at least one tag.',
@@ -104,8 +103,9 @@ export default function CreateJobForm() {
       toast.error('Please select at least one tag.');
       return;
     }
+    const valuesWithId = { ...values, id: jobId };
 
-    mutate(values);
+    mutate(valuesWithId);
   };
 
   return (
@@ -114,9 +114,9 @@ export default function CreateJobForm() {
         <form onSubmit={form.handleSubmit(onSubmit, onError)}>
           <FieldGroup className={'relative'}>
             <FieldSet>
-              <FieldLegend>Create a Job</FieldLegend>
+              <FieldLegend>Update Job</FieldLegend>
               <FieldDescription>
-                Fill out the form below to create a new job posting.
+                Update the details of your job posting using the form below.
               </FieldDescription>
 
               <div className={'absolute top-4 right-4'}>
@@ -127,6 +127,7 @@ export default function CreateJobForm() {
                   <IconReload className={'size-4'} />
                 </Button>
               </div>
+              <FieldSeparator />
               <FieldGroup className={'gap-4'}>
                 <TitleInput />
 
@@ -168,20 +169,22 @@ export default function CreateJobForm() {
             </FieldSet>
 
             <Field orientation='horizontal'>
-              <Button type='submit' disabled={isPending}>
-                {isPending ? (
+              <Button
+                type='submit'
+                disabled={isGetPending || isUpdatePending || isGetLoading}>
+                {isUpdatePending ? (
                   <span className={'inline-flex items-center gap-2'}>
-                    Posting...
+                    Updating...
                     <Spinner />
                   </span>
                 ) : (
-                  <span>Post Job</span>
+                  <span>Update Job</span>
                 )}
               </Button>
               <Button
                 variant='outline'
                 type='reset'
-                disabled={isPending}
+                disabled={isGetPending || isUpdatePending || isGetLoading}
                 onClick={() => form.reset()}>
                 Cancel
               </Button>
