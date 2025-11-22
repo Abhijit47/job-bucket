@@ -5,10 +5,27 @@ import { admin as adminPlugin } from 'better-auth/plugins/admin';
 
 import { db } from '@/drizzle/db';
 import * as schemas from '@/drizzle/schemas';
+import { checkout, polar, portal, usage } from '@polar-sh/better-auth';
 import { username } from 'better-auth/plugins';
 import { eq } from 'drizzle-orm';
+import { polarClient } from '../polar';
 import { decodeRoleObject } from '../utils';
 import { ac, admin, candidate, employer } from './permissions';
+
+const products = [
+  {
+    productId: 'd4a6e6c3-5d47-4c7a-b828-9679eaab180d',
+    slug: 'hobby', // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
+  },
+  {
+    productId: '2f3ef43d-ccd5-4287-9668-4dc694f4e8af',
+    slug: 'pro-monthly', // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
+  },
+  {
+    productId: '0e99c553-0d0d-4824-bc99-93a6e0a697fc',
+    slug: 'pro-yearly', // Custom slug for easy reference in Checkout URL, e.g. /checkout/pro
+  },
+];
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -88,6 +105,21 @@ export const auth = betterAuth({
         employer,
       },
     }),
+
+    polar({
+      client: polarClient,
+      createCustomerOnSignUp: true,
+      use: [
+        checkout({
+          products: products,
+          successUrl: 'http://localhost:3000/success?checkout_id={CHECKOUT_ID}',
+          authenticatedUsersOnly: true,
+        }),
+        portal(),
+        usage(),
+      ],
+    }),
+
     username({
       minUsernameLength: 5,
       maxUsernameLength: 50,

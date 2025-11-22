@@ -1,10 +1,12 @@
 'use client';
 
 import {
+  IconAlertHexagon,
   IconCreditCard,
   IconDotsVertical,
   IconLogout,
   IconNotification,
+  IconSparkles,
   IconUserCircle,
 } from '@tabler/icons-react';
 
@@ -27,7 +29,8 @@ import {
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
-import { signOut, useSession } from '@/lib/auth/client';
+import { authClient, signOut, useSession } from '@/lib/auth/client';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 import { toast } from 'sonner';
@@ -40,18 +43,20 @@ export function NavUser() {
 
   const avatarFallback = 'https://avatar.vercel.sh/rauchg.svg?text=UN';
 
+  const isPaid = false;
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             {isPending || isRefetching || !data ? (
-              <SidebarMenuButton className='p-0 font-normal'>
-                <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
+              <SidebarMenuButton size='lg'>
+                <div className='flex items-center gap-2 py-1.5 text-left text-sm'>
                   <Skeleton className='h-8 w-8 rounded-lg animate-pulse' />
-                  <div className='grid flex-1 text-left text-sm leading-tight'>
-                    <Skeleton className='h-4 w-32 rounded animate-pulse' />
-                    <Skeleton className='mt-1 h-3 w-48 rounded animate-pulse' />
+                  <div className='grid flex-1 text-left text-sm leading-tight space-y-2'>
+                    <Skeleton className='h-3 w-32 rounded animate-pulse' />
+                    <Skeleton className='h-3 w-48 rounded animate-pulse' />
                   </div>
                 </div>
               </SidebarMenuButton>
@@ -84,6 +89,7 @@ export function NavUser() {
               </SidebarMenuButton>
             )}
           </DropdownMenuTrigger>
+
           <DropdownMenuContent
             className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
             side={isMobile ? 'bottom' : 'right'}
@@ -134,9 +140,34 @@ export function NavUser() {
                 </div>
               </DropdownMenuLabel>
             )}
+
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
+            {!data ? (
+              <Skeleton className={'h-4 w-full animate-pulse'} />
+            ) : !isPaid ? (
+              <DropdownMenuItem asChild>
+                <Link
+                  href={
+                    data.user.role === 'employer'
+                      ? '/employer/plans'
+                      : '/candidate/plans'
+                  }
+                  prefetch={true}>
+                  <IconAlertHexagon className={'size-4'} />
+                  Upgrade to Pro
+                </Link>
+              </DropdownMenuItem>
+            ) : (
               <DropdownMenuItem>
+                <IconSparkles className={'size-4'} />
+                Pro Member
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
+
+            <DropdownMenuGroup>
+              <DropdownMenuItem
+                onClick={async () => await authClient.customer.portal()}>
                 <IconUserCircle />
                 Account
               </DropdownMenuItem>

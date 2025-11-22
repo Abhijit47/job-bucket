@@ -1,3 +1,4 @@
+import { polarClient } from '@polar-sh/better-auth';
 import {
   adminClient,
   inferAdditionalFields,
@@ -21,6 +22,7 @@ export const authClient = createAuthClient({
         employer,
       },
     }),
+    polarClient(),
     usernameClient(),
   ],
 });
@@ -39,6 +41,7 @@ export const { signIn, signUp, signOut, useSession } = createAuthClient({
         employer,
       },
     }),
+    polarClient(),
     usernameClient(),
   ],
 });
