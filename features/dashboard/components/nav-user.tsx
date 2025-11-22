@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Spinner } from '@/components/ui/spinner';
+import { useHasActiveSubscription } from '@/features/subscriptions/use-subscription';
 import { authClient, signOut, useSession } from '@/lib/auth/client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -38,19 +39,21 @@ import { toast } from 'sonner';
 export function NavUser() {
   const [isLogOutPending, startLogOutTransition] = useTransition();
   const router = useRouter();
+
   const { data, isPending, isRefetching } = useSession();
   const { isMobile } = useSidebar();
+  const { hasActiveSubscription } = useHasActiveSubscription();
 
   const avatarFallback = 'https://avatar.vercel.sh/rauchg.svg?text=UN';
 
-  const isPaid = false;
+  const isSessionLoading = isPending || isRefetching || !data;
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            {isPending || isRefetching || !data ? (
+            {isSessionLoading ? (
               <SidebarMenuButton size='lg'>
                 <div className='flex items-center gap-2 py-1.5 text-left text-sm'>
                   <Skeleton className='h-8 w-8 rounded-lg animate-pulse' />
@@ -95,7 +98,7 @@ export function NavUser() {
             side={isMobile ? 'bottom' : 'right'}
             align='end'
             sideOffset={4}>
-            {isPending || isRefetching || !data ? (
+            {isSessionLoading ? (
               <DropdownMenuLabel className='p-0 font-normal'>
                 <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                   <Skeleton className='h-8 w-8 rounded-lg animate-pulse' />
@@ -144,7 +147,7 @@ export function NavUser() {
             <DropdownMenuSeparator />
             {!data ? (
               <Skeleton className={'h-4 w-full animate-pulse'} />
-            ) : !isPaid ? (
+            ) : !hasActiveSubscription ? (
               <DropdownMenuItem asChild>
                 <Link
                   href={

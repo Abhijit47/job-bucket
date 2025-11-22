@@ -27,9 +27,8 @@ export default function UpgradeModal({
         <AlertDialogHeader>
           <AlertDialogTitle>Upgrade to Pro</AlertDialogTitle>
           <AlertDialogDescription>
-            You need to upgrade your plan to Pro to create more workflows.
-            Upgrade now to unlock unlimited workflows and access premium
-            features!
+            You need to upgrade your plan to Pro to create more jobs. Upgrade
+            now to unlock unlimited jobs and access premium features!
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

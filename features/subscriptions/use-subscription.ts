@@ -14,9 +14,11 @@ export function useSubscription() {
 export function useHasActiveSubscription() {
   const { data: customerState, isLoading, ...rest } = useSubscription();
 
-  const hasActiveSubscription =
-    customerState?.activeSubscriptions &&
-    customerState.activeSubscriptions.length > 0;
+  // const hasActiveSubscription =
+  //   customerState?.activeSubscriptions &&
+  //   customerState.activeSubscriptions.length > 0;
+
+  const hasActiveSubscription = !!customerState?.activeSubscriptions?.length;
 
   return {
     hasActiveSubscription,

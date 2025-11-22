@@ -112,7 +112,7 @@ export const auth = betterAuth({
       use: [
         checkout({
           products: products,
-          successUrl: 'http://localhost:3000/success?checkout_id={CHECKOUT_ID}',
+          successUrl: `${process.env.NEXT_PUBLIC_APP_URL}/success?checkout_id={CHECKOUT_ID}`,
           authenticatedUsersOnly: true,
         }),
         portal(),
