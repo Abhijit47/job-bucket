@@ -1,5 +1,6 @@
 'use client';
 
+import { ProfileCompletionAlertDialog } from '@/components/shared/profile-completion-alert-dialog';
 import { Button } from '@/components/ui/button';
 import {
   Field,
@@ -10,6 +11,7 @@ import {
   FieldSet,
 } from '@/components/ui/field';
 import { Spinner } from '@/components/ui/spinner';
+import { useUpgradeModal } from '@/features/subscriptions/use-upgrade-modal';
 import {
   CreateJobInput,
   createJobSchema,
@@ -24,7 +26,10 @@ import {
   useForm,
 } from 'react-hook-form';
 import { toast } from 'sonner';
-import { useCreateJob } from '../hooks/use-employers';
+import {
+  useCreateJob,
+  useIsEmployerProfileComplete,
+} from '../hooks/use-employers';
 import AdditionalInputs from './additional-inputs';
 import ApplyJobInput from './apply-job-input';
 import DescriptionInput from './description-input';
@@ -45,7 +50,13 @@ import WorkTypeInput from './work-type-input';
 const isDev = process.env.NODE_ENV === 'development';
 
 export default function CreateJobForm() {
-  const { mutate, isPending } = useCreateJob();
+  const createJob = useCreateJob();
+  const { handleError, modal } = useUpgradeModal();
+  const {
+    data: isCompletedProfile,
+    isPending,
+    isLoading,
+  } = useIsEmployerProfileComplete();
 
   const form = useForm<CreateJobInput>({
     resolver: zodResolver(
@@ -101,15 +112,39 @@ export default function CreateJobForm() {
         type: 'manual',
         message: 'Please select at least one tag.',
       });
-      toast.error('Please select at least one tag.');
+      toast.warning('Please select at least one tag.');
       return;
     }
 
-    mutate(values);
+    createJob.mutate(values, {
+      onSuccess: () => {
+        toast.success('Job posted successfully!');
+        form.reset();
+      },
+      onError: (error) => {
+        console.error(error);
+        handleError(error);
+        toast.error('Failed to post the job. Please try again later.');
+      },
+    });
   };
 
   return (
     <div className='w-full'>
+      {modal}
+
+      {isLoading || isPending ? (
+        <div className='flex justify-center py-10'>
+          <Spinner />
+        </div>
+      ) : (
+        <ProfileCompletionAlertDialog
+          isOpen={!isCompletedProfile}
+          title='Employer Profile Incomplete'
+          description='To post a job, please complete your employer profile first. This ensures that your job postings are credible and trustworthy.'
+        />
+      )}
+
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onError)}>
           <FieldGroup className={'relative'}>
@@ -168,8 +203,8 @@ export default function CreateJobForm() {
             </FieldSet>
 
             <Field orientation='horizontal'>
-              <Button type='submit' disabled={isPending}>
-                {isPending ? (
+              <Button type='submit' disabled={createJob.isPending}>
+                {createJob.isPending ? (
                   <span className={'inline-flex items-center gap-2'}>
                     Posting...
                     <Spinner />
@@ -181,7 +216,7 @@ export default function CreateJobForm() {
               <Button
                 variant='outline'
                 type='reset'
-                disabled={isPending}
+                disabled={createJob.isPending}
                 onClick={() => form.reset()}>
                 Cancel
               </Button>
