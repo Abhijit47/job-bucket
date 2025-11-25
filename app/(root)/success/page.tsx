@@ -62,13 +62,6 @@ export default async function SuccessPage(props: PageProps) {
               {searchParams.checkout_id}
             </code>
           </p>
-
-          <p>
-            <span className={'text-base'}>Customer Session Token: </span>
-            <code className={'bg-accent px-1 py-0.5 rounded'}>
-              {searchParams.customer_session_token}
-            </code>
-          </p>
         </CardContent>
 
         <CardFooter>
