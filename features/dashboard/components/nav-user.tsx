@@ -42,7 +42,8 @@ export function NavUser() {
 
   const { data, isPending, isRefetching } = useSession();
   const { isMobile } = useSidebar();
-  const { hasActiveSubscription } = useHasActiveSubscription();
+  const { hasActiveSubscription, isLoading: isSubscriptionLoading } =
+    useHasActiveSubscription();
 
   const avatarFallback = 'https://avatar.vercel.sh/rauchg.svg?text=UN';
 
@@ -145,7 +146,7 @@ export function NavUser() {
             )}
 
             <DropdownMenuSeparator />
-            {!data ? (
+            {!data || isSubscriptionLoading ? (
               <Skeleton className={'h-4 w-full animate-pulse'} />
             ) : !hasActiveSubscription ? (
               <DropdownMenuItem asChild>

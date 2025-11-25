@@ -1,6 +1,5 @@
 'use client';
 
-import Logo from '@/components/shared/logo';
 import { Button } from '@/components/ui/button';
 import {
   NavigationMenu,
@@ -17,6 +16,7 @@ import { navigationLinks } from '@/constants';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { LazyLogo } from './logo';
 import ThemeToggler from './theme-toggler';
 import UserButton from './user-button';
 
@@ -24,7 +24,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className='border-b px-4 md:px-6'>
+    <header className='border-b px-4 md:px-6 sticky top-0 z-50 bg-background/95 backdrop-blur-sm'>
       <div className='flex h-16 justify-between gap-4'>
         {/* Left side */}
         <div className='flex gap-2'>
@@ -62,11 +62,11 @@ export default function Navbar() {
               <PopoverContent align='start' className='w-36 p-1 md:hidden'>
                 <NavigationMenu className='max-w-none *:w-full'>
                   <NavigationMenuList className='flex-col items-start gap-0 md:gap-2'>
-                    {navigationLinks.map((link, index) => {
+                    {navigationLinks.map((link) => {
                       const isCurrentPath = pathname === link.href;
 
                       return (
-                        <NavigationMenuItem key={index} className='w-full'>
+                        <NavigationMenuItem key={link.id} className='w-full'>
                           <NavigationMenuLink
                             href={link.href}
                             className='py-1.5'
@@ -84,13 +84,13 @@ export default function Navbar() {
           {/* Main nav */}
           <div className='flex items-center gap-6'>
             <Link href='/' className='text-primary hover:text-primary/90'>
-              <Logo />
+              <LazyLogo />
             </Link>
             {/* Navigation menu */}
             <NavigationMenu className='h-full *:h-full max-md:hidden'>
               <NavigationMenuList className='h-full gap-2'>
-                {navigationLinks.map((link, index) => (
-                  <NavigationMenuItem key={index} className='h-full'>
+                {navigationLinks.map((link) => (
+                  <NavigationMenuItem key={link.id} className='h-full'>
                     <NavigationMenuLink
                       active={pathname === link.href}
                       className={cn(

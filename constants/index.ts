@@ -29,17 +29,113 @@ import type { Route } from 'next';
 export const roleEnum = ['candidate', 'employer'] as const;
 
 type RootNavItem<T extends string = string> = {
+  id: string;
   href: T;
   label: string;
 };
 
 // Navigation links array to be used in both desktop and mobile menus
 export const navigationLinks: RootNavItem<Route>[] = [
-  { href: '/', label: 'Home' },
-  { href: '#', label: 'Features' },
-  { href: '#', label: 'Pricing' },
-  { href: '#', label: 'About' },
+  // { href: '/', label: 'Home' },
+  // { href: '#', label: 'Features' },
+  // { href: '#', label: 'Pricing' },
+  // { href: '#', label: 'About' },
+  {
+    id: crypto.randomUUID(),
+    label: 'Explore Jobs',
+    href: '#',
+  },
+  {
+    id: crypto.randomUUID(),
+    label: 'Company',
+    href: '#',
+  },
+  {
+    id: crypto.randomUUID(),
+    label: 'Blog',
+    href: '#',
+  },
+  {
+    id: crypto.randomUUID(),
+    label: 'Contact',
+    href: '#',
+  },
 ];
+
+type FooterLinkItem<T extends string = string> = {
+  company: { id: string; label: string; href: T }[];
+  features: { id: string; label: string; href: T }[];
+  resources: { id: string; label: string; href: T }[];
+};
+
+export const footerLinks: FooterLinkItem<Route> = {
+  company: [
+    {
+      id: crypto.randomUUID(),
+      label: 'Our Mission',
+      href: '#',
+    },
+    {
+      id: crypto.randomUUID(),
+      label: 'Our Vision',
+      href: '#',
+    },
+    {
+      id: crypto.randomUUID(),
+      label: 'Our Story',
+      href: '#',
+    },
+    {
+      id: crypto.randomUUID(),
+      label: 'Meet Our Team',
+      href: '#',
+    },
+  ],
+  features: [
+    {
+      id: crypto.randomUUID(),
+      label: 'Job Search',
+      href: '#',
+    },
+    {
+      id: crypto.randomUUID(),
+      label: 'Browse Industries',
+      href: '#',
+    },
+    {
+      id: crypto.randomUUID(),
+      label: 'Career Resources',
+      href: '#',
+    },
+    {
+      id: crypto.randomUUID(),
+      label: 'Job Alerts',
+      href: '#',
+    },
+  ],
+  resources: [
+    {
+      id: crypto.randomUUID(),
+      label: 'Blog',
+      href: '#',
+    },
+    {
+      id: crypto.randomUUID(),
+      label: 'Case Studies',
+      href: '#',
+    },
+    {
+      id: crypto.randomUUID(),
+      label: 'Whitepapers',
+      href: '#',
+    },
+    {
+      id: crypto.randomUUID(),
+      label: 'eBooks',
+      href: '#',
+    },
+  ],
+};
 
 type DashboardNavItem<T extends string = string> = {
   user: {
