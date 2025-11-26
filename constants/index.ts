@@ -408,3 +408,235 @@ export const dashboardLinks: DashboardNavItem<Route> = {
     },
   ],
 };
+
+// company logos
+export const companyLogos = [
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/01.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/02.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/03.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/04.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/05.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/06.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/07.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/08.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/09.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/10.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/11.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/12.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/13.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/14.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/15.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/16.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/17.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/18.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/19.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/20.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/21.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/22.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/23.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/24.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/25.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/26.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/27.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/28.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/29.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/30.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/31.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/32.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/33.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/34.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/35.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/36.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/37.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/38.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/39.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/40.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/41.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/42.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/43.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/44.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/45.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/46.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/47.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/48.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/49.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/50.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/51.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/52.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/53.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/54.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/55.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/56.svg',
+  },
+  {
+    id: crypto.randomUUID(),
+    logo: '/company-logos/57.svg',
+  },
+];

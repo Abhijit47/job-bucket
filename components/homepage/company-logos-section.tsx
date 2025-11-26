@@ -1,76 +1,18 @@
 'use client';
 
 // import AutoPlay from 'embla-carousel-autoplay';
+import { companyLogos } from '@/constants';
+import { useIsMobile } from '@/hooks/use-mobile';
 import AutoScroll from 'embla-carousel-auto-scroll';
+import Image from 'next/image';
 import { Card, CardContent, CardDescription, CardHeader } from '../ui/card';
 import { Carousel, CarouselContent, CarouselItem } from '../ui/carousel';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-export const companyLogos = [
-  {
-    id: crypto.randomUUID(),
-    logo: '/best-practices.jpg',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/express.png',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/mongoose.png',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/myfonts.png',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/w3c.png',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/best-practices.jpg',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/express.png',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/mongoose.png',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/myfonts.png',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/w3c.png',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/best-practices.jpg',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/express.png',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/mongoose.png',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/myfonts.png',
-  },
-  {
-    id: crypto.randomUUID(),
-    logo: '/w3c.png',
-  },
-];
-
 export default function CompanyLogosSection() {
+  const isMobile = useIsMobile();
+
   return (
     <section className={'max-w-[85em] mx-auto'}>
       <Card
@@ -83,7 +25,7 @@ export default function CompanyLogosSection() {
           </CardDescription>
         </CardHeader>
 
-        <CardContent className={'flex items-center gap-4'}>
+        <CardContent className={'flex items-center gap-4 overflow-x-hidden'}>
           <Carousel
             // plugins={isDev ? undefined : [AutoPlay({ delay: 3000 })]}
             // AutoPlay({
@@ -103,17 +45,20 @@ export default function CompanyLogosSection() {
               slidesToScroll: 'auto',
             }}>
             <CarouselContent>
-              {companyLogos.reverse().map((logo) => (
+              {companyLogos.map((logo, idx) => (
                 <CarouselItem
                   key={logo.id}
                   className='basis-3/12 md:basis-4/12 lg:basis-1/5 relative'>
                   <div className={'aspect-video lg:aspect-22/9 w-full h-full'}>
-                    <img
+                    <Image
                       src={logo.logo}
-                      alt='company-1'
+                      alt={`Company Logo-${idx + 1}`}
+                      width={500}
+                      height={500}
                       className={
-                        'grayscale hover:grayscale-0 hover:cursor-pointer w-full h-full'
+                        'hover:cursor-pointer w-full h-full object-cover'
                       }
+                      priority={idx < 5 && !isMobile}
                     />
                   </div>
                 </CarouselItem>

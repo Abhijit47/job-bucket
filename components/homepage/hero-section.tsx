@@ -12,6 +12,7 @@ import {
   Users2Icon,
   XIcon,
 } from 'lucide-react';
+import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import {
@@ -81,7 +82,7 @@ export default function HeroSection() {
         }>
         <InputGroup
           className={
-            'rounded-full! h-full w-full border-none! bg-background dark:bg-foreground'
+            'rounded-full! h-full w-full border-none! bg-background! dark:bg-background!'
           }>
           <InputGroupText className={'px-2'}>
             <LucideGlasses className={'size-4'} />
@@ -127,12 +128,12 @@ export default function HeroSection() {
           <CardContent className={'px-0'}>
             <Item variant='outline' size='sm' className={'p-1'}>
               <ItemMedia variant={'image'} className={'p-0.5'}>
-                <img
+                <Image
                   src='/react.svg'
                   alt='job-logo'
                   width={32}
                   height={32}
-                  className={'w-full h-full p-1'}
+                  className={'w-full h-full p-1 object-contain'}
                 />
               </ItemMedia>
               <ItemContent>
@@ -320,12 +321,12 @@ export function CompanyInfo() {
   return (
     <Item variant='outline' size='sm' className={'p-1'}>
       <ItemMedia variant={'image'} className={'p-0.5'}>
-        <img
+        <Image
           src='/react.svg'
           alt='job-logo'
           width={32}
           height={32}
-          className={'w-full h-full p-1'}
+          className={'w-full h-full p-1 object-contain'}
         />
       </ItemMedia>
       <ItemContent>
