@@ -79,7 +79,9 @@ export default function FaqsSection() {
           <CardFooter>
             <Button
               size={'lg'}
-              className={'bg-foreground rounded-full text-base'}>
+              className={
+                'bg-foreground! hover:bg-background! hover:text-foreground ring-1! dark:bg-background! dark:hover:bg-foreground! dark:hover:text-background rounded-full text-base'
+              }>
               Contact Our Team
             </Button>
           </CardFooter>

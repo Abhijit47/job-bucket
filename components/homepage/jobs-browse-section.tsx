@@ -11,6 +11,7 @@ import {
   ShoppingBagIcon,
 } from 'lucide-react';
 
+import Image from 'next/image';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import {
@@ -149,13 +150,13 @@ export default function JobsBrowseSection() {
                   value='ui-ux-design'
                   asChild
                   className={
-                    'data-[state=inactive]:bg-muted-foreground/5 data-[state=inactive]:text-muted-foreground ring-1 data-[state=active]:bg-foreground'
+                    'data-[state=inactive]:bg-muted-foreground/5! data-[state=inactive]:text-muted-foreground! ring-1! data-[state=active]:bg-foreground!'
                   }>
                   <Button
                     size={'lg'}
                     variant={'secondary'}
                     className={
-                      'rounded-full! p-4 text-background font-semibold'
+                      'rounded-full! p-4 text-background! font-semibold'
                     }>
                     <PaletteIcon className={'size-4'} />
                     UI/UX Design
@@ -165,13 +166,13 @@ export default function JobsBrowseSection() {
                   value='development'
                   asChild
                   className={
-                    'data-[state=inactive]:bg-muted-foreground/5 data-[state=inactive]:text-muted-foreground ring-1 data-[state=active]:bg-foreground'
+                    'data-[state=inactive]:bg-muted-foreground/5! data-[state=inactive]:text-muted-foreground! ring-1! data-[state=active]:bg-foreground!'
                   }>
                   <Button
                     size={'lg'}
                     variant={'secondary'}
                     className={
-                      'rounded-full! p-4 text-background font-semibold'
+                      'rounded-full! p-4 text-background! font-semibold'
                     }>
                     <Code2 className={'size-4'} />
                     Development
@@ -181,13 +182,13 @@ export default function JobsBrowseSection() {
                   value='data-analyst'
                   asChild
                   className={
-                    'data-[state=inactive]:bg-muted-foreground/5 data-[state=inactive]:text-muted-foreground ring-1 data-[state=active]:bg-foreground'
+                    'data-[state=inactive]:bg-muted-foreground/5! data-[state=inactive]:text-muted-foreground! ring-1! data-[state=active]:bg-foreground!'
                   }>
                   <Button
                     size={'lg'}
                     variant={'secondary'}
                     className={
-                      'rounded-full! p-4 text-background font-semibold'
+                      'rounded-full! p-4 text-background! font-semibold'
                     }>
                     <BarChart2 className={'size-4'} /> Data Analyst
                   </Button>
@@ -196,13 +197,13 @@ export default function JobsBrowseSection() {
                   value='sales'
                   asChild
                   className={
-                    'data-[state=inactive]:bg-muted-foreground/5 data-[state=inactive]:text-muted-foreground ring-1 data-[state=active]:bg-foreground'
+                    'data-[state=inactive]:bg-muted-foreground/5! data-[state=inactive]:text-muted-foreground! ring-1! data-[state=active]:bg-foreground!'
                   }>
                   <Button
                     size={'lg'}
                     variant={'secondary'}
                     className={
-                      'rounded-full! p-4 text-background font-semibold'
+                      'rounded-full! p-4 text-background! font-semibold'
                     }>
                     <ShoppingBagIcon className={'size-4'} />
                     Sales
@@ -212,13 +213,13 @@ export default function JobsBrowseSection() {
                   value='other'
                   asChild
                   className={
-                    'data-[state=inactive]:bg-muted-foreground/5 data-[state=inactive]:text-muted-foreground ring-1 data-[state=active]:bg-foreground'
+                    'data-[state=inactive]:bg-muted-foreground/5! data-[state=inactive]:text-muted-foreground! ring-1! data-[state=active]:bg-foreground!'
                   }>
                   <Button
                     size={'lg'}
                     variant={'secondary'}
                     className={
-                      'rounded-full! p-4 text-background font-semibold'
+                      'rounded-full! p-4 text-background! font-semibold'
                     }>
                     <CircleQuestionMarkIcon className={'size-4'} />
                     Other
@@ -229,507 +230,125 @@ export default function JobsBrowseSection() {
             </ScrollArea>
 
             <TabsContent value='ui-ux-design' className=''>
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                {jobs.map((job) => (
-                  <Card key={job.id} className={'py-4 gap-3'}>
-                    <CardHeader className={''}>
-                      <Item
-                        variant='outline'
-                        size='sm'
-                        className={'border-none!'}>
-                        <ItemMedia variant={'image'} className={'p-0.5'}>
-                          <img
-                            src={job.logo}
-                            alt='job-logo'
-                            width={32}
-                            height={32}
-                            className={'w-full h-full object-contain!'}
-                          />
-                        </ItemMedia>
-                        <ItemContent>
-                          <ItemTitle>
-                            <h3 className={'font-semibold text-base'}>
-                              {job.title}
-                            </h3>
-                          </ItemTitle>
-                          <ItemDescription>{job.companyName}</ItemDescription>
-                        </ItemContent>
-                        <ItemActions>
-                          <ItemDescription className={'text-xs'}>
-                            {job.createdAt}
-                          </ItemDescription>
-                        </ItemActions>
-                      </Item>
-                    </CardHeader>
-
-                    <Separator />
-
-                    <CardContent className={'space-y-2'}>
-                      <CardTitle>
-                        <h3>About the Job</h3>
-                      </CardTitle>
-                      <CardDescription>
-                        <p>{job.description}</p>
-                      </CardDescription>
-                      <CardAction className={'justify-self-start'}>
-                        <Button size={'sm'} variant={'link'} className={'px-0'}>
-                          Read more
-                        </Button>
-                      </CardAction>
-                    </CardContent>
-
-                    <CardContent className={'flex flex-wrap gap-2'}>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <MapPinCheck className={'size-4'} /> {job.location}
-                      </Badge>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <BriefcaseBusiness className={'size-4'} />{' '}
-                        {job.workType}
-                      </Badge>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <ReceiptIndianRupeeIcon className={'size-4'} />{' '}
-                        {job.salary}
-                      </Badge>
-                    </CardContent>
-
-                    <CardFooter className={'gap-4 mt-auto'}>
-                      <Button
-                        size={'lg'}
-                        variant={'outline'}
-                        className={
-                          'flex-1 bg-foreground text-background rounded-full'
-                        }>
-                        Apply Now
-                      </Button>
-
-                      <CardAction className={'flex items-center gap-2'}>
-                        <Button
-                          size={'icon-lg'}
-                          variant={'outline'}
-                          className={'rounded-full'}>
-                          <BookmarkIcon className={'size-4'} />
-                        </Button>
-                        <Button
-                          size={'icon-lg'}
-                          variant={'outline'}
-                          className={'rounded-full'}>
-                          <Share2Icon className={'size-4'} />
-                        </Button>
-                      </CardAction>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
+              <JobsCard jobs={jobs} />
             </TabsContent>
 
             <TabsContent value='development' className=''>
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                {jobs.reverse().map((job) => (
-                  <Card key={job.id} className={'py-4 gap-3'}>
-                    <CardHeader className={''}>
-                      <Item
-                        variant='outline'
-                        size='sm'
-                        className={'border-none!'}>
-                        <ItemMedia variant={'image'} className={'p-0.5'}>
-                          <img
-                            src={job.logo}
-                            alt='job-logo'
-                            width={32}
-                            height={32}
-                            className={'w-full h-full object-contain!'}
-                          />
-                        </ItemMedia>
-                        <ItemContent>
-                          <ItemTitle>
-                            <h3 className={'font-semibold text-base'}>
-                              {job.title}
-                            </h3>
-                          </ItemTitle>
-                          <ItemDescription>{job.companyName}</ItemDescription>
-                        </ItemContent>
-                        <ItemActions>
-                          <ItemDescription className={'text-xs'}>
-                            {job.createdAt}
-                          </ItemDescription>
-                        </ItemActions>
-                      </Item>
-                    </CardHeader>
-
-                    <Separator />
-
-                    <CardContent className={'space-y-2'}>
-                      <CardTitle>
-                        <h3>About the Job</h3>
-                      </CardTitle>
-                      <CardDescription>
-                        <p>{job.description}</p>
-                      </CardDescription>
-                      <CardAction className={'justify-self-start'}>
-                        <Button size={'sm'} variant={'link'} className={'px-0'}>
-                          Read more
-                        </Button>
-                      </CardAction>
-                    </CardContent>
-
-                    <CardContent className={'flex flex-wrap gap-2'}>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <MapPinCheck className={'size-4'} /> {job.location}
-                      </Badge>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <BriefcaseBusiness className={'size-4'} />{' '}
-                        {job.workType}
-                      </Badge>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <ReceiptIndianRupeeIcon className={'size-4'} />{' '}
-                        {job.salary}
-                      </Badge>
-                    </CardContent>
-
-                    <CardFooter className={'gap-4 mt-auto'}>
-                      <Button
-                        size={'lg'}
-                        variant={'outline'}
-                        className={
-                          'flex-1 bg-foreground text-background rounded-full'
-                        }>
-                        Apply Now
-                      </Button>
-
-                      <CardAction className={'flex items-center gap-2'}>
-                        <Button
-                          size={'icon-lg'}
-                          variant={'outline'}
-                          className={'rounded-full'}>
-                          <BookmarkIcon className={'size-4'} />
-                        </Button>
-                        <Button
-                          size={'icon-lg'}
-                          variant={'outline'}
-                          className={'rounded-full'}>
-                          <Share2Icon className={'size-4'} />
-                        </Button>
-                      </CardAction>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
+              <JobsCard jobs={jobs.reverse()} />
             </TabsContent>
 
             <TabsContent value='data-analyst' className=''>
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                {jobs.reverse().map((job) => (
-                  <Card key={job.id} className={'py-4 gap-3'}>
-                    <CardHeader className={''}>
-                      <Item
-                        variant='outline'
-                        size='sm'
-                        className={'border-none!'}>
-                        <ItemMedia variant={'image'} className={'p-0.5'}>
-                          <img
-                            src={job.logo}
-                            alt='job-logo'
-                            width={32}
-                            height={32}
-                            className={'w-full h-full object-contain!'}
-                          />
-                        </ItemMedia>
-                        <ItemContent>
-                          <ItemTitle>
-                            <h3 className={'font-semibold text-base'}>
-                              {job.title}
-                            </h3>
-                          </ItemTitle>
-                          <ItemDescription>{job.companyName}</ItemDescription>
-                        </ItemContent>
-                        <ItemActions>
-                          <ItemDescription className={'text-xs'}>
-                            {job.createdAt}
-                          </ItemDescription>
-                        </ItemActions>
-                      </Item>
-                    </CardHeader>
-
-                    <Separator />
-
-                    <CardContent className={'space-y-2'}>
-                      <CardTitle>
-                        <h3>About the Job</h3>
-                      </CardTitle>
-                      <CardDescription>
-                        <p>{job.description}</p>
-                      </CardDescription>
-                      <CardAction className={'justify-self-start'}>
-                        <Button size={'sm'} variant={'link'} className={'px-0'}>
-                          Read more
-                        </Button>
-                      </CardAction>
-                    </CardContent>
-
-                    <CardContent className={'flex flex-wrap gap-2'}>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <MapPinCheck className={'size-4'} /> {job.location}
-                      </Badge>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <BriefcaseBusiness className={'size-4'} />{' '}
-                        {job.workType}
-                      </Badge>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <ReceiptIndianRupeeIcon className={'size-4'} />{' '}
-                        {job.salary}
-                      </Badge>
-                    </CardContent>
-
-                    <CardFooter className={'gap-4 mt-auto'}>
-                      <Button
-                        size={'lg'}
-                        variant={'outline'}
-                        className={
-                          'flex-1 bg-foreground text-background rounded-full'
-                        }>
-                        Apply Now
-                      </Button>
-
-                      <CardAction className={'flex items-center gap-2'}>
-                        <Button
-                          size={'icon-lg'}
-                          variant={'outline'}
-                          className={'rounded-full'}>
-                          <BookmarkIcon className={'size-4'} />
-                        </Button>
-                        <Button
-                          size={'icon-lg'}
-                          variant={'outline'}
-                          className={'rounded-full'}>
-                          <Share2Icon className={'size-4'} />
-                        </Button>
-                      </CardAction>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
+              <JobsCard jobs={jobs.reverse()} />
             </TabsContent>
 
             <TabsContent value='sales' className=''>
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                {jobs.reverse().map((job) => (
-                  <Card key={job.id} className={'py-4 gap-3'}>
-                    <CardHeader className={''}>
-                      <Item
-                        variant='outline'
-                        size='sm'
-                        className={'border-none!'}>
-                        <ItemMedia variant={'image'} className={'p-0.5'}>
-                          <img
-                            src={job.logo}
-                            alt='job-logo'
-                            width={32}
-                            height={32}
-                            className={'w-full h-full object-contain!'}
-                          />
-                        </ItemMedia>
-                        <ItemContent>
-                          <ItemTitle>
-                            <h3 className={'font-semibold text-base'}>
-                              {job.title}
-                            </h3>
-                          </ItemTitle>
-                          <ItemDescription>{job.companyName}</ItemDescription>
-                        </ItemContent>
-                        <ItemActions>
-                          <ItemDescription className={'text-xs'}>
-                            {job.createdAt}
-                          </ItemDescription>
-                        </ItemActions>
-                      </Item>
-                    </CardHeader>
-
-                    <Separator />
-
-                    <CardContent className={'space-y-2'}>
-                      <CardTitle>
-                        <h3>About the Job</h3>
-                      </CardTitle>
-                      <CardDescription>
-                        <p>{job.description}</p>
-                      </CardDescription>
-                      <CardAction className={'justify-self-start'}>
-                        <Button size={'sm'} variant={'link'} className={'px-0'}>
-                          Read more
-                        </Button>
-                      </CardAction>
-                    </CardContent>
-
-                    <CardContent className={'flex flex-wrap gap-2'}>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <MapPinCheck className={'size-4'} /> {job.location}
-                      </Badge>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <BriefcaseBusiness className={'size-4'} />{' '}
-                        {job.workType}
-                      </Badge>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <ReceiptIndianRupeeIcon className={'size-4'} />{' '}
-                        {job.salary}
-                      </Badge>
-                    </CardContent>
-
-                    <CardFooter className={'gap-4 mt-auto'}>
-                      <Button
-                        size={'lg'}
-                        variant={'outline'}
-                        className={
-                          'flex-1 bg-foreground text-background rounded-full'
-                        }>
-                        Apply Now
-                      </Button>
-
-                      <CardAction className={'flex items-center gap-2'}>
-                        <Button
-                          size={'icon-lg'}
-                          variant={'outline'}
-                          className={'rounded-full'}>
-                          <BookmarkIcon className={'size-4'} />
-                        </Button>
-                        <Button
-                          size={'icon-lg'}
-                          variant={'outline'}
-                          className={'rounded-full'}>
-                          <Share2Icon className={'size-4'} />
-                        </Button>
-                      </CardAction>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
+              <JobsCard jobs={jobs.reverse()} />
             </TabsContent>
 
             <TabsContent value='other' className=''>
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
-                {jobs.reverse().map((job) => (
-                  <Card key={job.id} className={'py-4 gap-3'}>
-                    <CardHeader className={''}>
-                      <Item
-                        variant='outline'
-                        size='sm'
-                        className={'border-none!'}>
-                        <ItemMedia variant={'image'} className={'p-0.5'}>
-                          <img
-                            src={job.logo}
-                            alt='job-logo'
-                            width={32}
-                            height={32}
-                            className={'w-full h-full object-contain!'}
-                          />
-                        </ItemMedia>
-                        <ItemContent>
-                          <ItemTitle>
-                            <h3 className={'font-semibold text-base'}>
-                              {job.title}
-                            </h3>
-                          </ItemTitle>
-                          <ItemDescription>{job.companyName}</ItemDescription>
-                        </ItemContent>
-                        <ItemActions>
-                          <ItemDescription className={'text-xs'}>
-                            {job.createdAt}
-                          </ItemDescription>
-                        </ItemActions>
-                      </Item>
-                    </CardHeader>
-
-                    <Separator />
-
-                    <CardContent className={'space-y-2'}>
-                      <CardTitle>
-                        <h3>About the Job</h3>
-                      </CardTitle>
-                      <CardDescription>
-                        <p>{job.description}</p>
-                      </CardDescription>
-                      <CardAction className={'justify-self-start'}>
-                        <Button size={'sm'} variant={'link'} className={'px-0'}>
-                          Read more
-                        </Button>
-                      </CardAction>
-                    </CardContent>
-
-                    <CardContent className={'flex flex-wrap gap-2'}>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <MapPinCheck className={'size-4'} /> {job.location}
-                      </Badge>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <BriefcaseBusiness className={'size-4'} />{' '}
-                        {job.workType}
-                      </Badge>
-                      <Badge
-                        variant={'outline'}
-                        className={'bg-muted-foreground/5 text-sm px-3'}>
-                        <ReceiptIndianRupeeIcon className={'size-4'} />{' '}
-                        {job.salary}
-                      </Badge>
-                    </CardContent>
-
-                    <CardFooter className={'gap-4 mt-auto'}>
-                      <Button
-                        size={'lg'}
-                        variant={'outline'}
-                        className={
-                          'flex-1 bg-foreground text-background rounded-full'
-                        }>
-                        Apply Now
-                      </Button>
-
-                      <CardAction className={'flex items-center gap-2'}>
-                        <Button
-                          size={'icon-lg'}
-                          variant={'outline'}
-                          className={'rounded-full'}>
-                          <BookmarkIcon className={'size-4'} />
-                        </Button>
-                        <Button
-                          size={'icon-lg'}
-                          variant={'outline'}
-                          className={'rounded-full'}>
-                          <Share2Icon className={'size-4'} />
-                        </Button>
-                      </CardAction>
-                    </CardFooter>
-                  </Card>
-                ))}
-              </div>
+              <JobsCard jobs={jobs.reverse()} />
             </TabsContent>
           </Tabs>
         </CardContent>
       </Card>
     </section>
+  );
+}
+
+function JobsCard({ jobs }: { jobs: Job[] }) {
+  return (
+    <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+      {jobs.map((job) => (
+        <Card key={job.id} className={'py-4 gap-3'}>
+          <CardHeader className={''}>
+            <Item variant='outline' size='sm' className={'border-none!'}>
+              <ItemMedia
+                variant={'image'}
+                className={'p-0.5 ring-1 rounded-full'}>
+                <Image
+                  src={job.logo}
+                  alt='job-logo'
+                  width={32}
+                  height={32}
+                  className={'w-full h-full object-contain!'}
+                />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>
+                  <h3 className={'font-semibold text-base'}>{job.title}</h3>
+                </ItemTitle>
+                <ItemDescription>{job.companyName}</ItemDescription>
+              </ItemContent>
+              <ItemActions>
+                <ItemDescription
+                  className={'text-xs underline underline-offset-3'}>
+                  {job.createdAt}
+                </ItemDescription>
+              </ItemActions>
+            </Item>
+          </CardHeader>
+
+          <Separator />
+
+          <CardContent className={'space-y-2'}>
+            <CardTitle>
+              <h3>About the Job</h3>
+            </CardTitle>
+            <CardDescription>
+              <p>{job.description}</p>
+            </CardDescription>
+            <CardAction className={'justify-self-start'}>
+              <Button size={'sm'} variant={'link'} className={'px-0'}>
+                Read more
+              </Button>
+            </CardAction>
+          </CardContent>
+
+          <CardContent className={'flex flex-wrap gap-2'}>
+            <Badge
+              variant={'outline'}
+              className={'bg-muted-foreground/5 text-sm px-3'}>
+              <MapPinCheck className={'size-4'} /> {job.location}
+            </Badge>
+            <Badge
+              variant={'outline'}
+              className={'bg-muted-foreground/5 text-sm px-3'}>
+              <BriefcaseBusiness className={'size-4'} /> {job.workType}
+            </Badge>
+            <Badge
+              variant={'outline'}
+              className={'bg-muted-foreground/5 text-sm px-3'}>
+              <ReceiptIndianRupeeIcon className={'size-4'} /> {job.salary}
+            </Badge>
+          </CardContent>
+
+          <CardFooter className={'gap-4 mt-auto'}>
+            <Button
+              size={'lg'}
+              variant={'outline'}
+              className={
+                'flex-1 bg-foreground! hover:bg-background! text-background! hover:text-foreground! rounded-full'
+              }>
+              Apply Now
+            </Button>
+
+            <CardAction className={'flex items-center gap-2'}>
+              <Button
+                size={'icon-lg'}
+                variant={'outline'}
+                className={'rounded-full'}>
+                <BookmarkIcon className={'size-4'} />
+              </Button>
+              <Button
+                size={'icon-lg'}
+                variant={'outline'}
+                className={'rounded-full'}>
+                <Share2Icon className={'size-4'} />
+              </Button>
+            </CardAction>
+          </CardFooter>
+        </Card>
+      ))}
+    </div>
   );
 }

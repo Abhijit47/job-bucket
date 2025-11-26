@@ -38,7 +38,7 @@ import { LazyLogo } from './logo';
 
 export default function Footer() {
   return (
-    <footer className='max-w-[85em] mx-auto px-4 2xl:px-2 space-y-8'>
+    <footer className='max-w-[85em] mx-auto px-4 2xl:px-2 space-y-6'>
       <div className={'grid grid-cols-5 gap-6 py-12'}>
         <div className={'col-span-full lg:col-span-2 space-y-4'}>
           <a href='#' className={'inline-flex items-center gap-2'}>
