@@ -13,6 +13,7 @@ import {
   IconDatabase,
   IconFileAi,
   IconFileDescription,
+  IconFileTypePdf,
   IconFileWord,
   IconFolder,
   IconHelp,
@@ -390,6 +391,11 @@ export const dashboardLinks: DashboardNavItem<Route> = {
       title: 'My Applications',
       url: '/candidate/applied',
       icon: IconSend,
+    },
+    {
+      title: 'My Resumes',
+      url: '/candidate/resumes',
+      icon: IconFileTypePdf,
     },
     {
       title: 'Saved Jobs',

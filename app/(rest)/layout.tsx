@@ -16,7 +16,7 @@ export default function DashboardLayout({
         } as React.CSSProperties
       }>
       <AppSidebar variant='inset' />
-      <SidebarInset>
+      <SidebarInset className={'bg-card'}>
         <SiteHeader />
         <div className='flex flex-1 flex-col'>
           <div className='@container/main flex flex-1 flex-col gap-2'>
