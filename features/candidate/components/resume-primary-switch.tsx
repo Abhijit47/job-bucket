@@ -17,7 +17,7 @@ export default function ResumePrimarySwitch({
         id={`is-primary-${id}`}
         checked={isPrimary}
         onCheckedChange={() => mutate(id)}
-        disabled={isPending}
+        disabled={isPending || isPrimary}
         aria-invalid={isError}
       />
       <Label htmlFor={`is-primary-${id}`} aria-invalid={isError}>

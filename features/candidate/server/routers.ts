@@ -75,6 +75,8 @@ export const candidatesRouter = createTRPCRouter({
           .where(
             and(eq(resume.applicantId, auth.user.id), ne(resume.id, targetId))
           );
+
+        return updated;
       });
       return result;
     }),

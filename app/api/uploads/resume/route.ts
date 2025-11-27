@@ -2,12 +2,13 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import { auth } from '@/lib/auth/server';
-import { headers } from 'next/headers';
+// import { headers } from 'next/headers';
+import { allowedFileTypes } from '@/lib/zodSchemas/candidate.schema';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   const session = await auth.api.getSession({
-    headers: await headers(),
+    headers: request.headers,
   });
   if (!session?.user) {
     return NextResponse.json(
@@ -41,34 +42,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const allowed = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    ];
-    if (!allowed.includes(fileField.type)) {
+    if (!allowedFileTypes.includes(fileField.type)) {
       return NextResponse.json(
         { error: 'Only PDF and Word documents are allowed' },
         { status: 400, statusText: 'Bad Request' }
       );
     }
 
-    const storedFileName = `${session.user.id}-${Date.now()}-${fileField.name}`;
+    // Sanitize filename: remove path components and special characters
+    const sanitizedName = fileField.name
+      .replace(/^.*[\\/]/, '') // Remove any path prefix
+      .replace(/[^a-zA-Z0-9._-]/g, '_'); // Replace special chars
+
+    const storedFileName = `${session.user.id}-${Date.now()}-${sanitizedName}`;
 
     await fs.writeFile(
       path.join(uploadDir, storedFileName),
       Buffer.from(await fileField.arrayBuffer())
     );
-
-    // const payload = await request.formData();
-
-    // const fileField = payload.get('resumeFile') as File;
-    // const fileName = `${session.user.id}-${Date.now()}-${fileField.name}`;
-
-    // await fs.writeFile(
-    //   path.join(uploadDir, fileName),
-    //   Buffer.from(await fileField.arrayBuffer())
-    // );
 
     return NextResponse.json(
       {
