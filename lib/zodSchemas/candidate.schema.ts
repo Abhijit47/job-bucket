@@ -1,5 +1,11 @@
 import z from 'zod';
 
+export const allowedFileTypes = [
+  'application/pdf',
+  'application/msword', // .doc
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+];
+
 export const resumeFormSchema = z.object({
   applicantId: z.string().min(1, 'User ID is required'),
   fileUrl: z.string().optional(),
@@ -25,12 +31,7 @@ export const resumeFormSchema = z.object({
         });
       }
 
-      const allowed = [
-        'application/pdf',
-        'application/msword', // .doc
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
-      ];
-      if (!allowed.includes(file.type)) {
+      if (!allowedFileTypes.includes(file.type)) {
         ctx.addIssue({
           code: 'custom',
           message: 'Only PDF and Word documents are allowed',

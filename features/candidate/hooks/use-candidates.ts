@@ -38,7 +38,7 @@ export function useMakeResumePrimaryMutation() {
 
   return useMutation(
     trpc.candidates.makeResumePrimary.mutationOptions({
-      onSuccess: (data, variables) => {
+      onSuccess: (data) => {
         toast.success('Resume set as primary successfully.');
         queryClient.invalidateQueries(
           trpc.candidates.getResumes.queryOptions()

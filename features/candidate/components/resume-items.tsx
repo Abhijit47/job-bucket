@@ -8,7 +8,7 @@ import {
   ItemMedia,
   ItemTitle,
 } from '@/components/ui/item';
-import { IconFileTypePdf } from '@tabler/icons-react';
+import { IconFileTypeDocx, IconFileTypePdf } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import { useCandidateResumes } from '../hooks/use-candidates';
 import ResumePreview from './resume-preview';
@@ -22,7 +22,11 @@ export default function ResumeItems() {
       {resumes.map((resume, idx) => (
         <Item variant='outline' key={resume.id}>
           <ItemMedia variant='icon'>
-            <IconFileTypePdf />
+            {resume.fileType === 'application/pdf' ? (
+              <IconFileTypePdf />
+            ) : (
+              <IconFileTypeDocx />
+            )}
           </ItemMedia>
           <ItemContent>
             <ItemTitle>Resume {idx + 1}</ItemTitle>

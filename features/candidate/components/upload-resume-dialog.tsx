@@ -85,6 +85,7 @@ export default function UploadResumeDialog({ userId }: { userId: string }) {
       if (error) {
         // console.error({ error });
         if (error.status === 401) {
+          toast.info('Session expired. Please log in again.');
           router.push('/login');
           return;
         }
