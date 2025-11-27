@@ -1,3 +1,4 @@
+import { candidatesRouter } from '@/features/candidate/server/routers';
 import { employersRouter } from '@/features/employer/server/routers';
 import { auth } from '@/lib/auth/server';
 import { headers } from 'next/headers';
@@ -58,6 +59,7 @@ export const appRouter = createTRPCRouter({
   }),
 
   employers: employersRouter,
+  candidates: candidatesRouter,
 });
 // export type definition of API
 export type AppRouter = typeof appRouter;

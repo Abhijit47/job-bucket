@@ -110,6 +110,6 @@ export const candidateProcedure = protectedProcedure.use(
           data.error || 'You do not have permission to access this resource.',
       });
     }
-    return next({ ctx });
+    return next({ ctx: { ...ctx, auth: ctx.auth } });
   }
 );
