@@ -61,7 +61,7 @@ export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
     });
   }
 
-  return next({ ctx: { ...ctx, status: data.success } });
+  return next({ ctx: { ...ctx, permissionStatus: data.success } });
 });
 
 export const employerProcedure = protectedProcedure.use(
@@ -85,7 +85,7 @@ export const employerProcedure = protectedProcedure.use(
           data.error || 'You do not have permission to access this resource.',
       });
     }
-    return next({ ctx });
+    return next({ ctx: { ...ctx, permissionStatus: data.success } });
   }
 );
 
@@ -110,6 +110,6 @@ export const candidateProcedure = protectedProcedure.use(
           data.error || 'You do not have permission to access this resource.',
       });
     }
-    return next({ ctx: { ...ctx, auth: ctx.auth } });
+    return next({ ctx: { ...ctx, permissionStatus: data.success } });
   }
 );
