@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     globalNotFound: true,
+    typedEnv: true,
   },
   images: {
     remotePatterns: [

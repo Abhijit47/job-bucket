@@ -31,6 +31,7 @@ import {
 } from '@/lib/zodSchemas/candidate.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { IconCircleX, IconFilePlus } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import {
   Controller,
@@ -45,6 +46,7 @@ import { useUploadResume } from '../hooks/use-candidates';
 export default function UploadResumeDialog({ userId }: { userId: string }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const { mutate, isPending: isUploadPending } = useUploadResume();
 
   const form = useForm<ResumeFormValues>({
@@ -57,8 +59,8 @@ export default function UploadResumeDialog({ userId }: { userId: string }) {
     mode: 'onChange',
   });
 
-  function toggleUploadDialog() {
-    setIsOpen((prev) => !prev);
+  function closeUploadDialog() {
+    setIsOpen(false);
   }
 
   const onError: SubmitErrorHandler<ResumeFormValues> = (errors) => {
@@ -81,7 +83,11 @@ export default function UploadResumeDialog({ userId }: { userId: string }) {
         body: formData,
       });
       if (error) {
-        console.error({ error });
+        // console.error({ error });
+        if (error.status === 401) {
+          router.push('/login');
+          return;
+        }
         toast.error('Failed to upload resume.', { description: error.message });
         return;
       }
@@ -97,7 +103,7 @@ export default function UploadResumeDialog({ userId }: { userId: string }) {
 
       mutate(mutableData, {
         onSuccess: () => {
-          toggleUploadDialog();
+          closeUploadDialog();
           form.reset({ resumeFile: undefined, isPrimary: false });
         },
       });
@@ -105,7 +111,7 @@ export default function UploadResumeDialog({ userId }: { userId: string }) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={toggleUploadDialog}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button variant='outline' size='sm'>
           <IconFilePlus />
@@ -234,7 +240,7 @@ export default function UploadResumeDialog({ userId }: { userId: string }) {
                 disabled={isUploadPending || isPending}
                 onClick={() => {
                   form.reset({ resumeFile: undefined, isPrimary: false });
-                  toggleUploadDialog();
+                  closeUploadDialog();
                 }}>
                 <IconCircleX />
                 Cancel

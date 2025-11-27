@@ -1,11 +1,10 @@
+import { TRPCError } from '@trpc/server';
+import { and, eq, ne } from 'drizzle-orm';
+
 import { db } from '@/drizzle/db';
 import { resume } from '@/drizzle/schemas';
 import { resumeFormSchema, resumeId } from '@/lib/zodSchemas/candidate.schema';
 import { candidateProcedure, createTRPCRouter } from '@/trpc/init';
-import { TRPCError } from '@trpc/server';
-import { and, eq } from 'drizzle-orm';
-// import { writeFile } from 'fs/promises';
-// import { join } from 'path';
 
 export const candidatesRouter = createTRPCRouter({
   uploadResume: candidateProcedure
@@ -22,39 +21,61 @@ export const candidatesRouter = createTRPCRouter({
         });
       }
 
-      const newResume = await db
-        .insert(resume)
-        .values({
-          applicantId: auth.user.id,
-          fileUrl: fileUrl,
-          fileSize: fileSize,
-          fileType: fileType,
-          isPrimary: input.isPrimary,
-        })
-        .returning({ id: resume.id, applicantId: resume.applicantId });
+      const result = await db.transaction(async (tx) => {
+        // check if isPrimary is true, then set all other resumes to false
+        if (input.isPrimary) {
+          await tx
+            .update(resume)
+            .set({ isPrimary: false })
+            .where(eq(resume.applicantId, auth.user.id));
+        }
 
-      return newResume;
+        // insert new resume record into the database
+        const newResume = await tx
+          .insert(resume)
+          .values({
+            applicantId: auth.user.id,
+            fileUrl: fileUrl,
+            fileSize: fileSize,
+            fileType: fileType,
+            isPrimary: input.isPrimary,
+          })
+          .returning({ id: resume.id, applicantId: resume.applicantId });
+
+        return newResume;
+      });
+      return result;
     }),
 
   makeResumePrimary: candidateProcedure
     .input(resumeId)
     .mutation(async ({ ctx, input }) => {
       const auth = ctx.auth;
-      const resumeId = input;
-      // First, set all resumes of the user to isPrimary = false
-      await db
-        .update(resume)
-        .set({ isPrimary: false })
-        .where(eq(resume.applicantId, auth.user.id));
+      const targetId = input;
 
-      // Then, set the selected resume to isPrimary = true
-      const result = await db
-        .update(resume)
-        .set({ isPrimary: true })
-        .where(
-          and(eq(resume.id, resumeId), eq(resume.applicantId, auth.user.id))
-        )
-        .returning({ id: resume.id, applicantId: resume.applicantId });
+      const result = await db.transaction(async (tx) => {
+        const [updated] = await tx
+          .update(resume)
+          .set({ isPrimary: true })
+          .where(
+            and(eq(resume.id, targetId), eq(resume.applicantId, auth.user.id))
+          )
+          .returning({ id: resume.id, applicantId: resume.applicantId });
+
+        if (!updated) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: `Resume with ID ${targetId} not found.`,
+          });
+        }
+
+        await tx
+          .update(resume)
+          .set({ isPrimary: false })
+          .where(
+            and(eq(resume.applicantId, auth.user.id), ne(resume.id, targetId))
+          );
+      });
       return result;
     }),
 
