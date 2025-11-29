@@ -24,12 +24,18 @@ import {
   getStates,
 } from '@/lib/dynamic-loaded';
 import { CandidateProfileFormValues } from '@/lib/zodSchemas/candidate.schema';
+import {
+  defaultCity,
+  defaultCountry,
+  defaultRegion,
+  defaultState,
+} from '@/lib/zodSchemas/common.schema';
 import FieldErrorMessageAndDescription from '../../features/candidate/components/field-error-message-and-description';
 
 export default function LocationFields() {
   const [regionsList, setRegionsList] = useState<Region[]>([]);
   const [countriesList, setCountriesList] = useState<Country[]>([]);
-  const [statesList, setStatesList] = useState<State[] | undefined>();
+  const [statesList, setStatesList] = useState<State['states'] | undefined>();
   const [citiesList, setCities] = useState<City | undefined>();
 
   const [isRegionPending, startRegionTransition] = useTransition();
@@ -66,11 +72,11 @@ export default function LocationFields() {
   useEffect(() => {
     if (watchRegion.hasCountries) {
       startCountryTransition(async () => {
-        const data = await getCountries();
+        const data = await getCountries(watchRegion.name);
         setCountriesList(data);
       });
     }
-  }, [watchRegion.hasCountries]);
+  }, [watchRegion.hasCountries, watchRegion.name]);
 
   useEffect(() => {
     if (watchCountry.hasStates) {
@@ -108,11 +114,7 @@ export default function LocationFields() {
                 onValueChange={(e) => {
                   // before parse check if e is not empty
                   if (e === '') {
-                    form.setValue('location.region', {
-                      id: '0',
-                      name: '',
-                      hasCountries: false,
-                    });
+                    form.setValue('location.region', defaultRegion);
                     return;
                   }
 
@@ -121,6 +123,10 @@ export default function LocationFields() {
                     'id' | 'name' | 'hasCountries'
                   >;
                   field.onChange(selectedRegion);
+                  // Reset dependent fields
+                  form.setValue('location.country', defaultCountry);
+                  form.setValue('location.state', defaultState);
+                  form.setValue('location.city', defaultCity);
                 }}>
                 <SelectTrigger
                   id='country'
@@ -133,7 +139,7 @@ export default function LocationFields() {
                     <SelectLabel>Choose your region</SelectLabel>
                     {regionsList.map((region) => (
                       <SelectItem
-                        key={crypto.randomUUID()}
+                        key={region.id}
                         value={JSON.stringify({
                           id: region.id,
                           name: region.name,
@@ -170,12 +176,7 @@ export default function LocationFields() {
                 value={JSON.stringify(field.value)}
                 onValueChange={(e) => {
                   if (e === '') {
-                    form.setValue('location.country', {
-                      id: 0,
-                      name: '',
-                      code: '',
-                      hasStates: false,
-                    });
+                    form.setValue('location.country', defaultCountry);
                     return;
                   }
                   const selectedCountry = JSON.parse(e) as Pick<
@@ -195,7 +196,7 @@ export default function LocationFields() {
                     <SelectLabel>Choose your country</SelectLabel>
                     {countriesList.map((country) => (
                       <SelectItem
-                        key={crypto.randomUUID()}
+                        key={country.id}
                         value={JSON.stringify({
                           id: country.id,
                           name: country.name,
@@ -233,12 +234,7 @@ export default function LocationFields() {
                 value={JSON.stringify(field.value)}
                 onValueChange={(e) => {
                   if (e === '') {
-                    form.setValue('location.state', {
-                      id: 0,
-                      name: '',
-                      code: '',
-                      hasCities: false,
-                    });
+                    form.setValue('location.state', defaultState);
                     return;
                   }
 
@@ -257,7 +253,7 @@ export default function LocationFields() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Choose your state/province</SelectLabel>
-                    {statesList?.map((state) =>
+                    {/* {statesList?.map((state) =>
                       state.states.map((substate) => (
                         <SelectItem
                           key={crypto.randomUUID()}
@@ -270,6 +266,22 @@ export default function LocationFields() {
                           {substate.name}
                         </SelectItem>
                       ))
+                    )} */}
+                    {statesList?.map(
+                      (state) => (
+                        <SelectItem
+                          key={crypto.randomUUID()}
+                          value={JSON.stringify({
+                            id: state.id,
+                            name: state.name,
+                            code: state.state_code,
+                            hasCities: state.hasCities,
+                          })}>
+                          {state.name}
+                        </SelectItem>
+                      )
+                      // state.states.map((substate) => (
+                      // ))
                     )}
                   </SelectGroup>
                 </SelectContent>
@@ -299,12 +311,7 @@ export default function LocationFields() {
                 value={JSON.stringify(field.value)}
                 onValueChange={(e) => {
                   if (e === '') {
-                    form.setValue('location.city', {
-                      id: 0,
-                      name: '',
-                      latitude: '',
-                      longitude: '',
-                    });
+                    form.setValue('location.city', defaultCity);
                     return;
                   }
 
@@ -352,7 +359,7 @@ export default function LocationFields() {
         <Input
           id='latitude'
           placeholder='0.0000'
-          defaultValue={watchCity.latitude}
+          value={watchCity.latitude ?? ''}
           readOnly
         />
       </Field>
@@ -361,7 +368,7 @@ export default function LocationFields() {
         <Input
           id='longitude'
           placeholder='01.00000'
-          defaultValue={watchCity.longitude}
+          value={watchCity.longitude ?? ''}
           readOnly
         />
       </Field>

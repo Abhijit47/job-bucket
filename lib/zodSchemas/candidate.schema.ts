@@ -28,7 +28,7 @@ export const candidateProfileFormSchema = z.object({
     .max(30, 'Username must be at most 30 characters long')
     .regex(
       /^[a-zA-Z0-9_-]+$/,
-      'Username can only contain letters, numbers, and underscores'
+      'Username can only contain letters, numbers, underscores, and hyphens'
     )
     .transform((val) => val.toLowerCase()),
   language: languageSchema,
@@ -42,11 +42,21 @@ export const candidateProfileFormSchema = z.object({
     .string()
     .min(10, 'Biography must be at least 10 characters long')
     .max(1000, 'Biography must be at most 1000 characters long'),
-  dateOfBirth: z.date('Invalid date format').refine((date) => {
-    const today = new Date();
-    const age = today.getFullYear() - date.getFullYear();
-    return age >= 18;
-  }),
+  dateOfBirth: z.date('Invalid date format').refine(
+    (date) => {
+      const today = new Date();
+      let age = today.getFullYear() - date.getFullYear();
+      const monthDiff = today.getMonth() - date.getMonth();
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < date.getDate())
+      ) {
+        age--;
+      }
+      return age >= 18;
+    },
+    { error: 'You must be at least 18 years old' }
+  ),
   nationality: z.enum(nationalities, 'Invalid nationality'),
   maritalStatus: z.enum(maritalStatus, 'Invalid marital status'),
   gender: z.enum(genders, 'Invalid gender'),
