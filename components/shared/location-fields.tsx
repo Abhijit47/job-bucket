@@ -127,6 +127,8 @@ export default function LocationFields() {
                   form.setValue('location.country', defaultCountry);
                   form.setValue('location.state', defaultState);
                   form.setValue('location.city', defaultCity);
+                  setStatesList(undefined);
+                  setCities(undefined);
                 }}>
                 <SelectTrigger
                   id='country'
