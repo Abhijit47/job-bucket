@@ -23,6 +23,13 @@ import {
   candidateProfileFormSchema,
   CandidateProfileFormValues,
 } from '@/lib/zodSchemas/candidate.schema';
+import {
+  defaultCity,
+  defaultCountry,
+  defaultLanguage,
+  defaultRegion,
+  defaultState,
+} from '@/lib/zodSchemas/common.schema';
 import { IconAlertHexagon, IconCircleCheck } from '@tabler/icons-react';
 import {
   FieldBiography,
@@ -67,7 +74,7 @@ export default function CandidateProfileForm() {
       email: '',
       image: '',
       username: '',
-      language: { code: '', name: '', native: '' },
+      language: defaultLanguage,
       locale: undefined,
       phone: '',
       biography: '',
@@ -79,19 +86,21 @@ export default function CandidateProfileForm() {
       qualification: undefined,
       websiteUrl: '',
       location: {
-        region: { id: '0', name: '', hasCountries: false },
-        country: { id: 0, name: '', code: '', hasStates: false },
-        state: { id: 0, name: '', code: '', hasCities: false },
-        city: { id: 0, name: '', latitude: undefined, longitude: undefined },
+        region: defaultRegion,
+        country: defaultCountry,
+        state: defaultState,
+        city: defaultCity,
       },
     },
     mode: 'onChange',
   });
 
+  // TODO:
   const onError: SubmitErrorHandler<CandidateProfileFormValues> = (errors) => {
     console.log('Form errors:', errors);
   };
 
+  // TODO:
   const onSubmit: SubmitHandler<CandidateProfileFormValues> = (data) => {
     console.log('Form data:', data);
   };

@@ -1,8 +1,11 @@
 import { IconCalendarCheck } from '@tabler/icons-react';
 import { format } from 'date-fns';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
+// import { LazyLanguageField } from '@/components/shared/language-field';
+import { LazyLanguageField } from '@/components/shared/language-field';
+import { LazyLocaleField } from '@/components/shared/locale-field';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
@@ -30,12 +33,10 @@ import {
 import {
   experiences,
   genders,
-  locales,
   maritalStatus,
   nationalities,
   qualifications,
 } from '@/drizzle/db-constants';
-import { getLanguages } from '@/lib/dynamic-loaded';
 import { capitalizeFirstLetter } from '@/lib/utils';
 import { CandidateProfileFormValues } from '@/lib/zodSchemas/candidate.schema';
 import FieldErrorMessageAndDescription from './field-error-message-and-description';
@@ -199,86 +200,11 @@ export const FieldWebsiteUrlAndAvatarUrl = () => {
 };
 
 export const FieldLocaleAndLanguage = () => {
-  const [languages, setLanguages] = useState<KnownLanguage[] | undefined>();
-
-  const form =
-    useFormContext<Pick<CandidateProfileFormValues, 'locale' | 'language'>>();
-
-  useEffect(() => {
-    getLanguages().then((data) => setLanguages(data));
-  }, []);
-
   return (
     <FieldGroup className={'grid grid-cols-1 md:grid-cols-2 gap-4'}>
-      <Controller
-        name='locale'
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field
-            data-invalid={fieldState.invalid}
-            aria-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor='preferred-locale'>Preferred Locale</FieldLabel>
-            <Select defaultValue={field.value} onValueChange={field.onChange}>
-              <SelectTrigger
-                id='preferred-locale'
-                aria-invalid={fieldState.invalid}>
-                <SelectValue placeholder='Select your locale' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Choose your locale</SelectLabel>
-                </SelectGroup>
-                {locales.map((locale) => (
-                  <SelectItem key={locale} value={locale}>
-                    {locale}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-              <FieldErrorMessageAndDescription
-                error={fieldState.error}
-                description='Your preferred locale'
-              />
-            </Select>
-          </Field>
-        )}
-      />
+      <LazyLocaleField />
 
-      <Controller
-        name='language'
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field
-            data-invalid={fieldState.invalid}
-            aria-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor='known-language'>Known Language</FieldLabel>
-            <Select
-              defaultValue={JSON.stringify(field.value)}
-              onValueChange={(e) => field.onChange(JSON.parse(e))}>
-              <SelectTrigger
-                id='known-language'
-                aria-invalid={fieldState.invalid}>
-                <SelectValue placeholder='Select your language' />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Choose your language</SelectLabel>
-                </SelectGroup>
-                {languages?.map((language) => (
-                  <SelectItem
-                    key={crypto.randomUUID()}
-                    value={JSON.stringify(language)}>
-                    {language.name} ({language.native})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-              <FieldErrorMessageAndDescription
-                error={fieldState.error}
-                description='Your preferred language'
-              />
-            </Select>
-          </Field>
-        )}
-      />
+      <LazyLanguageField />
     </FieldGroup>
   );
 };
@@ -467,13 +393,13 @@ export const FieldDobAndGender = () => {
                 <Calendar
                   mode='single'
                   selected={field.value}
-                  captionLayout='label'
+                  captionLayout='dropdown'
                   onSelect={(date) => {
                     field.onChange(date);
                     setOpen(false);
                   }}
                   disabled={(date) => date > new Date()}
-                  className='rounded-lg border [--cell-size:--spacing(11)] md:[--cell-size:--spacing(12)]'
+                  // className='rounded-lg border [--cell-size:--spacing(11)] md:[--cell-size:--spacing(12)]'
                   buttonVariant='ghost'
                 />
               </PopoverContent>
@@ -549,7 +475,7 @@ export const FieldBiography = () => {
             />
             <InputGroupAddon align='block-end'>
               <InputGroupText className='text-muted-foreground text-[10px]'>
-                {biographyWatch}/1000 characters left
+                {biographyWatch}/1000 characters
               </InputGroupText>
             </InputGroupAddon>
           </InputGroup>
