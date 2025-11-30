@@ -11,6 +11,7 @@ import UploadResumeDialog from '@/features/candidate/components/upload-resume-di
 import { prefetchResumes } from '@/features/candidate/server/prefetch';
 import { withCandidateAuth } from '@/lib/auth/withCandidateAuth';
 import { HydrateClient } from '@/trpc/server';
+import Script from 'next/script';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
@@ -38,6 +39,12 @@ export default async function MyResumesPage() {
             </Item>
 
             <ResumeItems />
+
+            <Script
+              id='dommatrix-polyfill'
+              src='/assets/js/dommatrix.js'
+              strategy='worker'
+            />
           </div>
         </Suspense>
       </ErrorBoundary>

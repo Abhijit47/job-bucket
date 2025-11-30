@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     globalNotFound: true,
+    nextScriptWorkers: true,
     typedEnv: true,
   },
   images: {

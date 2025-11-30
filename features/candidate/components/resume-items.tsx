@@ -11,8 +11,7 @@ import {
 import { IconFileTypeDocx, IconFileTypePdf } from '@tabler/icons-react';
 import { format } from 'date-fns';
 import { useCandidateResumes } from '../hooks/use-candidates';
-import ResumePreview from './resume-preview';
-import ResumePrimarySwitch from './resume-primary-switch';
+import { LazyResumePreview } from './resume-preview';
 
 export default function ResumeItems() {
   const { data: resumes } = useCandidateResumes();
@@ -37,8 +36,12 @@ export default function ResumeItems() {
             </ItemDescription>
           </ItemContent>
           <ItemActions>
-            <ResumePrimarySwitch id={resume.id} isPrimary={resume.isPrimary} />
-            <ResumePreview id={resume.id} />
+            <LazyResumePreview
+              id={resume.id}
+              fileSize={resume.fileSize}
+              fileType={resume.fileType}
+              fileUrl={resume.fileUrl}
+            />
           </ItemActions>
         </Item>
       ))}

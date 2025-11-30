@@ -2,6 +2,9 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/features/dashboard/components/app-sidebar';
 import { SiteHeader } from '@/features/dashboard/components/site-header';
 
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
 export default function DashboardLayout({
   children,
 }: Readonly<{
