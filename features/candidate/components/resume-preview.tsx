@@ -245,6 +245,7 @@ export default function ResumePreview(props: ResumePreviewProps) {
 
           <SheetFooter className={'flex-row w-full'}>
             <Button
+              type='button'
               variant='outline'
               size={'sm'}
               disabled={pageNumber <= 1}
@@ -256,7 +257,8 @@ export default function ResumePreview(props: ResumePreviewProps) {
               Page {pageNumber} of {numPages}
             </Badge>
             <Button
-              type='submit'
+              type='button'
+              variant='outline'
               size={'sm'}
               disabled={pageNumber >= (numPages || 0)}
               onClick={() => setPageNumber(pageNumber + 1)}>
