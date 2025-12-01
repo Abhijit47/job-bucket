@@ -15,6 +15,7 @@ import {
   applicationStatus,
   experiences,
   genders,
+  industries,
   type JobBenefit,
   jobLevels,
   type JobTag,
@@ -59,6 +60,7 @@ export const genderEnum = pgEnum('gender', genders);
 export const maritalStatusEnum = pgEnum('marital_status', maritalStatus);
 export const experiencesEnum = pgEnum('experience', experiences);
 export const organizationEnum = pgEnum('organization_type', organizationTypes);
+export const industriesEnum = pgEnum('industry_type', industries);
 export const teamSizeEnum = pgEnum('team_size', teamSizes);
 export const qualificationsEnum = pgEnum('qualification', qualifications);
 export const jobLevelEnum = pgEnum('job_level', jobLevels);
@@ -178,6 +180,7 @@ export const employer = pgTable('employer', {
   companyLogoUrl: varchar('company_logo_url').default(avatarURL),
   companyBannerUrl: varchar('company_banner_url').default(bannerURL),
   organizationType: organizationEnum('organization_type'),
+  industryType: industriesEnum('industry_type'),
   teamSize: teamSizeEnum('team_size'),
   yearOfEstablishment: varchar('year_of_establishment', { length: 4 }),
   companyWebsite: varchar('company_website', { length: 100 }),
@@ -240,7 +243,7 @@ export const application = pgTable('application', {
   applicantId: text('applicant_id')
     .references(() => applicant.userId, { onDelete: 'cascade' })
     .notNull(),
-  coverLetter: varchar('cover_letter').notNull(),
+  coverLetter: text('cover_letter').notNull(),
   status: applicationStatusEnum('status').notNull(),
   resumeId: uuid('resume_id')
     .references(() => resume.id, { onDelete: 'cascade' })
