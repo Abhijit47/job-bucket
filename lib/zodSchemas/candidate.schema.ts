@@ -10,10 +10,12 @@ import z from 'zod';
 import { languageSchema, locationSchema } from './common.schema';
 
 export const allowedFileTypes = [
-  'application/pdf',
+  'application/pdf', // .pdf
   'application/msword', // .doc
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
-];
+] as const;
+
+type AllowedFileType = (typeof allowedFileTypes)[number];
 
 export const candidateProfileFormSchema = z.object({
   name: z
@@ -91,7 +93,7 @@ export const resumeFormSchema = z.object({
         });
       }
 
-      if (!allowedFileTypes.includes(file.type)) {
+      if (!allowedFileTypes.includes(file.type as AllowedFileType)) {
         ctx.addIssue({
           code: 'custom',
           message: 'Only PDF and Word documents are allowed',

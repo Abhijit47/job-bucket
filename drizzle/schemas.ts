@@ -1,3 +1,5 @@
+import { LanguageValues, LocationValues } from '@/lib/zodSchemas/common.schema';
+import { SalaryValues } from '@/lib/zodSchemas/employer.schema';
 import { relations } from 'drizzle-orm';
 import {
   boolean,
@@ -11,7 +13,6 @@ import {
 } from 'drizzle-orm/pg-core';
 import {
   applicationStatus,
-  currencies,
   experiences,
   genders,
   type JobBenefit,
@@ -24,7 +25,7 @@ import {
   organizationTypes,
   qualifications,
   roles,
-  salaryPeriods,
+  teamSizes,
   vacancies,
   workTypes,
 } from './db-constants';
@@ -47,17 +48,31 @@ export const updatedAt = timestamp('updated_at', {
   .$onUpdate(() => new Date())
   .notNull();
 
-export const roleEnum = pgEnum('role', roles);
+const bannerURL = 'https://placehold.co/1200x300/png?text=Company+Banner';
+const avatarURL = 'https://avatar.vercel.sh/rauchg.svg?text=UN';
 
-export const localesEnum = pgEnum('locales', locales);
+// Enums definition
+export const roleEnum = pgEnum('role', roles);
+export const localesEnum = pgEnum('locale', locales);
+export const nationalityEnum = pgEnum('nationality', nationalities);
+export const genderEnum = pgEnum('gender', genders);
+export const maritalStatusEnum = pgEnum('marital_status', maritalStatus);
+export const experiencesEnum = pgEnum('experience', experiences);
+export const organizationEnum = pgEnum('organization_type', organizationTypes);
+export const teamSizeEnum = pgEnum('team_size', teamSizes);
+export const qualificationsEnum = pgEnum('qualification', qualifications);
+export const jobLevelEnum = pgEnum('job_level', jobLevels);
+export const jobTypeEnum = pgEnum('job_type', jobTypes);
+export const workTypeEnum = pgEnum('work_type', workTypes);
+export const vacancyEnum = pgEnum('vacancy', vacancies);
+export const applicationStatusEnum = pgEnum('status', applicationStatus);
+
 export const user = pgTable('user', {
   id: text('id').primaryKey().unique().notNull(),
   name: varchar('name', { length: 100 }).notNull(),
   email: varchar('email', { length: 100 }).notNull().unique(),
   emailVerified: boolean('email_verified').default(false).notNull(),
-  image: varchar('image')
-    .default('https://avatar.vercel.sh/rauchg.svg?text=UN')
-    .notNull(),
+  image: varchar('image').default(avatarURL).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at')
     .defaultNow()
@@ -128,31 +143,28 @@ export const verification = pgTable('verification', {
     .notNull(),
 });
 
-export const nationalityEnum = pgEnum('nationality_enum', nationalities);
-export const genderEnum = pgEnum('gender_enum', genders);
-export const maritalStatusEnum = pgEnum('marital_status_enum', maritalStatus);
 export const applicant = pgTable('applicant', {
   userId: text('user_id')
     .primaryKey()
     .references(() => user.id, { onDelete: 'cascade' })
     .notNull(),
 
-  biography: varchar('biography', { length: 1024 }),
+  biography: varchar('biography', { length: 2048 }),
   dateOfBirth: timestamp('date_of_birth', { mode: 'date', withTimezone: true }),
   nationality: nationalityEnum('nationality'),
   maritalStatus: maritalStatusEnum('marital_status'),
   gender: genderEnum('gender'),
-  experience: varchar('experience', { length: 2048 }),
-  education: varchar('education', { length: 2048 }),
-  websiteUrl: varchar('website_url', { length: 512 }),
-  location: varchar('location', { length: 256 }),
+  experience: experiencesEnum('experience'),
+  qualification: qualificationsEnum('qualification'),
+  websiteUrl: varchar('website_url'),
+  location: jsonb('location').$type<LocationValues>(),
+  language: jsonb('language').$type<LanguageValues>(),
 
   createdAt,
   deletedAt,
   updatedAt,
 });
 
-export const organizationEnum = pgEnum('organization_type', organizationTypes);
 export const employer = pgTable('employer', {
   userId: text('user_id')
     .primaryKey()
@@ -163,19 +175,14 @@ export const employer = pgTable('employer', {
   companyDescription: varchar('company_description', {
     length: 2048,
   }),
-  companyLogoUrl: varchar('company_logo_url', { length: 512 }).default(
-    'https://avatar.vercel.sh/rauchg.svg?text=UN'
-  ),
-  companyBannerUrl: varchar('company_banner_url', { length: 512 }).default(
-    'https://placehold.co/1200x300/png?text=Company+Banner'
-  ),
+  companyLogoUrl: varchar('company_logo_url').default(avatarURL),
+  companyBannerUrl: varchar('company_banner_url').default(bannerURL),
   organizationType: organizationEnum('organization_type'),
-  teamSize: varchar('team_size', { length: 50 }),
-  yearOfEstablishment: varchar('year_of_establishment', {
-    length: 4,
-  }),
+  teamSize: teamSizeEnum('team_size'),
+  yearOfEstablishment: varchar('year_of_establishment', { length: 4 }),
   companyWebsite: varchar('company_website', { length: 100 }),
-  location: varchar('location', { length: 100 }),
+  streetAddress: varchar('street_address', { length: 100 }),
+  location: jsonb('location').$type<LocationValues>(),
 
   createdAt,
   deletedAt,
@@ -187,33 +194,23 @@ export const resume = pgTable('resume', {
   applicantId: text('applicant_id')
     .references(() => applicant.userId, { onDelete: 'cascade' })
     .notNull(),
-  fileUrl: varchar('file_url', { length: 512 }).notNull(),
-  fileSize: varchar('file_size', { length: 100 }).notNull(),
-  fileType: varchar('file_type', { length: 100 }).notNull(),
+  title: varchar('title', { length: 100 }).notNull(),
+  fileName: varchar('file_name').notNull(),
+  fileUrl: varchar('file_url').notNull(),
+  fileSize: varchar('file_size').notNull(),
+  fileType: varchar('file_type').notNull(),
   isPrimary: boolean('is_primary').default(false).notNull(),
   createdAt,
   deletedAt,
   updatedAt,
 });
 
-export interface SalaryJSONB {
-  min: number;
-  max: number;
-  currency: (typeof currencies)[number];
-  period: (typeof salaryPeriods)[number];
-}
-export const qualificationsEnum = pgEnum('qualifications', qualifications);
-export const jobLevelEnum = pgEnum('job_level', jobLevels);
-export const jobTypeEnum = pgEnum('job_type', jobTypes);
-export const workTypeEnum = pgEnum('work_type', workTypes);
-export const experiencesEnum = pgEnum('experiences', experiences);
-export const vacancyEnum = pgEnum('vacancy', vacancies);
 export const job = pgTable('job', {
   id: uuid('id').primaryKey().defaultRandom().unique().notNull(),
   title: varchar('title', { length: 256 }).notNull(),
   description: varchar('description', { length: 4096 }).notNull(),
   tags: varchar('tags').array().$type<JobTag[]>(),
-  salary: jsonb('salary').$type<SalaryJSONB>().notNull(),
+  salary: jsonb('salary').$type<SalaryValues>().notNull(),
   benefits: varchar('benefits').array().$type<JobBenefit[]>(),
   city: varchar('city', { length: 50 }).notNull(),
   country: varchar('country', { length: 50 }).notNull(),
@@ -235,7 +232,6 @@ export const job = pgTable('job', {
   updatedAt,
 });
 
-export const applicationStatusEnum = pgEnum('status', applicationStatus);
 export const application = pgTable('application', {
   id: uuid('id').primaryKey().defaultRandom().unique().notNull(),
   jobId: uuid('job_id')
@@ -244,7 +240,7 @@ export const application = pgTable('application', {
   applicantId: text('applicant_id')
     .references(() => applicant.userId, { onDelete: 'cascade' })
     .notNull(),
-  coverLetter: varchar('cover_letter', { length: 2048 }).notNull(),
+  coverLetter: varchar('cover_letter').notNull(),
   status: applicationStatusEnum('status').notNull(),
   resumeId: uuid('resume_id')
     .references(() => resume.id, { onDelete: 'cascade' })

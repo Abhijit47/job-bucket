@@ -140,3 +140,4 @@ export type MyJobInput = z.infer<typeof myJobSchema>;
 export type CreateJobInput = z.infer<typeof createJobSchema>;
 export type JobModel = z.infer<typeof jobModelSchema>;
 export type UpdateJobInput = z.infer<typeof updateJobSchema>;
+export type SalaryValues = z.infer<typeof salarySchema>;
