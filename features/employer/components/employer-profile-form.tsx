@@ -142,7 +142,11 @@ export function EmployerProfileForm() {
             </FieldDescription>
             <FieldSeparator />
 
-            <Button size='sm' variant='outline' onClick={() => clear()}>
+            <Button
+              type='button'
+              size='sm'
+              variant='outline'
+              onClick={() => clear()}>
               Clear Saved
             </Button>
 
