@@ -346,6 +346,11 @@ export const dashboardLinks: DashboardNavItem<Route> = {
       icon: IconAddressBook,
     },
     {
+      title: 'Company Profile',
+      url: '/employer/company-profile',
+      icon: IconBuilding,
+    },
+    {
       title: 'Post a Job',
       url: '/employer/jobs/new',
       icon: IconBriefcase,

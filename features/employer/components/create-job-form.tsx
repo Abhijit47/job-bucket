@@ -1,23 +1,7 @@
 'use client';
 
-import { ProfileCompletionAlertDialog } from '@/components/shared/profile-completion-alert-dialog';
-import { Button } from '@/components/ui/button';
-import {
-  Field,
-  FieldDescription,
-  FieldGroup,
-  FieldLegend,
-  FieldSeparator,
-  FieldSet,
-} from '@/components/ui/field';
-import { Spinner } from '@/components/ui/spinner';
-import { useUpgradeModal } from '@/features/subscriptions/use-upgrade-modal';
-import {
-  CreateJobInput,
-  createJobSchema,
-} from '@/lib/zodSchemas/employer.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { IconReload } from '@tabler/icons-react';
+import { IconReload, IconTrashX } from '@tabler/icons-react';
 import type { Resolver } from 'react-hook-form';
 import {
   FormProvider,
@@ -26,26 +10,48 @@ import {
   useForm,
 } from 'react-hook-form';
 import { toast } from 'sonner';
+
+import { ProfileCompletionAlertDialog } from '@/components/shared/profile-completion-alert-dialog';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Field, FieldGroup, FieldSeparator } from '@/components/ui/field';
+import { Separator } from '@/components/ui/separator';
+import { Spinner } from '@/components/ui/spinner';
+import { useUpgradeModal } from '@/features/subscriptions/use-upgrade-modal';
+import {
+  CreateJobInput,
+  createJobSchema,
+} from '@/lib/zodSchemas/employer.schema';
+import { useFormPersist } from '@liorpo/react-hook-form-persist';
 import {
   useCreateJob,
   useIsEmployerProfileComplete,
 } from '../hooks/use-employers';
-import AdditionalInputs from './additional-inputs';
-import ApplyJobInput from './apply-job-input';
-import DescriptionInput from './description-input';
-import ExperienceInput from './experience-input';
-import ExpiryJobInput from './expiry-job-input';
-import JobBenefits from './job-benefits';
-import JobLevelInput from './job-level-input';
-import JobTypeInput from './job-type-input';
-import LocationInput from './location-input';
-import QualificationInput from './qualification-input';
-import ResponsibilitiesInput from './responsibilities-input';
-import SalaryInputs from './salary-inputs';
-import TagsInput from './tags-input';
-import TitleInput from './title-input';
-import VacancyInput from './vacancy-input';
-import WorkTypeInput from './work-type-input';
+import {
+  JobAdditionalInputs,
+  JobApplyOnInput,
+  JobBenefitsInput,
+  JobDescriptionInput,
+  JobExperienceInput,
+  JobExpiryInput,
+  JobLevelInput,
+  JobLocationInput,
+  JobQualificationInput,
+  JobResponsibilitiesInput,
+  JobSalaryInputs,
+  JobTagsInput,
+  JobTitleInput,
+  JobTypeInput,
+  JobVacancyInput,
+  JobWorkTypeInput,
+} from './job-form-fields';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -65,11 +71,11 @@ export default function CreateJobForm() {
     defaultValues: {
       title: isDev ? 'frontend developer' : '',
       description: isDev ? 'This is a job description' : '',
-      tags: isDev ? ['CSS', 'AWS', 'HTML'] : undefined,
+      tags: isDev ? ['css', 'aws', 'html'] : undefined,
       salary: {
         min: 15000,
         max: 350000,
-        currency: isDev ? 'USD' : undefined,
+        currency: isDev ? 'INR' : undefined,
         period: isDev ? 'hourly' : undefined,
       },
       benefits: isDev ? ['childcare_assistance', 'dental_insurance'] : [],
@@ -79,14 +85,29 @@ export default function CreateJobForm() {
       jobLevel: isDev ? 'associate' : undefined,
       workType: isDev ? 'contract' : undefined,
       qualification: isDev ? 'associate_degree' : undefined,
-      experience: isDev ? '1 year' : undefined,
-      vacancy: isDev ? '1 vacancy' : undefined,
+      experience: isDev ? '1' : undefined,
+      vacancy: isDev ? '1' : undefined,
       responsibilities: isDev ? 'Here goes some responsibilities details' : '',
       expiryDate: new Date(),
       isFeatured: false,
       isActive: false,
     },
     mode: 'onChange',
+  });
+
+  const { clear } = useFormPersist('create-job-form', {
+    control: form.control,
+    setValue: form.setValue,
+    storage: sessionStorage, // Use sessionStorage instead of localStorage
+    // exclude: ["password", "confirmPassword"], // Don't persist passwords
+    debounceDelay: 500, // Save after 500ms of inactivity
+    timeout: 24 * 60 * 60 * 1000, // 24 hours
+    onTimeout: () => {
+      console.log('Form data expired');
+    },
+    validate: true, // Trigger validation when data is restored
+    dirty: true, // Mark form as dirty
+    touch: true, // Mark fields as touched
   });
 
   const onError: SubmitErrorHandler<CreateJobInput> = (errors) => {
@@ -147,61 +168,69 @@ export default function CreateJobForm() {
 
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit, onError)}>
-          <FieldGroup className={'relative'}>
-            <FieldSet>
-              <FieldLegend>Create a Job</FieldLegend>
-              <FieldDescription>
+          <Card className={'p-0 w-full border-none shadow-none gap-4'}>
+            <CardHeader className={'p-0'}>
+              <CardTitle>Create a Job</CardTitle>
+              <CardDescription>
                 Fill out the form below to create a new job posting.
-              </FieldDescription>
-
-              <div className={'absolute top-4 right-4'}>
+              </CardDescription>
+              <CardAction className={'flex items-center gap-2'}>
                 <Button
                   type='button'
                   size={'icon-sm'}
                   onClick={() => form.reset()}>
                   <IconReload className={'size-4'} />
                 </Button>
-              </div>
+                <Button
+                  variant={'destructive'}
+                  type='button'
+                  size={'icon-sm'}
+                  onClick={() => clear()}>
+                  <IconTrashX className={'size-4'} />
+                </Button>
+              </CardAction>
+            </CardHeader>
+            <Separator />
+
+            <CardContent className={'p-0'}>
               <FieldGroup className={'gap-4'}>
-                <TitleInput />
+                <JobTitleInput />
 
                 <div className={'grid grid-cols-3 gap-4'}>
-                  <TagsInput />
+                  <JobTagsInput />
                   <JobLevelInput />
                 </div>
 
                 <FieldSeparator />
-                <SalaryInputs />
+                <JobSalaryInputs />
                 <FieldSeparator />
 
                 <div className={'grid grid-cols-1 lg:grid-cols-3 gap-4'}>
-                  <ExperienceInput />
-                  <QualificationInput />
+                  <JobExperienceInput />
+                  <JobQualificationInput />
                   <JobTypeInput />
-                  <VacancyInput />
-                  <ExpiryJobInput />
-                  <WorkTypeInput />
+                  <JobVacancyInput />
+                  <JobExpiryInput />
+                  <JobWorkTypeInput />
                 </div>
                 <FieldSeparator />
-                <JobBenefits />
+                <JobBenefitsInput />
                 <FieldSeparator />
-                <LocationInput />
+                <JobLocationInput />
 
                 <FieldSeparator />
-                <DescriptionInput />
+                <JobDescriptionInput />
 
-                <ResponsibilitiesInput />
+                <JobResponsibilitiesInput />
 
                 <FieldSeparator />
 
-                <AdditionalInputs />
+                <JobAdditionalInputs />
                 <FieldSeparator />
 
-                <ApplyJobInput />
-                <FieldSeparator />
+                <JobApplyOnInput />
               </FieldGroup>
-            </FieldSet>
-
+            </CardContent>
             <Field orientation='horizontal'>
               <Button type='submit' disabled={createJob.isPending}>
                 {createJob.isPending ? (
@@ -221,7 +250,7 @@ export default function CreateJobForm() {
                 Cancel
               </Button>
             </Field>
-          </FieldGroup>
+          </Card>
         </form>
       </FormProvider>
     </div>

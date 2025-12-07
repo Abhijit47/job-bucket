@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useFormPersist } from '@liorpo/react-hook-form-persist';
 import { IconArrowBackUp, IconRestore, IconTrashX } from '@tabler/icons-react';
 import { FileEdit } from 'lucide-react';
-import { useState } from 'react';
+// import { useState } from 'react';
 import {
   FormProvider,
   SubmitErrorHandler,
@@ -14,7 +14,10 @@ import {
 } from 'react-hook-form';
 import { toast } from 'sonner';
 
+// import { LazyLocationFields } from '@/components/shared/location-fields';
 import { Button, buttonVariants } from '@/components/ui/button';
+// import { Card, CardContent } from '@/components/ui/card';
+import { LazyLocationFields } from '@/components/shared/location-fields';
 import {
   Card,
   CardAction,
@@ -24,48 +27,62 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Field, FieldGroup } from '@/components/ui/field';
+import { Field, FieldGroup, FieldSeparator } from '@/components/ui/field';
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
 import {
-  UpdateEmployerProfileInput,
-  updateEmployerProfileSchema,
+  defaultCity,
+  defaultCountry,
+  defaultRegion,
+  defaultState,
+} from '@/lib/zodSchemas/common.schema';
+import {
+  UpdateCompanyProfileInput,
+  updateCompanyProfileSchema,
 } from '@/lib/zodSchemas/employer.schema';
 import Link from 'next/link';
 import {
-  useGetEmployerProfile,
-  useUpdateEmployerProfile,
+  useGetCompanyProfile,
+  useUpdateCompanyProfile,
 } from '../hooks/use-employers';
 import {
-  FieldEmailAndRole,
-  FieldEmployerAvatar,
-  FieldNameAndUserName,
-  FieldPhoneNumberAndLocale,
-} from './employer-profile-fields';
+  FieldCompanyDescription,
+  FieldCompanyName,
+  FieldCompanyStreetAddressWebsite,
+  FieldOrganizationAndIndustry,
+  FieldTeamSizeAndYear,
+} from './company-form-fields';
 
 // const isDev = process.env.NODE_ENV === 'development';
 
-export function EmployerProfileForm() {
-  const [isAvailable, setIsAvailable] = useState<boolean>(false);
+export function CompanyProfileForm() {
+  const { data, isPending, isLoading } = useGetCompanyProfile();
+  const { mutateAsync, isPending: isUpdatePending } = useUpdateCompanyProfile();
 
-  const { data, isPending, isLoading } = useGetEmployerProfile();
-  const { mutateAsync, isPending: isUpdatePending } =
-    useUpdateEmployerProfile();
-
-  const form = useForm<UpdateEmployerProfileInput>({
-    resolver: zodResolver(updateEmployerProfileSchema),
+  const form = useForm<UpdateCompanyProfileInput>({
+    resolver: zodResolver(updateCompanyProfileSchema),
     defaultValues: {
-      name: data?.name || '',
-      username: data?.username || '',
-      phoneNumber: data?.phoneNumber || '',
-      image: data?.image || '',
-      locale: data?.locale || 'en-US',
-      isActive: data?.isActive || false,
+      companyName: data?.companyName || '',
+      companyDescription: data?.companyDescription || '',
+      companyLogoUrl: data?.companyLogoUrl ?? '',
+      companyBannerUrl: data?.companyBannerUrl ?? '',
+      organizationType: data?.organizationType || undefined,
+      industryType: data?.industryType || undefined,
+      teamSize: data?.teamSize || undefined,
+      yearOfEstablishment: data?.yearOfEstablishment || '',
+      companyWebsite: data?.companyWebsite || '',
+      streetAddress: data?.streetAddress || '',
+      location: {
+        region: data?.location?.region ?? defaultRegion,
+        country: data?.location?.country ?? defaultCountry,
+        state: data?.location?.state ?? defaultState,
+        city: data?.location?.city ?? defaultCity,
+      },
     },
     mode: 'onChange',
   });
 
-  const { clear } = useFormPersist('employer-form', {
+  const { clear } = useFormPersist('company-form', {
     control: form.control,
     setValue: form.setValue,
     storage: sessionStorage, // Use sessionStorage instead of localStorage
@@ -80,7 +97,7 @@ export function EmployerProfileForm() {
     touch: true, // Mark fields as touched
   });
 
-  const onError: SubmitErrorHandler<UpdateEmployerProfileInput> = (errors) => {
+  const onError: SubmitErrorHandler<UpdateCompanyProfileInput> = (errors) => {
     // console.log('Form errors:', errors);
     Object.values(errors).forEach((error) => {
       if (error.message) {
@@ -89,11 +106,11 @@ export function EmployerProfileForm() {
     });
   };
 
-  const onSubmit: SubmitHandler<UpdateEmployerProfileInput> = (data) => {
+  const onSubmit: SubmitHandler<UpdateCompanyProfileInput> = (data) => {
     mutateAsync(data, {
-      onSuccess: () => {
-        setIsAvailable(false);
-      },
+      // onSuccess: () => {
+      //   setIsAvailable(false);
+      // },
     });
   };
 
@@ -103,14 +120,14 @@ export function EmployerProfileForm() {
         <form onSubmit={form.handleSubmit(onSubmit, onError)}>
           <Card>
             <CardHeader>
-              <CardTitle>Update Profile and Company Information</CardTitle>
+              <CardTitle>Update Company Information</CardTitle>
               <CardDescription>
-                Update your personal and company profile information below.
+                Update your company profile information below.
               </CardDescription>
               <CardAction className={'flex items-center gap-2'}>
                 <Link
                   prefetch
-                  href={'/employer/profile'}
+                  href={'/employer/company-profile'}
                   className={buttonVariants({
                     variant: 'outline',
                     size: 'sm',
@@ -119,34 +136,38 @@ export function EmployerProfileForm() {
                   Back to Profile
                 </Link>
                 <Button
-                  disabled={isPending || isLoading}
-                  variant='destructive'
                   type='button'
                   size='icon-sm'
+                  variant='destructive'
                   onClick={() => clear()}>
                   <IconTrashX className='size-4' />
                 </Button>
               </CardAction>
             </CardHeader>
+
             <Separator />
+
             <CardContent className={'space-y-4'}>
-              <FieldNameAndUserName
-                isAvailable={isAvailable}
-                setIsAvailable={setIsAvailable}
-              />
+              <FieldCompanyName />
 
-              <FieldEmailAndRole />
+              <FieldCompanyDescription />
 
-              <FieldPhoneNumberAndLocale />
+              <FieldTeamSizeAndYear />
 
-              <FieldEmployerAvatar />
+              <FieldOrganizationAndIndustry />
+
+              <FieldCompanyStreetAddressWebsite />
+
+              <LazyLocationFields />
             </CardContent>
             <CardFooter>
               <FieldGroup className={'gap-4'}>
+                <FieldSeparator />
+
                 <Field orientation='responsive'>
                   <Button
                     type='submit'
-                    disabled={isUpdatePending || isPending || isLoading}>
+                    disabled={isUpdatePending || isLoading || isPending}>
                     {isUpdatePending ? (
                       <span className={'inline-flex items-center gap-2'}>
                         Updating...
@@ -159,7 +180,7 @@ export function EmployerProfileForm() {
                     )}
                   </Button>
                   <Button
-                    disabled={isUpdatePending || isPending || isLoading}
+                    disabled={isUpdatePending || isLoading || isPending}
                     type='reset'
                     variant='outline'
                     onClick={() => form.reset()}>

@@ -1,6 +1,7 @@
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -13,16 +14,18 @@ import {
 } from '@/components/ui/collapsible';
 import { withEmployerAuth } from '@/lib/auth/withEmployerAuth';
 import { caller } from '@/trpc/server';
+import { IconPencilPlus } from '@tabler/icons-react';
 import { ChevronsUpDown } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
-const fallback =
-  'https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80';
+// const fallback =
+//   'https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80';
 
 export default async function EmployerProfile() {
   await withEmployerAuth();
 
-  const profile = await caller.employers.myProfile();
+  const profile = await caller.employers.getEmployerProfile();
 
   return (
     <div className='flex flex-col gap-4 px-6 py-4 md:gap-6 md:py-6'>
@@ -34,6 +37,18 @@ export default async function EmployerProfile() {
           <CardDescription>
             Here you can view and edit your employer profile information.
           </CardDescription>
+
+          <CardAction>
+            <Link
+              prefetch
+              href={'/employer/profile/update'}
+              className={buttonVariants({
+                variant: 'link',
+              })}>
+              <IconPencilPlus className={'size-4'} />
+              Update Profile
+            </Link>
+          </CardAction>
         </CardHeader>
         <CardContent>
           <div className={'grid grid-cols-4 gap-4 items-center'}>
@@ -47,25 +62,25 @@ export default async function EmployerProfile() {
               fill
               className='h-full w-full rounded-lg object-cover dark:brightness-[0.2] dark:grayscale'
             /> */}
-              <Image
+              {/* <Image
                 src={profile.employer.companyBannerUrl || fallback}
                 alt='Company Banner'
                 width={1200}
                 height={300}
                 className='rounded-md w-full h-full object-cover'
-              />
+              /> */}
             </div>
             <div className='col-span-1 w-full'>
-              <Image
+              {/* <Image
                 src={profile.employer.companyLogoUrl || fallback}
                 alt='Company Logo'
                 width={150}
                 height={150}
                 className='rounded-full w-full h-full object-cover'
-              />
+              /> */}
             </div>
             <Image
-              src={profile.user.image}
+              src={profile.image}
               alt='Employer Profile Image'
               width={150}
               height={150}
@@ -87,19 +102,19 @@ export default async function EmployerProfile() {
             </div>
             <CollapsibleContent className={'space-y-2'}>
               <p className='rounded-md border px-4 py-2 font-mono text-sm'>
-                Name: {profile.user.name}
+                Name: {profile.name}
               </p>
               <p className='rounded-md border px-4 py-2 font-mono text-sm'>
-                Username: {profile.user.username}
+                Username: {profile.username}
               </p>
               <p className='rounded-md border px-4 py-2 font-mono text-sm'>
-                Email: {profile.user.email}
+                Email: {profile.email}
               </p>
               <p className='rounded-md border px-4 py-2 font-mono text-sm'>
-                Preferred Locale: {profile.user.lang}
+                Preferred Locale: {profile.locale}
               </p>
               <p className='rounded-md border px-4 py-2 font-mono text-sm'>
-                Phone Number: {profile.user.phoneNumber}
+                Phone Number: {profile.phoneNumber}
               </p>
             </CollapsibleContent>
           </Collapsible>

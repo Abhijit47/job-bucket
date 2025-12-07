@@ -1,5 +1,16 @@
 'use client';
 
+import { zodResolver } from '@hookform/resolvers/zod';
+import { IconReload } from '@tabler/icons-react';
+import {
+  FormProvider,
+  type Resolver,
+  SubmitErrorHandler,
+  SubmitHandler,
+  useForm,
+} from 'react-hook-form';
+import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import {
   Field,
@@ -14,33 +25,26 @@ import {
   UpdateJobInput,
   updateJobSchema,
 } from '@/lib/zodSchemas/employer.schema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { IconReload } from '@tabler/icons-react';
-import {
-  FormProvider,
-  type Resolver,
-  SubmitErrorHandler,
-  SubmitHandler,
-  useForm,
-} from 'react-hook-form';
-import { toast } from 'sonner';
 import { useGetMyJob, useUpdateJob } from '../hooks/use-employers';
-import AdditionalInputs from './additional-inputs';
-import ApplyJobInput from './apply-job-input';
-import DescriptionInput from './description-input';
-import ExperienceInput from './experience-input';
-import ExpiryJobInput from './expiry-job-input';
-import JobBenefits from './job-benefits';
-import JobLevelInput from './job-level-input';
-import JobTypeInput from './job-type-input';
-import LocationInput from './location-input';
-import QualificationInput from './qualification-input';
-import ResponsibilitiesInput from './responsibilities-input';
-import SalaryInputs from './salary-inputs';
-import TagsInput from './tags-input';
-import TitleInput from './title-input';
-import VacancyInput from './vacancy-input';
-import WorkTypeInput from './work-type-input';
+
+import {
+  JobAdditionalInputs,
+  JobApplyOnInput,
+  JobBenefitsInput,
+  JobDescriptionInput,
+  JobExperienceInput,
+  JobExpiryInput,
+  JobLevelInput,
+  JobLocationInput,
+  JobQualificationInput,
+  JobResponsibilitiesInput,
+  JobSalaryInputs,
+  JobTagsInput,
+  JobTitleInput,
+  JobTypeInput,
+  JobVacancyInput,
+  JobWorkTypeInput,
+} from './job-form-fields';
 
 export default function UpdateJobForm({ jobId }: { jobId: string }) {
   const {
@@ -133,41 +137,41 @@ export default function UpdateJobForm({ jobId }: { jobId: string }) {
               </div>
               <FieldSeparator />
               <FieldGroup className={'gap-4'}>
-                <TitleInput />
+                <JobTitleInput />
 
                 <div className={'grid grid-cols-3 gap-4'}>
-                  <TagsInput />
+                  <JobTagsInput />
                   <JobLevelInput />
                 </div>
 
                 <FieldSeparator />
-                <SalaryInputs />
+                <JobSalaryInputs />
                 <FieldSeparator />
 
                 <div className={'grid grid-cols-1 lg:grid-cols-3 gap-4'}>
-                  <ExperienceInput />
-                  <QualificationInput />
+                  <JobExperienceInput />
+                  <JobQualificationInput />
                   <JobTypeInput />
-                  <VacancyInput />
-                  <ExpiryJobInput />
-                  <WorkTypeInput />
+                  <JobVacancyInput />
+                  <JobExpiryInput />
+                  <JobWorkTypeInput />
                 </div>
                 <FieldSeparator />
-                <JobBenefits />
+                <JobBenefitsInput />
                 <FieldSeparator />
-                <LocationInput />
-
-                <FieldSeparator />
-                <DescriptionInput />
-
-                <ResponsibilitiesInput />
+                <JobLocationInput />
 
                 <FieldSeparator />
+                <JobDescriptionInput />
 
-                <AdditionalInputs />
+                <JobResponsibilitiesInput />
+
                 <FieldSeparator />
 
-                <ApplyJobInput />
+                <JobAdditionalInputs />
+                <FieldSeparator />
+
+                <JobApplyOnInput />
                 <FieldSeparator />
               </FieldGroup>
             </FieldSet>

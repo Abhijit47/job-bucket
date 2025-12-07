@@ -7,8 +7,9 @@ import {
 import {
   createJobSchema,
   myJobSchema,
+  updateCompanyProfileSchema,
+  updateEmployerProfileSchema,
   updateJobSchema,
-  updateProfileSchema,
 } from '@/lib/zodSchemas/employer.schema';
 import { createTRPCRouter, employerProcedure } from '@/trpc/init';
 import { TRPCError } from '@trpc/server';
@@ -97,7 +98,6 @@ export const employersRouter = createTRPCRouter({
       return newJob.id;
     }),
 
-  // .input(createJobSchema.extend({ jobId: myJobSchema.shape.id }))
   updateJob: employerProcedure
     .input(updateJobSchema)
     .mutation(async ({ ctx, input }) => {
@@ -225,47 +225,40 @@ export const employersRouter = createTRPCRouter({
     return [];
   }),
 
-  myProfile: employerProcedure.query(async ({ ctx }) => {
+  getEmployerProfile: employerProcedure.query(async ({ ctx }) => {
     const { user: employerAuth } = ctx.auth;
 
     // join user table to employer table to verify user ownership
-    const prepareInnerJoinStatement = db
-      .select()
-      .from(employerTable)
-      .innerJoin(userTable, eq(employerTable.userId, userTable.id))
-      .where((table) =>
-        and(
-          eq(table.user.id, employerAuth.id),
-          eq(table.employer.userId, employerAuth.id)
-        )
-      )
-      .prepare('employer-profile-inner-join');
+    const prepareStatement = db.query.user
+      .findFirst({
+        where(table, { eq }) {
+          return eq(table.id, employerAuth.id);
+        },
+      })
+      .prepare('employer-profile');
 
     // find the employer
-    const result = await prepareInnerJoinStatement.execute();
+    const result = await prepareStatement.execute();
 
-    if (!result.length) {
+    if (!result) {
       throw new TRPCError({
         code: 'NOT_FOUND',
         message: 'Employer profile not found.',
       });
     }
 
-    const [{ employer, user }] = result;
-
-    return { employer, user };
+    return result;
   }),
-
-  updateProfile: employerProcedure
-    .input(updateProfileSchema)
+  updateEmployerProfile: employerProcedure
+    .input(updateEmployerProfileSchema)
     .mutation(async ({ ctx, input }) => {
       const { user: employerAuth } = ctx.auth;
 
       const result = await db.transaction(async (tx) => {
         // find the employer
         const existingEmployer = await tx.query.employer.findFirst({
-          where(table, { and, eq }) {
-            return and(eq(table.userId, employerAuth.id));
+          where(table, { eq }) {
+            return eq(table.userId, employerAuth.id);
           },
         });
 
@@ -276,7 +269,7 @@ export const employersRouter = createTRPCRouter({
           });
         }
 
-        await tx
+        const [updatedEmployerProfile] = await tx
           .update(userTable)
           .set({
             name: input.name,
@@ -292,9 +285,66 @@ export const employersRouter = createTRPCRouter({
               eq(userTable.id, employerAuth.id),
               eq(userTable.id, existingEmployer.userId)
             )
-          );
+          )
+          .returning();
 
-        const [updatedEmployer] = await tx
+        if (!updatedEmployerProfile) {
+          throw new TRPCError({
+            code: 'INTERNAL_SERVER_ERROR',
+            message: 'Failed to update employer profile.',
+          });
+        }
+        return updatedEmployerProfile;
+      });
+
+      return result.name;
+    }),
+
+  getCompanyProfile: employerProcedure.query(async ({ ctx }) => {
+    const { user: employerAuth } = ctx.auth;
+
+    // join user table to employer table to verify user ownership
+    const prepareStatement = db.query.employer
+      .findFirst({
+        where(table, { eq }) {
+          return eq(table.userId, employerAuth.id);
+        },
+      })
+      .prepare('company-profile');
+
+    // find the employer
+    const result = await prepareStatement.execute();
+
+    if (!result) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'Company profile not found.',
+      });
+    }
+
+    return result;
+  }),
+  updateCompanyProfile: employerProcedure
+    .input(updateCompanyProfileSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { user: employerAuth } = ctx.auth;
+
+      const result = await db.transaction(async (tx) => {
+        // find the employer
+        const existingEmployer = await tx.query.employer.findFirst({
+          where(table, { and, eq }) {
+            return and(eq(table.userId, employerAuth.id));
+          },
+        });
+
+        if (!existingEmployer) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Company profile not found for update.',
+          });
+        }
+
+        const [updatedCompanyProfile] = await tx
           .update(employerTable)
           .set({
             companyName: input.companyName,
@@ -317,32 +367,13 @@ export const employersRouter = createTRPCRouter({
           )
           .returning();
 
-        const [updateUser] = await tx
-          .update(userTable)
-          .set({
-            name: input.name,
-            image: input.image,
-            username: input.username,
-            displayUsername: input.username,
-            locale: input.locale,
-            phoneNumber: input.phoneNumber,
-            isActive: input.isActive,
-          })
-          .where(
-            and(
-              eq(userTable.id, employerAuth.id),
-              eq(userTable.id, existingEmployer.userId)
-            )
-          )
-          .returning();
-
-        if (!updatedEmployer || !updateUser) {
+        if (!updatedCompanyProfile) {
           throw new TRPCError({
             code: 'INTERNAL_SERVER_ERROR',
-            message: 'Failed to update employer profile.',
+            message: 'Failed to update company profile.',
           });
         }
-        return updatedEmployer;
+        return updatedCompanyProfile;
       });
 
       return result.companyName;

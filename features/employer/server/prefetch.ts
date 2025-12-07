@@ -22,5 +22,12 @@ export function prefetchJob(jobId: string) {
  * Prefetch employer profile
  */
 export function prefetchEmployerProfile() {
-  return prefetch(trpc.employers.myProfile.queryOptions());
+  return prefetch(trpc.employers.getEmployerProfile.queryOptions());
+}
+
+/**
+ * Prefetch company profile
+ */
+export function prefetchCompanyProfile() {
+  return prefetch(trpc.employers.getCompanyProfile.queryOptions());
 }

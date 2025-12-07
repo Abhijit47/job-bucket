@@ -31,7 +31,7 @@ import { Progress } from '@/components/ui/progress';
 import { $fetch } from '@/lib/fetch';
 import { cn } from '@/lib/utils';
 import { ExtendedFileWithPreview } from '@/lib/zodSchemas/common.schema';
-import { UpdateProfileInput } from '@/lib/zodSchemas/employer.schema';
+import { UpdateEmployerProfileInput } from '@/lib/zodSchemas/employer.schema';
 
 const maxLength = 20;
 
@@ -54,7 +54,7 @@ export default function UploadImage({ maxFiles }: { maxFiles: number }) {
   const [progress, setProgress] = useState(0);
   const [isUploadPending, startUploadTransition] = useTransition();
   const [isDeletePending, startDeleteTransition] = useTransition();
-  const form = useFormContext<Pick<UpdateProfileInput, 'image'>>();
+  const form = useFormContext<Pick<UpdateEmployerProfileInput, 'image'>>();
 
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
