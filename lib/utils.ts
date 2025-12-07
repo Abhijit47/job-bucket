@@ -70,10 +70,7 @@ export function capitalizeFirstLetter(string: string) {
   const newString = string.replace(/_/g, ' '); // Replace underscores with spaces
 
   // pattern (one_word, one word, one-word) to One Word, One Word, One-Word
-
   const regex = /(^\w|[\s-]\w)/g;
-  newString.replace(regex, (match) => match.toUpperCase());
 
-  // return newString.charAt(0).toUpperCase() + newString.slice(1);
   return newString.replace(regex, (match) => match.toUpperCase());
 }

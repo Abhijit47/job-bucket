@@ -1,5 +1,7 @@
-import { ImageUpload } from '@/components/shared/image-upload';
-import { Card, CardContent } from '@/components/ui/card';
+import { IconCheck, IconHandClick } from '@tabler/icons-react';
+import { Dispatch, SetStateAction, useTransition } from 'react';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
+
 import {
   Field,
   FieldContent,
@@ -7,7 +9,6 @@ import {
   FieldError,
   FieldGroup,
   FieldLabel,
-  FieldSet,
 } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import {
@@ -38,9 +39,6 @@ import {
 import { authClient } from '@/lib/auth/client';
 import { capitalizeFirstLetter, establishmentYears } from '@/lib/utils';
 import { UpdateProfileInput } from '@/lib/zodSchemas/employer.schema';
-import { IconCheck, IconHandClick } from '@tabler/icons-react';
-import { Dispatch, SetStateAction, useTransition } from 'react';
-import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { useGetEmployerProfile } from '../hooks/use-employers';
 
 type FieldNameAndUserNameProps = {
@@ -522,7 +520,7 @@ export function FieldTeamSizeAndYear() {
               <FieldLabel htmlFor='yearOfEstablishment'>
                 Year of establishment
               </FieldLabel>
-              <Select defaultValue={field.value} onValueChange={field.onChange}>
+              <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
                   className='w-full'
                   id='yearOfEstablishment'
@@ -562,96 +560,6 @@ export function FieldTeamSizeAndYear() {
   );
 }
 
-export function FieldComapnyLogoAndBanner() {
-  const form =
-    useFormContext<
-      Pick<UpdateProfileInput, 'companyLogoUrl' | 'companyBannerUrl'>
-    >();
-
-  const watchLogo = useWatch({
-    control: form.control,
-    name: 'companyLogoUrl',
-  });
-
-  const watchBanner = useWatch({
-    control: form.control,
-    name: 'companyBannerUrl',
-  });
-
-  return (
-    <Card className={'p-2'}>
-      <CardContent className={'p-2 space-y-4'}>
-        <FieldSet className={'flex-row flex-wrap lg:flex-nowrap gap-4'}>
-          <FieldGroup>
-            <ImageUpload
-              name='avatar'
-              id='companyLogo'
-              label='Company Logo'
-              description='Provide company logo for identification'
-            />
-            <Field>
-              <FieldContent>
-                <FieldLabel htmlFor='companyLogoUrl'>
-                  Company Logo URL
-                </FieldLabel>
-                <Input
-                  id='companyLogoUrl'
-                  placeholder='https://example.com'
-                  autoComplete='off'
-                  disabled
-                  readOnly
-                  defaultValue={watchLogo}
-                />
-                <FieldDescription className={'text-xs'}>
-                  Provide your company logo URL
-                </FieldDescription>
-              </FieldContent>
-            </Field>
-          </FieldGroup>
-
-          <FieldGroup>
-            <ImageUpload
-              name='banner'
-              id='companyBanner'
-              label='Company Banner'
-              description='Provide company banner for identification'
-            />
-            <Field>
-              <FieldContent>
-                <FieldLabel htmlFor='companyBannerUrl'>
-                  Company Banner URL
-                </FieldLabel>
-                <Input
-                  id='companyBannerUrl'
-                  placeholder='https://example.com'
-                  autoComplete='off'
-                  disabled
-                  readOnly
-                  defaultValue={watchBanner}
-                />
-                <FieldDescription className={'text-xs'}>
-                  Provide your company banner URL
-                </FieldDescription>
-              </FieldContent>
-            </Field>
-          </FieldGroup>
-        </FieldSet>
-      </CardContent>
-    </Card>
-  );
-}
-
-export function FieldEmployerAvatar() {
-  return (
-    <ImageUpload
-      name='avatar'
-      id='image'
-      label='Avatar'
-      description='Provide avatar for identification'
-    />
-  );
-}
-
 export function FieldCompanyName() {
   const form = useFormContext<Pick<UpdateProfileInput, 'companyName'>>();
   return (
@@ -660,7 +568,6 @@ export function FieldCompanyName() {
       control={form.control}
       render={({ field, fieldState }) => (
         <Field
-          // orientation='responsive'
           data-invalid={fieldState.invalid}
           aria-invalid={fieldState.invalid}>
           <FieldContent>
@@ -733,7 +640,6 @@ export function FieldCompanyStreetAddressWebsite() {
                 id='streetAddress'
                 placeholder='123 Main St,'
                 autoComplete='street-address'
-                defaultValue={field.value}
                 {...field}
                 aria-invalid={fieldState.invalid}
               />
