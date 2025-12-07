@@ -276,6 +276,24 @@ export const employersRouter = createTRPCRouter({
           });
         }
 
+        await tx
+          .update(userTable)
+          .set({
+            name: input.name,
+            image: input.image,
+            username: input.username,
+            displayUsername: input.username,
+            locale: input.locale,
+            phoneNumber: input.phoneNumber,
+            isActive: input.isActive,
+          })
+          .where(
+            and(
+              eq(userTable.id, employerAuth.id),
+              eq(userTable.id, existingEmployer.userId)
+            )
+          );
+
         const [updatedEmployer] = await tx
           .update(employerTable)
           .set({
@@ -284,9 +302,11 @@ export const employersRouter = createTRPCRouter({
             companyLogoUrl: input.companyLogoUrl,
             companyBannerUrl: input.companyBannerUrl,
             organizationType: input.organizationType,
+            industryType: input.industryType,
             teamSize: input.teamSize,
             yearOfEstablishment: input.yearOfEstablishment,
             companyWebsite: input.companyWebsite,
+            streetAddress: input.streetAddress,
             location: input.location,
           })
           .where(
