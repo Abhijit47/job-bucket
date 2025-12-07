@@ -30,11 +30,11 @@ import {
   defaultRegion,
   defaultState,
 } from '@/lib/zodSchemas/common.schema';
-import { UpdateProfileInput } from '@/lib/zodSchemas/employer.schema';
+import { UpdateCompanyProfileInput } from '@/lib/zodSchemas/employer.schema';
 import FieldErrorMessageAndDescription from '../../features/candidate/components/field-error-message-and-description';
 
 type FormContextType = Pick<
-  CandidateProfileFormValues | UpdateProfileInput,
+  CandidateProfileFormValues | UpdateCompanyProfileInput,
   'location'
 >;
 

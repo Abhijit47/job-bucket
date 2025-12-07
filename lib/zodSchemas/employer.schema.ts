@@ -17,11 +17,30 @@ import {
 import z from 'zod';
 import { locationSchema } from './common.schema';
 
-const jobTagValues = jobTags.map((tag) => tag.value) as ReadonlyArray<
+export const jobTagValues = jobTags.map((tag) => tag.value) as ReadonlyArray<
   (typeof jobTags)[number]['value']
 >;
 
-export const updateProfileSchema = z.object({
+export const updateEmployerProfileSchema = z.object({
+  name: z
+    .string()
+    .min(1, 'Name is required')
+    .max(100, 'Name should not exceed 100 characters.'),
+  username: z
+    .string()
+    .min(5, 'Username must be at least 5 characters')
+    .max(50, 'Username should not exceed 50 characters.'),
+  phoneNumber: z
+    .string()
+    .min(1, 'Phone number is required')
+    .max(20, 'Phone number should not exceed 20 characters.'),
+  image: z.url(),
+  locale: z.enum(locales, {
+    error: 'Please select a valid language preference.',
+  }),
+  isActive: z.boolean({ error: 'Profile active status is required.' }),
+});
+export const updateCompanyProfileSchema = z.object({
   companyName: z.string().min(1, 'Company name is required.').max(256),
   companyDescription: z
     .string()
@@ -55,24 +74,6 @@ export const updateProfileSchema = z.object({
   companyWebsite: z.url(),
   streetAddress: z.string().min(1, 'Street address is required.'),
   location: locationSchema,
-
-  name: z
-    .string()
-    .min(1, 'Name is required')
-    .max(100, 'Name should not exceed 100 characters.'),
-  username: z
-    .string()
-    .min(5, 'Username must be at least 5 characters')
-    .max(50, 'Username should not exceed 50 characters.'),
-  phoneNumber: z
-    .string()
-    .min(1, 'Phone number is required')
-    .max(20, 'Phone number should not exceed 20 characters.'),
-  image: z.url(),
-  locale: z.enum(locales, {
-    error: 'Please select a valid language preference.',
-  }),
-  isActive: z.boolean({ error: 'Profile active status is required.' }),
 });
 
 export const myJobSchema = z.object({ id: z.string() });
@@ -160,9 +161,14 @@ export const updateJobSchema = createJobSchemaBase.partial().extend({
     .optional(),
 });
 
-export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
 export type MyJobInput = z.infer<typeof myJobSchema>;
 export type CreateJobInput = z.infer<typeof createJobSchema>;
 export type JobModel = z.infer<typeof jobModelSchema>;
 export type UpdateJobInput = z.infer<typeof updateJobSchema>;
 export type SalaryValues = z.infer<typeof salarySchema>;
+export type UpdateEmployerProfileInput = z.infer<
+  typeof updateEmployerProfileSchema
+>;
+export type UpdateCompanyProfileInput = z.infer<
+  typeof updateCompanyProfileSchema
+>;

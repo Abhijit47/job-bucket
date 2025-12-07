@@ -104,7 +104,6 @@ import {
   experiences,
   jobBenefits,
   jobLevels,
-  jobTagValues,
   jobTypes,
   qualifications,
   vacancies,
@@ -112,7 +111,7 @@ import {
 } from '@/drizzle/db-constants';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { capitalizeFirstLetter, cn } from '@/lib/utils';
-import { salarySchema } from '@/lib/zodSchemas/employer.schema';
+import { jobTagValues, salarySchema } from '@/lib/zodSchemas/employer.schema';
 import { format } from 'date-fns';
 import { ChevronRightIcon, TagIcon } from 'lucide-react';
 import Link from 'next/link';

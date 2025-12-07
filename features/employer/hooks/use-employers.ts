@@ -96,7 +96,16 @@ export function useGetMyJob(jobId: string) {
 export function useGetEmployerProfile() {
   const trpc = useTRPC();
 
-  return useSuspenseQuery(trpc.employers.myProfile.queryOptions());
+  return useSuspenseQuery(trpc.employers.getEmployerProfile.queryOptions());
+}
+
+/**
+ * Hook to get company profile
+ */
+export function useGetCompanyProfile() {
+  const trpc = useTRPC();
+
+  return useSuspenseQuery(trpc.employers.getCompanyProfile.queryOptions());
 }
 
 /**
@@ -117,16 +126,46 @@ export function useUpdateEmployerProfile() {
   // const router = useRouter();
 
   return useMutation(
-    trpc.employers.updateProfile.mutationOptions({
+    trpc.employers.updateEmployerProfile.mutationOptions({
       onSuccess: (data, variables) => {
-        toast.success(`${variables.companyName} profile updated successfully.`);
-        queryClient.invalidateQueries(trpc.employers.myProfile.queryOptions());
+        toast.success(`${variables.name} profile updated successfully.`);
+        queryClient.invalidateQueries(
+          trpc.employers.getEmployerProfile.queryOptions()
+        );
         queryClient.invalidateQueries(
           trpc.employers.getProfileStatus.queryOptions()
         );
       },
       onError: () => {
         toast.error('Failed to update employer profile.');
+      },
+    })
+  );
+}
+
+/**
+ * Hook to update company profile
+ */
+export function useUpdateCompanyProfile() {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  // const router = useRouter();
+
+  return useMutation(
+    trpc.employers.updateCompanyProfile.mutationOptions({
+      onSuccess: (data, variables) => {
+        toast.success(
+          `${variables.companyName} company profile updated successfully.`
+        );
+        queryClient.invalidateQueries(
+          trpc.employers.getCompanyProfile.queryOptions()
+        );
+        queryClient.invalidateQueries(
+          trpc.employers.getProfileStatus.queryOptions()
+        );
+      },
+      onError: () => {
+        toast.error('Failed to update company profile.');
       },
     })
   );
