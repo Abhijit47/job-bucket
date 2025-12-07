@@ -42,6 +42,11 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate user inputs to prevent path traversal
+    const sanitizePathComponent = (input: string): string => {
+      return input.replace(/[^a-zA-Z0-9_-]/g, '');
+    };
+
     // create a buffer from the file
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
@@ -49,7 +54,9 @@ export async function POST(req: NextRequest) {
     // set up folders
     const baseFolder = 'job-bucket'; // in cloudinary base folder
     // e.g., job-bucket/employers/employerId or job-bucket/candidates/candidateId
-    const uploadFolder = `${baseFolder}/${user.role}s/${user.id}`;
+    const uploadFolder = `${baseFolder}/${sanitizePathComponent(
+      user.role
+    )}s/${sanitizePathComponent(user.id)}`;
 
     // upload options
     const options: UploadApiOptions = {
@@ -76,7 +83,7 @@ export async function POST(req: NextRequest) {
     );
   } catch (error) {
     // console.error({ error });
-    console.error('Cloudinary upload failed:', (error as Error).message);
+    console.error('Cloudinary upload failed:', (error as Error).message, error);
     return NextResponse.json(
       {
         message: 'Unexpected error occurred during file upload.',

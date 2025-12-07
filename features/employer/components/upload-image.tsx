@@ -107,17 +107,10 @@ export default function UploadImage({ maxFiles }: { maxFiles: number }) {
         form.setValue('image', data.fileUrl);
 
         // update the publicId and tags in the form files
-        // Object.assign(previewFiles[0], {
-        //   publicId: data.publicId,
-        //   tags: data.tags,
-        // });
         setFiles((prev) =>
           prev.map((file, i) =>
             i === 0
-              ? Object.assign({}, file, {
-                  publicId: data.publicId,
-                  tags: data.tags,
-                })
+              ? { ...file, publicId: data.publicId, tags: data.tags }
               : file
           )
         );
