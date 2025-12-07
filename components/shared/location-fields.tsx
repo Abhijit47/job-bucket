@@ -38,6 +38,16 @@ type FormContextType = Pick<
   'location'
 >;
 
+type CountryType = Pick<Country, 'id' | 'name' | 'iso2' | 'hasStates'>;
+type StateType = Pick<
+  State['states'][0],
+  'id' | 'name' | 'state_code' | 'hasCities'
+>;
+type CityType = Pick<
+  City['cities'][0],
+  'id' | 'name' | 'latitude' | 'longitude'
+>;
+
 export default function LocationFields() {
   const [regionsList, setRegionsList] = useState<Region[]>([]);
   const [countriesList, setCountriesList] = useState<Country[]>([]);
@@ -111,7 +121,7 @@ export default function LocationFields() {
           <Field
             data-invalid={fieldState.invalid}
             aria-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor='country'>Region</FieldLabel>
+            <FieldLabel htmlFor='region'>Region</FieldLabel>
             {isRegionPending ? (
               <Skeleton className={'h-9 w-full animate-pulse'} />
             ) : (
@@ -123,11 +133,7 @@ export default function LocationFields() {
                     form.setValue('location.region', defaultRegion);
                     return;
                   }
-
-                  const selectedRegion = JSON.parse(e) as Pick<
-                    Region,
-                    'id' | 'name' | 'hasCountries'
-                  >;
+                  const selectedRegion = JSON.parse(e) as Region;
                   field.onChange(selectedRegion);
                   // Reset dependent fields
                   form.setValue('location.country', defaultCountry);
@@ -137,7 +143,7 @@ export default function LocationFields() {
                   setCities(undefined);
                 }}>
                 <SelectTrigger
-                  id='country'
+                  id='region'
                   className='w-full'
                   aria-invalid={fieldState.invalid}>
                   <SelectValue placeholder='Choose a region' />
@@ -171,59 +177,59 @@ export default function LocationFields() {
       <Controller
         name='location.country'
         control={form.control}
-        render={({ field, fieldState }) => (
-          <Field
-            data-invalid={fieldState.invalid}
-            aria-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor='country'>Country</FieldLabel>
-            {isCountryPending ? (
-              <Skeleton className={'h-9 w-full animate-pulse'} />
-            ) : (
-              <Select
-                disabled={!watchRegion.hasCountries || isCountryPending}
-                value={JSON.stringify(field.value)}
-                onValueChange={(e) => {
-                  if (e === '') {
-                    form.setValue('location.country', defaultCountry);
-                    return;
-                  }
-                  const selectedCountry = JSON.parse(e) as Pick<
-                    Country,
-                    'id' | 'name' | 'iso2' | 'hasStates'
-                  >;
-                  field.onChange(selectedCountry);
-                }}>
-                <SelectTrigger
-                  id='country'
-                  className='w-full'
-                  aria-invalid={fieldState.invalid}>
-                  <SelectValue placeholder='Choose a country' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Choose your country</SelectLabel>
-                    {countriesList.map((country) => (
-                      <SelectItem
-                        key={country.id}
-                        value={JSON.stringify({
-                          id: country.id,
-                          name: country.name,
-                          code: country.iso2,
-                          hasStates: country.hasStates,
-                        })}>
-                        {country.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-            <FieldErrorMessageAndDescription
-              error={fieldState.error}
-              description='Select your country of residence'
-            />
-          </Field>
-        )}
+        render={({ field, fieldState }) => {
+          console.log('location.country', field.value);
+          return (
+            <Field
+              data-invalid={fieldState.invalid}
+              aria-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor='country'>Country</FieldLabel>
+              {isCountryPending ? (
+                <Skeleton className={'h-9 w-full animate-pulse'} />
+              ) : (
+                <Select
+                  disabled={!watchRegion.hasCountries || isCountryPending}
+                  value={JSON.stringify(field.value)}
+                  onValueChange={(e) => {
+                    if (e === '') {
+                      form.setValue('location.country', defaultCountry);
+                      return;
+                    }
+                    const selectedCountry = JSON.parse(e) as CountryType;
+                    field.onChange(selectedCountry);
+                  }}>
+                  <SelectTrigger
+                    id='country'
+                    className='w-full'
+                    aria-invalid={fieldState.invalid}>
+                    <SelectValue placeholder='Choose a country' />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Choose your country</SelectLabel>
+                      {countriesList.map((country) => (
+                        <SelectItem
+                          key={country.id}
+                          value={JSON.stringify({
+                            id: country.id,
+                            name: country.name,
+                            code: country.iso2,
+                            hasStates: country.hasStates,
+                          })}>
+                          {country.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+              <FieldErrorMessageAndDescription
+                error={fieldState.error}
+                description='Select your country of residence'
+              />
+            </Field>
+          );
+        }}
       />
 
       <Controller
@@ -245,11 +251,7 @@ export default function LocationFields() {
                     form.setValue('location.state', defaultState);
                     return;
                   }
-
-                  const selectedState = JSON.parse(e) as Pick<
-                    State['states'][0],
-                    'id' | 'name' | 'state_code' | 'hasCities'
-                  >;
+                  const selectedState = JSON.parse(e) as StateType;
                   field.onChange(selectedState);
                 }}>
                 <SelectTrigger
@@ -261,36 +263,18 @@ export default function LocationFields() {
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Choose your state/province</SelectLabel>
-                    {/* {statesList?.map((state) =>
-                      state.states.map((substate) => (
-                        <SelectItem
-                          key={crypto.randomUUID()}
-                          value={JSON.stringify({
-                            id: substate.id,
-                            name: substate.name,
-                            code: substate.state_code,
-                            hasCities: substate.hasCities,
-                          })}>
-                          {substate.name}
-                        </SelectItem>
-                      ))
-                    )} */}
-                    {statesList?.map(
-                      (state) => (
-                        <SelectItem
-                          key={crypto.randomUUID()}
-                          value={JSON.stringify({
-                            id: state.id,
-                            name: state.name,
-                            code: state.state_code,
-                            hasCities: state.hasCities,
-                          })}>
-                          {state.name}
-                        </SelectItem>
-                      )
-                      // state.states.map((substate) => (
-                      // ))
-                    )}
+                    {statesList?.map((state) => (
+                      <SelectItem
+                        key={crypto.randomUUID()}
+                        value={JSON.stringify({
+                          id: state.id,
+                          name: state.name,
+                          code: state.state_code,
+                          hasCities: state.hasCities,
+                        })}>
+                        {state.name}
+                      </SelectItem>
+                    ))}
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -322,11 +306,7 @@ export default function LocationFields() {
                     form.setValue('location.city', defaultCity);
                     return;
                   }
-
-                  const selectedCity = JSON.parse(e) as Pick<
-                    City['cities'][0],
-                    'id' | 'name' | 'latitude' | 'longitude'
-                  >;
+                  const selectedCity = JSON.parse(e) as CityType;
                   field.onChange(selectedCity);
                 }}>
                 <SelectTrigger

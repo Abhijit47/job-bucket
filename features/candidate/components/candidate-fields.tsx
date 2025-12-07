@@ -308,13 +308,9 @@ export const FieldExperienceAndQualification = () => {
                 </SelectGroup>
                 {experiences.map((exp) => (
                   <SelectItem key={exp} value={exp}>
-                    {`${exp} ${
-                      exp === 'No experience'
-                        ? ''
-                        : exp === '1'
-                        ? 'Year'
-                        : 'Years'
-                    }`}
+                    {exp === 'No experience'
+                      ? exp
+                      : `${exp} ${exp === '1' ? 'Year' : 'Years'}`}
                   </SelectItem>
                 ))}
               </SelectContent>

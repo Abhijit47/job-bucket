@@ -46,7 +46,6 @@ import {
 } from '../hooks/use-employers';
 import {
   FieldActiveProfile,
-  // FieldComapnyLogoAndBanner,
   FieldCompanyDescription,
   FieldCompanyName,
   FieldCompanyStreetAddressWebsite,
@@ -57,6 +56,8 @@ import {
   FieldTeamSizeAndYear,
 } from './employer-profile-fields';
 import UploadImage from './upload-image';
+
+const isDev = process.env.NODE_ENV === 'development';
 
 export function EmployerProfileForm() {
   const [isAvailable, setIsAvailable] = useState<boolean>(false);
@@ -69,39 +70,36 @@ export function EmployerProfileForm() {
     resolver: zodResolver(updateProfileSchema),
     defaultValues: {
       // employer fields
-      companyName: data?.employer.companyName || '',
-      companyDescription: data?.employer.companyDescription || '',
-      // companyLogo: [], // { avatar: [] },
-      // companyBanner: undefined, // { banner: [] },
-      companyLogoUrl: data.employer.companyLogoUrl || '',
-      companyBannerUrl: data.employer.companyBannerUrl || '',
-      organizationType: data.employer.organizationType || undefined,
-      industryType: data.employer.industryType || undefined,
-      teamSize: data.employer.teamSize || undefined,
-      yearOfEstablishment: data.employer.yearOfEstablishment || '',
-      companyWebsite: data.employer.companyWebsite || '',
-      streetAddress: data.employer.streetAddress || '',
+      companyName: data?.employer?.companyName || '',
+      companyDescription: data?.employer?.companyDescription || '',
+      companyLogoUrl: data?.employer?.companyLogoUrl ?? '',
+      companyBannerUrl: data?.employer?.companyBannerUrl ?? '',
+      organizationType: data?.employer?.organizationType || undefined,
+      industryType: data?.employer?.industryType || undefined,
+      teamSize: data?.employer?.teamSize || undefined,
+      yearOfEstablishment: data?.employer?.yearOfEstablishment || '',
+      companyWebsite: data?.employer?.companyWebsite || '',
+      streetAddress: data?.employer?.streetAddress || '',
       location: {
-        region: defaultRegion,
-        country: defaultCountry,
-        state: defaultState,
-        city: defaultCity,
+        region: data?.employer.location?.region ?? defaultRegion,
+        country: data?.employer?.location?.country ?? defaultCountry,
+        state: data?.employer?.location?.state ?? defaultState,
+        city: data?.employer?.location?.city ?? defaultCity,
       },
 
       // user fields
-      name: data.user.name || '',
-      username: data.user.username || '',
-      phoneNumber: data.user.phoneNumber || '',
-      image: data.user.image || '',
-      // avatar: [], // local file state
-      locale: data.user.locale || 'en-US',
-      isActive: data.user.isActive || false,
+      name: data?.user?.name || '',
+      username: data?.user?.username || '',
+      phoneNumber: data?.user?.phoneNumber || '',
+      image: data?.user?.image || '',
+      locale: data?.user?.locale || 'en-US',
+      isActive: data?.user?.isActive || false,
     },
     mode: 'onChange',
   });
 
   const onError: SubmitErrorHandler<UpdateProfileInput> = (errors) => {
-    console.log('Form errors:', errors);
+    // console.log('Form errors:', errors);
     Object.values(errors).forEach((error) => {
       if (error.message) {
         toast.error(error.message);
@@ -183,8 +181,6 @@ export function EmployerProfileForm() {
 
                 <FieldCompanyDescription />
 
-                {/* <FieldComapnyLogoAndBanner /> */}
-
                 <FieldTeamSizeAndYear />
 
                 <FieldOrganizationAndIndustry />
@@ -224,7 +220,7 @@ export function EmployerProfileForm() {
             </Card>
           </FieldSet>
         </form>
-        <DevTool control={form.control} id='employer-form' />
+        {isDev ? <DevTool control={form.control} id='employer-form' /> : null}
       </FormProvider>
     </div>
   );

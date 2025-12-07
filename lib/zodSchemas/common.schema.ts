@@ -55,23 +55,40 @@ export const languageSchema = z.object({
   native: z.string(),
 });
 
+const ACCEPTED_IMAGE_TYPES = [
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+];
+
 export const avatarSchema = z
   .array(z.custom<ExtendedFileWithPreview>())
   .min(1, 'Please select at least one file')
   .max(1, 'Please select up to 1 file')
   .refine((files) => files.every((file) => file.size <= 10 * 1024 * 1024), {
     message: 'File size must be less than 10MB',
-    path: ['avatar'],
-  });
+  })
+  .refine(
+    (files) => files.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type)),
+    {
+      message: 'Only .jpg, .jpeg, .png, and .webp formats are supported',
+    }
+  );
 
 export const bannerSchema = z
-  .array(z.custom<File>())
+  .array(z.custom<ExtendedFileWithPreview>())
   .min(1, 'Please select at least one file')
   .max(1, 'Please select up to 1 file')
   .refine((files) => files.every((file) => file.size <= 10 * 1024 * 1024), {
     message: 'File size must be less than 10MB',
-    path: ['banner'],
-  });
+  })
+  .refine(
+    (files) => files.every((file) => ACCEPTED_IMAGE_TYPES.includes(file.type)),
+    {
+      message: 'Only .jpg, .jpeg, .png, and .webp formats are supported',
+    }
+  );
 
 export type ExtendedFileWithPreview = FileWithPath & {
   publicId?: string;

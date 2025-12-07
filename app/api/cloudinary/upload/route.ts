@@ -12,6 +12,36 @@ export async function POST(req: NextRequest) {
     const file = payload.get('avatar') as File;
     // console.log('UPLOAD file', file);
 
+    if (!file || !(file instanceof File)) {
+      return NextResponse.json(
+        { message: 'No file provided or invalid file.' },
+        { status: 400, statusText: 'Bad Request' }
+      );
+    }
+
+    const ALLOWED_TYPES = [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+    ];
+
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return NextResponse.json(
+        { message: 'Invalid file type. Allowed: JPEG, PNG, WebP, GIF.' },
+        { status: 400 }
+      );
+    }
+
+    if (file.size > MAX_SIZE) {
+      return NextResponse.json(
+        { message: 'File too large. Maximum size: 5MB.' },
+        { status: 400 }
+      );
+    }
+
     // create a buffer from the file
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);

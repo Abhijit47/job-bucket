@@ -1,22 +1,31 @@
 import cloudinary from '@/configs';
 import { requireAuth } from '@/lib/auth/requireAuth';
 import { NextRequest, NextResponse } from 'next/server';
-// import {  } from "cloudinary";
 
 export async function POST(req: NextRequest) {
-  await requireAuth();
+  const { user } = await requireAuth();
 
   try {
     const payload = await req.formData();
     const publicId = payload.get('publicId') as string;
-    console.log('DELETE payload', payload);
+    // console.log('DELETE payload', payload);
 
-    // cloudinary.api.delete_resources(
-    //   [payload.public_id],
-    //   function (error, result) {
-    //     console.log('Cloudinary delete result', result, error);
-    //   }
-    // );
+    if (!publicId) {
+      return NextResponse.json(
+        { message: 'publicId is required.' },
+        { status: 400, statusText: 'Bad Request' }
+      );
+    }
+
+    // Verify ownership: ensure publicId belongs to this user's folder
+    const expectedPrefix = `job-bucket/${user.role}s/${user.id}/`;
+    if (!publicId.startsWith(expectedPrefix)) {
+      return NextResponse.json(
+        { message: 'Unauthorized to delete this resource.' },
+        { status: 403, statusText: 'Forbidden' }
+      );
+    }
+
     await cloudinary.uploader.destroy(publicId, {
       resource_type: 'image',
     });

@@ -1,5 +1,17 @@
 'use client';
 
+import { UploadCloudIcon, XCircleIcon } from 'lucide-react';
+import Image from 'next/image';
+import { useCallback, useEffect, useState, useTransition } from 'react';
+import {
+  type DropEvent,
+  type FileRejection,
+  type FileWithPath,
+  useDropzone,
+} from 'react-dropzone';
+import { useFormContext } from 'react-hook-form';
+import { toast } from 'sonner';
+
 import { Button } from '@/components/ui/button';
 import {
   Field,
@@ -18,19 +30,8 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { $fetch } from '@/lib/fetch';
 import { cn } from '@/lib/utils';
+import { ExtendedFileWithPreview } from '@/lib/zodSchemas/common.schema';
 import { UpdateProfileInput } from '@/lib/zodSchemas/employer.schema';
-import { UploadCloudIcon, XCircleIcon } from 'lucide-react';
-import Image from 'next/image';
-import { useCallback, useEffect, useState, useTransition } from 'react';
-
-import {
-  type DropEvent,
-  type FileRejection,
-  type FileWithPath,
-  useDropzone,
-} from 'react-dropzone';
-import { useFormContext } from 'react-hook-form';
-import { toast } from 'sonner';
 
 const maxLength = 20;
 
@@ -48,12 +49,6 @@ function nameLengthValidator(file: File | null) {
   return null;
 }
 
-type ExtendedFileWithPreview = FileWithPath & {
-  publicId?: string;
-  tags?: string[];
-  preview: string;
-};
-
 export default function UploadImage({ maxFiles }: { maxFiles: number }) {
   const [files, setFiles] = useState<ExtendedFileWithPreview[]>([]);
   const [progress, setProgress] = useState(0);
@@ -61,36 +56,18 @@ export default function UploadImage({ maxFiles }: { maxFiles: number }) {
   const [isDeletePending, startDeleteTransition] = useTransition();
   const form = useFormContext<Pick<UpdateProfileInput, 'image'>>();
 
-  // const watchFiles = useWatch({
-  //   control: form.control,
-  //   name: 'avatar',
-  //   // defaultValue: { companyLogo:  undefined },
-  // });
-
   const onDrop = useCallback(
     (acceptedFiles: FileWithPath[]) => {
       startUploadTransition(async () => {
-        setFiles(
-          acceptedFiles.map((file) =>
-            Object.assign(file, {
-              preview: URL.createObjectURL(file),
-            })
-          )
-        );
-
-        // reset the form error
-        // form.clearErrors('avatar');
-
         // Create preview files
         const previewFiles = acceptedFiles.map((file) =>
           Object.assign(file, {
             preview: URL.createObjectURL(file),
           })
         );
+        setFiles(previewFiles);
 
-        // Update the form value
-        // form.setValue('avatar', previewFiles);
-
+        // Upload the first file only in cloudinary
         const formData = new FormData();
         formData.append('avatar', acceptedFiles[0]);
 
@@ -111,7 +88,6 @@ export default function UploadImage({ maxFiles }: { maxFiles: number }) {
           return;
         }
 
-        // Handle successful upload response
         // console.info('File uploaded successfully:', data);
 
         // Upload progress simulation
@@ -135,16 +111,6 @@ export default function UploadImage({ maxFiles }: { maxFiles: number }) {
           publicId: data.publicId,
           tags: data.tags,
         });
-        // const updatedFiles = previewFiles.map((file) => ({
-        //   ...file,
-        //   publicId: data.publicId,
-        //   tags: data.tags,
-        // }));
-        // console.info({ updatedFiles });
-        // form.setValue('avatar', updatedFiles);
-
-        // Reset progress
-        // setProgress(0);
       });
     },
     [form]
@@ -179,13 +145,14 @@ export default function UploadImage({ maxFiles }: { maxFiles: number }) {
     [form]
   );
 
+  // eslint-disable-next-line
   const onDropAccepted = useCallback((acceptedFiles: FileWithPath[]) => {
-    console.info({ acceptedFiles });
+    // console.info({ acceptedFiles });
   }, []);
 
   const onError = useCallback(
     (error: Error) => {
-      console.error({ error });
+      // console.error({ error });
 
       // set the form error
       form.setError('image', {
@@ -262,7 +229,7 @@ export default function UploadImage({ maxFiles }: { maxFiles: number }) {
         // toast.success('Image removed successfully.');
       }
 
-      console.info('File deleted successfully:', data);
+      // console.info('File deleted successfully:', data);
 
       // form.setValue('avatar', newFiles);
       setFiles(newFiles);
@@ -376,7 +343,6 @@ function PreviewImage({
   onRemoveFile,
   isPending,
 }: PreviewImageProps) {
-  console.info({ files });
   const thumbs = files.map((file, idx) => (
     <li key={idx}>
       <Item variant='outline' size={'sm'}>
@@ -406,7 +372,7 @@ function PreviewImage({
             type='button'
             size='icon-sm'
             variant='destructive'
-            onClick={() => onRemoveFile(file.publicId!)}>
+            onClick={() => file.publicId && onRemoveFile(file.publicId)}>
             <XCircleIcon />
           </Button>
         </ItemActions>
