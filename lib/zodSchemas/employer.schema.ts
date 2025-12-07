@@ -1,18 +1,25 @@
 import {
   currencies,
   experiences,
+  industries,
   jobBenefits,
   jobLevels,
-  jobTagValues,
+  jobTags,
   jobTypes,
   locales,
   organizationTypes,
   qualifications,
   salaryPeriods,
+  teamSizes,
   vacancies,
   workTypes,
 } from '@/drizzle/db-constants';
 import z from 'zod';
+import { locationSchema } from './common.schema';
+
+const jobTagValues = jobTags.map((tag) => tag.value) as ReadonlyArray<
+  (typeof jobTags)[number]['value']
+>;
 
 export const updateProfileSchema = z.object({
   companyName: z.string().min(1, 'Company name is required.').max(256),
@@ -20,16 +27,34 @@ export const updateProfileSchema = z.object({
     .string()
     .min(1, 'Company description is required.')
     .max(2048, 'Company description should not exceed 2048 characters.'),
-  companyLogoUrl: z.url(),
-  companyBannerUrl: z.url(),
+  // companyLogo: z
+  //   .array(z.custom<ExtendedFileWithPreview>())
+  //   .min(1, 'Please select at least one file')
+  //   .max(1, 'Please select up to 1 file')
+  //   .refine((files) => files.every((file) => file.size <= 10 * 1024 * 1024), {
+  //     message: 'File size must be less than 10MB',
+  //     path: ['companyLogo'],
+  //   }),
+  // companyBanner: z
+  //   .array(z.custom<ExtendedFileWithPreview>())
+  //   .min(1, 'Please select at least one file')
+  //   .max(1, 'Please select up to 1 file')
+  //   .refine((files) => files.every((file) => file.size <= 10 * 1024 * 1024), {
+  //     message: 'File size must be less than 10MB',
+  //     path: ['companyBanner'],
+  //   }),
+  companyLogoUrl: z.url('Company logo URL is required.'),
+  companyBannerUrl: z.url('Company banner URL is required.'),
   organizationType: z.enum(
     organizationTypes,
     'Please select a valid organization type.'
   ),
-  teamSize: z.string().min(1, 'Team size is required.'),
+  industryType: z.enum(industries, 'Please select a valid industry type.'),
+  teamSize: z.enum(teamSizes, 'Please select a valid team size.'),
   yearOfEstablishment: z.string().min(1, 'Year of establishment is required.'),
   companyWebsite: z.url(),
-  location: z.string().min(1, 'Location is required.').max(256),
+  streetAddress: z.string().min(1, 'Street address is required.'),
+  location: locationSchema,
 
   name: z
     .string()

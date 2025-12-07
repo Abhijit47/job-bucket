@@ -234,7 +234,7 @@ export const FieldNationalityAndMaritalStatus = () => {
                 </SelectGroup>
                 {nationalities.map((nation) => (
                   <SelectItem key={nation} value={nation}>
-                    {nation}
+                    {capitalizeFirstLetter(nation)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -308,7 +308,13 @@ export const FieldExperienceAndQualification = () => {
                 </SelectGroup>
                 {experiences.map((exp) => (
                   <SelectItem key={exp} value={exp}>
-                    {capitalizeFirstLetter(exp)}
+                    {`${exp} ${
+                      exp === 'No experience'
+                        ? ''
+                        : exp === '1'
+                        ? 'Year'
+                        : 'Years'
+                    }`}
                   </SelectItem>
                 ))}
               </SelectContent>

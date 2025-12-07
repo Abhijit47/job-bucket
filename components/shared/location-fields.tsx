@@ -30,7 +30,13 @@ import {
   defaultRegion,
   defaultState,
 } from '@/lib/zodSchemas/common.schema';
+import { UpdateProfileInput } from '@/lib/zodSchemas/employer.schema';
 import FieldErrorMessageAndDescription from '../../features/candidate/components/field-error-message-and-description';
+
+type FormContextType = Pick<
+  CandidateProfileFormValues | UpdateProfileInput,
+  'location'
+>;
 
 export default function LocationFields() {
   const [regionsList, setRegionsList] = useState<Region[]>([]);
@@ -43,7 +49,7 @@ export default function LocationFields() {
   const [isStatePending, startStateTransition] = useTransition();
   const [isCityPending, startCityTransition] = useTransition();
 
-  const form = useFormContext<Pick<CandidateProfileFormValues, 'location'>>();
+  const form = useFormContext<FormContextType>();
 
   const watchRegion = useWatch({
     control: form.control,

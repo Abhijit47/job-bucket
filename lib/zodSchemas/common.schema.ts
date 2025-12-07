@@ -1,3 +1,4 @@
+import { type FileWithPath } from 'react-dropzone';
 import z from 'zod';
 
 export const defaultRegion = { id: '0', name: '', hasCountries: false };
@@ -54,5 +55,43 @@ export const languageSchema = z.object({
   native: z.string(),
 });
 
+export const avatarSchema = z
+  .array(z.custom<ExtendedFileWithPreview>())
+  .min(1, 'Please select at least one file')
+  .max(1, 'Please select up to 1 file')
+  .refine((files) => files.every((file) => file.size <= 10 * 1024 * 1024), {
+    message: 'File size must be less than 10MB',
+    path: ['avatar'],
+  });
+
+export const bannerSchema = z
+  .array(z.custom<File>())
+  .min(1, 'Please select at least one file')
+  .max(1, 'Please select up to 1 file')
+  .refine((files) => files.every((file) => file.size <= 10 * 1024 * 1024), {
+    message: 'File size must be less than 10MB',
+    path: ['banner'],
+  });
+
+export type ExtendedFileWithPreview = FileWithPath & {
+  publicId?: string;
+  tags?: string[];
+  preview: string;
+};
+
+export const filesSchema = z.object({
+  files: z
+    .array(z.custom<ExtendedFileWithPreview>())
+    .min(1, 'Please select at least one file')
+    .max(2, 'Please select up to 2 files')
+    .refine((files) => files.every((file) => file.size <= 10 * 1024 * 1024), {
+      message: 'File size must be less than 10MB',
+      path: ['files'],
+    }),
+});
+
 export type LocationValues = z.infer<typeof locationSchema>;
 export type LanguageValues = z.infer<typeof languageSchema>;
+export type AvatarValue = z.infer<typeof avatarSchema>;
+export type BannerValue = z.infer<typeof bannerSchema>;
+export type FilesValues = z.infer<typeof filesSchema>;

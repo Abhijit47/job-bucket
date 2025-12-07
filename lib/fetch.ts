@@ -12,6 +12,26 @@ export const zodSchema = createSchema({
       fileType: z.string().min(1, 'File type is required'),
     }),
   },
+
+  '/api/cloudinary/upload': {
+    input: z.unknown(),
+    output: z.object({
+      publicId: z.string().min(1, 'Public ID is required'),
+      fileUrl: z.string().min(1, 'File URL is required'),
+      fileName: z.string().min(1, 'File name is required'),
+      fileSize: z.number().min(1, 'File size is required'),
+      fileType: z.string().min(1, 'File type is required'),
+      tags: z.array(z.string()),
+    }),
+  },
+
+  '/api/cloudinary/delete': {
+    input: z.unknown(),
+    output: z.object({
+      success: z.boolean(),
+      message: z.string().min(1, 'Message is required'),
+    }),
+  },
 });
 
 export const $fetch = createFetch({
