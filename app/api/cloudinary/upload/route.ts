@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
 
     if (file.size > MAX_SIZE) {
       return NextResponse.json(
-        { message: 'File too large. Maximum size: 5MB.' },
+        { message: 'File too large. Maximum size: 10MB.' },
         { status: 400 }
       );
     }
@@ -75,7 +75,8 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error({ error });
+    // console.error({ error });
+    console.error('Cloudinary upload failed:', (error as Error).message);
     return NextResponse.json(
       {
         message: 'Unexpected error occurred during file upload.',

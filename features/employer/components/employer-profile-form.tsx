@@ -2,6 +2,7 @@
 
 import { DevTool } from '@hookform/devtools';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useFormPersist } from '@liorpo/react-hook-form-persist';
 import { IconRestore } from '@tabler/icons-react';
 import { FileEdit } from 'lucide-react';
 import { useState } from 'react';
@@ -81,7 +82,7 @@ export function EmployerProfileForm() {
       companyWebsite: data?.employer?.companyWebsite || '',
       streetAddress: data?.employer?.streetAddress || '',
       location: {
-        region: data?.employer.location?.region ?? defaultRegion,
+        region: data?.employer?.location?.region ?? defaultRegion,
         country: data?.employer?.location?.country ?? defaultCountry,
         state: data?.employer?.location?.state ?? defaultState,
         city: data?.employer?.location?.city ?? defaultCity,
@@ -96,6 +97,21 @@ export function EmployerProfileForm() {
       isActive: data?.user?.isActive || false,
     },
     mode: 'onChange',
+  });
+
+  const { clear } = useFormPersist('employer-form', {
+    control: form.control,
+    setValue: form.setValue,
+    storage: sessionStorage, // Use sessionStorage instead of localStorage
+    // exclude: ["password", "confirmPassword"], // Don't persist passwords
+    debounceDelay: 500, // Save after 500ms of inactivity
+    timeout: 24 * 60 * 60 * 1000, // 24 hours
+    onTimeout: () => {
+      console.log('Form data expired');
+    },
+    validate: true, // Trigger validation when data is restored
+    dirty: true, // Mark form as dirty
+    touch: true, // Mark fields as touched
   });
 
   const onError: SubmitErrorHandler<UpdateProfileInput> = (errors) => {
@@ -125,6 +141,10 @@ export function EmployerProfileForm() {
               Update your personal and company profile information below.
             </FieldDescription>
             <FieldSeparator />
+
+            <Button size='sm' variant='outline' onClick={() => clear()}>
+              Clear Saved
+            </Button>
 
             <Card>
               <CardContent className={'space-y-4'}>
