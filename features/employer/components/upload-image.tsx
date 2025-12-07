@@ -107,10 +107,20 @@ export default function UploadImage({ maxFiles }: { maxFiles: number }) {
         form.setValue('image', data.fileUrl);
 
         // update the publicId and tags in the form files
-        Object.assign(previewFiles[0], {
-          publicId: data.publicId,
-          tags: data.tags,
-        });
+        // Object.assign(previewFiles[0], {
+        //   publicId: data.publicId,
+        //   tags: data.tags,
+        // });
+        setFiles((prev) =>
+          prev.map((file, i) =>
+            i === 0
+              ? Object.assign({}, file, {
+                  publicId: data.publicId,
+                  tags: data.tags,
+                })
+              : file
+          )
+        );
       });
     },
     [form]
@@ -191,20 +201,8 @@ export default function UploadImage({ maxFiles }: { maxFiles: number }) {
   });
 
   const handleRemoveFile = (publicId: string) => {
-    // Update the acceptedFiles state
-    // Note: useDropzone does not provide a direct way to update acceptedFiles,
-    // so you might need to manage your own state for files if you want to remove them.
-    // remove all file from index 0 to idx-1
-    // setFiles((prevFiles) => {
-    //   if (!prevFiles) return prevFiles;
-    //   const newFiles = [...prevFiles];
-    //   newFiles.splice(idx - 1, 1);
-    //   return newFiles;
-    // });
     startDeleteTransition(async () => {
-      // const currentFiles = watchFiles;
       const newFiles = [...files];
-      // newFiles.splice(idx - 1, 1);
 
       // Delete from cloudinary could be added here
       const formData = new FormData();
@@ -226,12 +224,8 @@ export default function UploadImage({ maxFiles }: { maxFiles: number }) {
       );
       if (indexToRemove !== -1) {
         newFiles.splice(indexToRemove, 1);
-        // toast.success('Image removed successfully.');
       }
 
-      // console.info('File deleted successfully:', data);
-
-      // form.setValue('avatar', newFiles);
       setFiles(newFiles);
 
       form.setValue('image', '');
@@ -372,7 +366,13 @@ function PreviewImage({
             type='button'
             size='icon-sm'
             variant='destructive'
-            onClick={() => file.publicId && onRemoveFile(file.publicId)}>
+            onClick={() => {
+              if (file.publicId) {
+                onRemoveFile(file.publicId);
+              } else {
+                toast.warning('Cannot remove: upload still in progress');
+              }
+            }}>
             <XCircleIcon />
           </Button>
         </ItemActions>

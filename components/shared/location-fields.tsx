@@ -178,7 +178,7 @@ export default function LocationFields() {
         name='location.country'
         control={form.control}
         render={({ field, fieldState }) => {
-          console.log('location.country', field.value);
+          // console.log('location.country', field.value);
           return (
             <Field
               data-invalid={fieldState.invalid}
@@ -265,7 +265,7 @@ export default function LocationFields() {
                     <SelectLabel>Choose your state/province</SelectLabel>
                     {statesList?.map((state) => (
                       <SelectItem
-                        key={crypto.randomUUID()}
+                        key={state.id}
                         value={JSON.stringify({
                           id: state.id,
                           name: state.name,
@@ -320,7 +320,7 @@ export default function LocationFields() {
                     <SelectLabel>Choose your city/town</SelectLabel>
                     {citiesList?.cities.map((city) => (
                       <SelectItem
-                        key={crypto.randomUUID()}
+                        key={city.id}
                         value={JSON.stringify({
                           id: city.id,
                           name: city.name,

@@ -19,7 +19,12 @@ export async function POST(req: NextRequest) {
 
     // Verify ownership: ensure publicId belongs to this user's folder
     const expectedPrefix = `job-bucket/${user.role}s/${user.id}/`;
-    if (!publicId.startsWith(expectedPrefix)) {
+    // Reject path traversal attempts
+    if (
+      publicId.includes('..') ||
+      publicId.includes('//') ||
+      !publicId.startsWith(expectedPrefix)
+    ) {
       return NextResponse.json(
         { message: 'Unauthorized to delete this resource.' },
         { status: 403, statusText: 'Forbidden' }
