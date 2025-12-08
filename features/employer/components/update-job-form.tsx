@@ -59,6 +59,7 @@ export default function UpdateJobForm({ jobId }: { jobId: string }) {
       updateJobSchema
     ) as unknown as Resolver<UpdateJobInput>,
     defaultValues: {
+      id: data?.id || '',
       title: data.title || '',
       description: data.description || '',
       tags: data.tags || [],
@@ -102,17 +103,8 @@ export default function UpdateJobForm({ jobId }: { jobId: string }) {
   //   form.setValue('id', jobId);
   // }, [jobId, form]);
 
-  form.setValue('id', jobId);
+  // form.setValue('id', jobId);
   const onSubmit: SubmitHandler<UpdateJobInput> = (values) => {
-    if (values?.tags?.length === 0) {
-      form.setError('tags', {
-        type: 'manual',
-        message: 'Please select at least one tag.',
-      });
-      toast.error('Please select at least one tag.');
-      return;
-    }
-
     mutate(values);
   };
 

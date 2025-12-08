@@ -73,7 +73,8 @@ export function EmployerProfileForm() {
     debounceDelay: 500, // Save after 500ms of inactivity
     timeout: 24 * 60 * 60 * 1000, // 24 hours
     onTimeout: () => {
-      console.log('Form data expired');
+      // console.log('Form data expired');
+      toast.info('Saved employer form data has expired.');
     },
     validate: true, // Trigger validation when data is restored
     dirty: true, // Mark form as dirty
@@ -103,9 +104,9 @@ export function EmployerProfileForm() {
         <form onSubmit={form.handleSubmit(onSubmit, onError)}>
           <Card>
             <CardHeader>
-              <CardTitle>Update Profile and Company Information</CardTitle>
+              <CardTitle>Update Profile Information</CardTitle>
               <CardDescription>
-                Update your personal and company profile information below.
+                Update your personal profile information below.
               </CardDescription>
               <CardAction className={'flex items-center gap-2'}>
                 <Link
@@ -163,7 +164,7 @@ export function EmployerProfileForm() {
                     type='reset'
                     variant='outline'
                     onClick={() => form.reset()}>
-                    Cancel <IconRestore className='size-4' />
+                    Reset <IconRestore className='size-4' />
                   </Button>
                 </Field>
               </FieldGroup>

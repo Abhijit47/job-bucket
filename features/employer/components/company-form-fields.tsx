@@ -383,7 +383,7 @@ export function FieldCompanyStreetAddressWebsite() {
                 {...field}
                 aria-invalid={fieldState.invalid}
               />
-              {fieldState.error?.message ? (
+              {fieldState.error ? (
                 <FieldError className={'text-xs'} errors={[fieldState.error]} />
               ) : (
                 <FieldDescription className={'text-xs'}>

@@ -21,6 +21,29 @@ export const jobTagValues = jobTags.map((tag) => tag.value) as ReadonlyArray<
   (typeof jobTags)[number]['value']
 >;
 
+export const applyOptions = [
+  {
+    value: 'on-job-bucket',
+    title: 'On JobBucket',
+    description:
+      ' Let candidates apply directly on JobBucket platform & all applications will show on your dashboard.',
+  },
+  {
+    value: 'external-platform',
+    title: 'External Platform',
+    description:
+      ' Candidates apply jobs on your website, all applications on your own website.',
+  },
+  {
+    value: 'on-your-email',
+    title: 'On Your Email',
+    description:
+      ' Candidates apply jobs on your email, all applications on your own email.',
+  },
+] as const;
+
+export type ApplyOption = (typeof applyOptions)[number]['value'];
+
 export const updateEmployerProfileSchema = z.object({
   name: z
     .string()
@@ -34,7 +57,7 @@ export const updateEmployerProfileSchema = z.object({
     .string()
     .min(1, 'Phone number is required')
     .max(20, 'Phone number should not exceed 20 characters.'),
-  image: z.url(),
+  image: z.url('Profile image URL is required.'),
   locale: z.enum(locales, {
     error: 'Please select a valid language preference.',
   }),
@@ -71,7 +94,7 @@ export const updateCompanyProfileSchema = z.object({
   industryType: z.enum(industries, 'Please select a valid industry type.'),
   teamSize: z.enum(teamSizes, 'Please select a valid team size.'),
   yearOfEstablishment: z.string().min(1, 'Year of establishment is required.'),
-  companyWebsite: z.url(),
+  companyWebsite: z.url('Company website is required.'),
   streetAddress: z.string().min(1, 'Street address is required.'),
   location: locationSchema,
 });
@@ -140,6 +163,10 @@ export const createJobSchemaBase = z.object({
     .optional(),
   isFeatured: z.boolean('Featured status is required.'),
   isActive: z.boolean('Active status is required.'),
+  applyOn: z.enum(
+    applyOptions.map((option) => option.value),
+    'Please select a valid application method.'
+  ),
 });
 
 export const createJobSchema = createJobSchemaBase;

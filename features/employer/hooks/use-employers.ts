@@ -136,8 +136,10 @@ export function useUpdateEmployerProfile() {
           trpc.employers.getProfileStatus.queryOptions()
         );
       },
-      onError: () => {
-        toast.error('Failed to update employer profile.');
+      onError: (err) => {
+        toast.error('Failed to update employer profile.', {
+          description: err.message,
+        });
       },
     })
   );
@@ -164,8 +166,10 @@ export function useUpdateCompanyProfile() {
           trpc.employers.getProfileStatus.queryOptions()
         );
       },
-      onError: () => {
-        toast.error('Failed to update company profile.');
+      onError: (err) => {
+        toast.error('Failed to update company profile.', {
+          description: err.message,
+        });
       },
     })
   );
