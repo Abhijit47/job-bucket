@@ -9,6 +9,9 @@ import {
   type EditorOptions,
 } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
+import DOMPurify from 'isomorphic-dompurify';
+import dynamic from 'next/dynamic';
+import { useMemo } from 'react';
 import {
   type ControllerFieldState,
   type ControllerRenderProps,
@@ -17,7 +20,6 @@ import { toast } from 'sonner';
 
 import { cn } from '@/lib/utils';
 import { UpdateCompanyProfileInput } from '@/lib/zodSchemas/employer.schema';
-import { useMemo } from 'react';
 import { Field, FieldGroup, FieldLabel } from '../ui/field';
 import { Skeleton } from '../ui/skeleton';
 import BubbleMenu from './bubble-menu';
@@ -130,7 +132,7 @@ const editorProps: EditorOptions['editorProps'] = {
 
       'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
 
-      'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-nonee max-h-[140px] resize-none overflow-y-auto ring-1 ring-transparent focus:ring-2 focus:ring-blue-500 rounded-md p-4 dark:prose-invert max-w-full!'
+      'prose prose-sm sm:prose lg:prose-lg xl:prose-2xl mx-auto focus:outline-none max-h-[140px] resize-none overflow-y-auto ring-1 ring-transparent focus:ring-2 focus:ring-blue-500 rounded-md p-4 dark:prose-invert max-w-full!'
     ),
   },
 };
@@ -167,12 +169,12 @@ export default function TextEditor({
     shouldRerenderOnTransaction: false,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      // TODO: we need to sanitize the HTML
+      const sanitizedHtml = DOMPurify.sanitize(html);
       // const json = editor.getJSON();
       // console.log('Editor content in HTML:', html);
       // console.log('Editor content in JSON:', json);
       // form.setValue('companyDescription', html, { shouldValidate: true });
-      field.onChange(html);
+      field.onChange(sanitizedHtml);
     },
   });
 
@@ -205,7 +207,6 @@ export default function TextEditor({
           <FloatingMenu />
           <EditorContent
             placeholder='Write something...'
-            htmlFor='companyDescription'
             id='companyDescription'
             editor={editor}
             aria-invalid={fieldState.invalid}
@@ -216,3 +217,8 @@ export default function TextEditor({
     </EditorContext.Provider>
   );
 }
+
+export const LazyTextEditor = dynamic(() => import('./index'), {
+  ssr: false,
+  loading: () => <Skeleton className='h-40 w-full rounded-md' />,
+});

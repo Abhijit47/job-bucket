@@ -66,7 +66,7 @@ export default function TextEditorHeader() {
           ctx.editor.can().chain().setHorizontalRule().run() ?? false,
         canHardBreak: ctx.editor.can().chain().setHardBreak().run() ?? false,
 
-        // can't use h1 because one only one h1 is allowed in html
+        // Heading 1 (h1) is skipped as it should be reserved for the main page title
         // isHeading1: ctx.editor.isActive('heading', { level: 1 }) ?? false,
         isHeading2: ctx.editor.isActive('heading', { level: 2 }) ?? false,
         isHeading3: ctx.editor.isActive('heading', { level: 3 }) ?? false,
@@ -121,11 +121,11 @@ export default function TextEditorHeader() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value='paragraph'>Paragraph</SelectItem>
-            <SelectItem value='heading2'>Heading 1</SelectItem>
-            <SelectItem value='heading3'>Heading 2</SelectItem>
-            <SelectItem value='heading4'>Heading 3</SelectItem>
-            <SelectItem value='heading5'>Heading 4</SelectItem>
-            <SelectItem value='heading6'>Heading 5</SelectItem>
+            {headingLevels.slice(1).map((level) => (
+              <SelectItem key={level} value={`heading${level}`}>
+                Heading {level}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
@@ -147,7 +147,7 @@ export default function TextEditorHeader() {
             disabled={!editorState.canItalic}
             pressed={editorState.isItalic}
             onPressedChange={() => editor.chain().focus().toggleItalic().run()}
-            aria-label='Toggle bold'
+            aria-label='Toggle italic'
             className={'aria-pressed:bg-accent'}>
             <ItalicIcon className='h-4 w-4' />
           </Toggle>
@@ -245,60 +245,78 @@ export default function TextEditorHeader() {
         <Separator orientation='vertical' className='min-h-8 h-full' />
 
         {editorState.isLink ? (
-          <Toggle
-            pressed
-            onPressedChange={() =>
-              editor.chain().focus().extendMarkRange('link').unsetLink().run()
-            }>
-            <UnlinkIcon className='h-4 w-4' />
-          </Toggle>
-        ) : (
-          <LinkButton>
-            <Toggle size='sm' aria-label='Toggle link'>
-              <LinkIcon className='h-4 w-4' />
+          <ToolbarTooltip content='Unlink'>
+            <Toggle
+              size='sm'
+              aria-label='Remove link'
+              pressed
+              onPressedChange={() =>
+                editor.chain().focus().extendMarkRange('link').unsetLink().run()
+              }
+              className={'aria-pressed:bg-accent'}>
+              <UnlinkIcon className='h-4 w-4' />
             </Toggle>
-          </LinkButton>
+          </ToolbarTooltip>
+        ) : (
+          <ToolbarTooltip content='Insert Link'>
+            <LinkButton>
+              <Toggle
+                size='sm'
+                aria-label='Toggle link'
+                className={'aria-pressed:bg-accent'}>
+                <LinkIcon className='h-4 w-4' />
+              </Toggle>
+            </LinkButton>
+          </ToolbarTooltip>
         )}
 
-        <Button
-          type='button'
-          size='sm'
-          variant='ghost'
-          onClick={() => editor.chain().focus().undo().run()}
-          disabled={!editorState.canUndo}
-          aria-label='Undo'>
-          <Undo2Icon className='h-4 w-4' />
-        </Button>
+        <ToolbarTooltip content='Undo'>
+          <Button
+            type='button'
+            size='sm'
+            variant='ghost'
+            onClick={() => editor.chain().focus().undo().run()}
+            disabled={!editorState.canUndo}
+            aria-label='Undo'>
+            <Undo2Icon className='h-4 w-4' />
+          </Button>
+        </ToolbarTooltip>
 
-        <Button
-          type='button'
-          size='sm'
-          variant='ghost'
-          onClick={() => editor.chain().focus().redo().run()}
-          disabled={!editorState.canRedo}
-          aria-label='Redo'>
-          <Redo2Icon className='h-4 w-4' />
-        </Button>
+        <ToolbarTooltip content='Redo'>
+          <Button
+            type='button'
+            size='sm'
+            variant='ghost'
+            onClick={() => editor.chain().focus().redo().run()}
+            disabled={!editorState.canRedo}
+            aria-label='Redo'>
+            <Redo2Icon className='h-4 w-4' />
+          </Button>
+        </ToolbarTooltip>
 
-        <Button
-          type='button'
-          size='sm'
-          variant='ghost'
-          onClick={() => editor.chain().focus().setHorizontalRule().run()}
-          disabled={!editorState.canHorizontalRule}
-          aria-label='Insert horizontal rule'>
-          <MinusIcon className='h-4 w-4' />
-        </Button>
+        <ToolbarTooltip content='Insert horizontal rule'>
+          <Button
+            type='button'
+            size='sm'
+            variant='ghost'
+            onClick={() => editor.chain().focus().setHorizontalRule().run()}
+            disabled={!editorState.canHorizontalRule}
+            aria-label='Insert horizontal rule'>
+            <MinusIcon className='h-4 w-4' />
+          </Button>
+        </ToolbarTooltip>
 
-        <Button
-          type='button'
-          size='sm'
-          variant='ghost'
-          onClick={() => editor.chain().focus().setHardBreak().run()}
-          disabled={!editorState.canHardBreak}
-          aria-label='Insert line break'>
-          <TextWrapIcon className='h-4 w-4' />
-        </Button>
+        <ToolbarTooltip content='Insert line break'>
+          <Button
+            type='button'
+            size='sm'
+            variant='ghost'
+            onClick={() => editor.chain().focus().setHardBreak().run()}
+            disabled={!editorState.canHardBreak}
+            aria-label='Insert line break'>
+            <TextWrapIcon className='h-4 w-4' />
+          </Button>
+        </ToolbarTooltip>
       </ItemContent>
     </Item>
   );
