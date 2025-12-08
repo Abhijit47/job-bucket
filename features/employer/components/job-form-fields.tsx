@@ -194,7 +194,7 @@ export function JobSalaryInputs() {
   });
 
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat(data.locale || 'en-IN', {
+    return new Intl.NumberFormat(data?.locale || 'en-IN', {
       style: 'currency',
       currency: watchCurrency || 'INR',
       notation: 'standard',
@@ -203,7 +203,6 @@ export function JobSalaryInputs() {
 
   return (
     <>
-      {data.locale}
       <Controller
         name='salary'
         control={form.control}
@@ -925,8 +924,8 @@ export function JobApplyOnInput() {
                 className={'grid-cols-3'}
                 value={field.value}
                 onValueChange={field.onChange}>
-                {applyOptions.map((option, idx) => (
-                  <FieldLabel htmlFor={option.value} key={idx}>
+                {applyOptions.map((option) => (
+                  <FieldLabel htmlFor={option.value} key={option.value}>
                     <Field orientation='horizontal'>
                       <FieldContent>
                         <FieldTitle className={'font-medium'}>
