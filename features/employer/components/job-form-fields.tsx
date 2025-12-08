@@ -59,7 +59,8 @@ import {
 } from '@/drizzle/db-constants';
 
 import { capitalizeFirstLetter, cn } from '@/lib/utils';
-import { CreateJobInput } from '@/lib/zodSchemas/employer.schema';
+import { applyOptions, CreateJobInput } from '@/lib/zodSchemas/employer.schema';
+import { useGetEmployerProfile } from '../hooks/use-employers';
 
 export function JobTitleInput() {
   const form = useFormContext<Pick<CreateJobInput, 'title'>>();
@@ -171,15 +172,9 @@ export function JobSalaryInputs() {
   const min_price = 15000;
   const max_price = 2500000;
 
-  const form = useFormContext<Pick<CreateJobInput, 'salary'>>();
+  const { data, isFetching, isLoading, isPending } = useGetEmployerProfile();
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      notation: 'standard',
-    }).format(price);
-  };
+  const form = useFormContext<Pick<CreateJobInput, 'salary'>>();
 
   const watchSalaryMin = useWatch({
     control: form.control,
@@ -193,8 +188,22 @@ export function JobSalaryInputs() {
     compute: (value) => value || 350000,
   });
 
+  const watchCurrency = useWatch({
+    control: form.control,
+    name: 'salary.currency',
+  });
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat(data.locale || 'en-IN', {
+      style: 'currency',
+      currency: watchCurrency || 'INR',
+      notation: 'standard',
+    }).format(price);
+  };
+
   return (
     <>
+      {data.locale}
       <Controller
         name='salary'
         control={form.control}
@@ -220,8 +229,16 @@ export function JobSalaryInputs() {
               onValueChange={(val) => {
                 field.onChange({ min: val[0], max: val[1] });
                 // Reset related fields when salary range changes
-                form.setValue('salary.currency', 'INR');
-                form.setValue('salary.period', 'hourly');
+                // form.setValue('salary.currency', 'INR');
+                // form.setValue('salary.period', 'hourly');
+
+                // Only set defaults if not already set
+                if (!form.getValues('salary.currency')) {
+                  form.setValue('salary.currency', 'INR');
+                }
+                if (!form.getValues('salary.period')) {
+                  form.setValue('salary.period', 'hourly');
+                }
               }}
               min={min_price}
               max={max_price}
@@ -235,6 +252,7 @@ export function JobSalaryInputs() {
 
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <Controller
+          disabled={isFetching || isLoading || isPending}
           name='salary.currency'
           control={form.control}
           render={({ field, fieldState }) => (
@@ -721,7 +739,7 @@ export function JobLocationInput() {
                 <FieldLabel htmlFor='city'>City</FieldLabel>
                 <Input
                   id='city'
-                  placeholder='ex: California'
+                  placeholder='ex: Los Angeles'
                   {...field}
                   aria-invalid={fieldState.invalid}
                 />
@@ -790,7 +808,7 @@ export function JobDescriptionInput() {
 export function JobResponsibilitiesInput() {
   const form = useFormContext<Pick<CreateJobInput, 'responsibilities'>>();
 
-  const watchResponsibilies = useWatch({
+  const watchResponsibilities = useWatch({
     control: form.control,
     name: 'responsibilities',
     compute: (value) => value?.length || 0,
@@ -820,7 +838,7 @@ export function JobResponsibilitiesInput() {
                 Describe the job responsibilities.
               </FieldDescription>
               <Badge variant={'outline'} className='text-[10px]'>
-                {watchResponsibilies}/2048
+                {watchResponsibilities}/2048
               </Badge>
             </div>
           )}
@@ -887,30 +905,8 @@ export function JobAdditionalInputs() {
   );
 }
 
-const applyOptions = [
-  {
-    value: 'on-job-bucket',
-    title: 'On JobBucket',
-    description:
-      ' Let candidates apply directly on JobBucket platform & all applications will show on your dashboard.',
-  },
-  {
-    value: 'external-platform',
-    title: 'External Platform',
-    description:
-      ' Candidates apply jobs on your website, all applications on your own website.',
-  },
-  {
-    value: 'on-your-email',
-    title: 'On Your Email',
-    description:
-      ' Candidates apply jobs on your email, all applications on your own email.',
-  },
-] as const;
-
-export type ApplyOption = (typeof applyOptions)[number]['value'];
-
 export function JobApplyOnInput() {
+  const form = useFormContext<Pick<CreateJobInput, 'applyOn'>>();
   return (
     <Card className={'gap-2'}>
       <CardHeader>
@@ -919,28 +915,38 @@ export function JobApplyOnInput() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <FieldSet>
-          <RadioGroup
-            orientation='vertical'
-            className={'grid-cols-3'}
-            defaultValue='on-job-bucket'>
-            {applyOptions.map((option, idx) => (
-              <FieldLabel htmlFor={option.value} key={idx}>
-                <Field orientation='horizontal'>
-                  <FieldContent>
-                    <FieldTitle className={'font-medium'}>
-                      {option.title}
-                    </FieldTitle>
-                    <FieldDescription className={'text-sm'}>
-                      {option.description}
-                    </FieldDescription>
-                  </FieldContent>
-                  <RadioGroupItem value={option.value} id={option.value} />
-                </Field>
-              </FieldLabel>
-            ))}
-          </RadioGroup>
-        </FieldSet>
+        <Controller
+          name='applyOn'
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <FieldSet>
+              <RadioGroup
+                orientation='vertical'
+                className={'grid-cols-3'}
+                value={field.value}
+                onValueChange={field.onChange}>
+                {applyOptions.map((option, idx) => (
+                  <FieldLabel htmlFor={option.value} key={idx}>
+                    <Field orientation='horizontal'>
+                      <FieldContent>
+                        <FieldTitle className={'font-medium'}>
+                          {option.title}
+                        </FieldTitle>
+                        <FieldDescription className={'text-sm'}>
+                          {option.description}
+                        </FieldDescription>
+                      </FieldContent>
+                      <RadioGroupItem value={option.value} id={option.value} />
+                    </Field>
+                  </FieldLabel>
+                ))}
+              </RadioGroup>
+              {fieldState.error && (
+                <FieldError errors={[fieldState.error]} className={'text-xs'} />
+              )}
+            </FieldSet>
+          )}
+        />
       </CardContent>
     </Card>
   );

@@ -332,8 +332,8 @@ export const employersRouter = createTRPCRouter({
       const result = await db.transaction(async (tx) => {
         // find the employer
         const existingEmployer = await tx.query.employer.findFirst({
-          where(table, { and, eq }) {
-            return and(eq(table.userId, employerAuth.id));
+          where(table, { eq }) {
+            return eq(table.userId, employerAuth.id);
           },
         });
 

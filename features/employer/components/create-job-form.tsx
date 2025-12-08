@@ -103,7 +103,8 @@ export default function CreateJobForm() {
     debounceDelay: 500, // Save after 500ms of inactivity
     timeout: 24 * 60 * 60 * 1000, // 24 hours
     onTimeout: () => {
-      console.log('Form data expired');
+      // console.log('Form data expired');
+      toast.info('Saved job form data has expired.');
     },
     validate: true, // Trigger validation when data is restored
     dirty: true, // Mark form as dirty

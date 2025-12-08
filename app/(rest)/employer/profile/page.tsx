@@ -19,8 +19,8 @@ import { ChevronsUpDown } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-// const fallback =
-//   'https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80';
+const fallback =
+  'https://images.unsplash.com/photo-1588345921523-c2dcdb7f1dcd?w=800&dpr=2&q=80';
 
 export default async function EmployerProfile() {
   await withEmployerAuth();
@@ -80,7 +80,7 @@ export default async function EmployerProfile() {
               /> */}
             </div>
             <Image
-              src={profile.image}
+              src={profile.image || fallback}
               alt='Employer Profile Image'
               width={150}
               height={150}
