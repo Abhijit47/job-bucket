@@ -7,6 +7,7 @@ import { IconArrowBackUp, IconRestore, IconTrashX } from '@tabler/icons-react';
 import { FileEdit } from 'lucide-react';
 // import { useState } from 'react';
 import {
+  Controller,
   FormProvider,
   SubmitErrorHandler,
   SubmitHandler,
@@ -18,6 +19,7 @@ import { toast } from 'sonner';
 import { Button, buttonVariants } from '@/components/ui/button';
 // import { Card, CardContent } from '@/components/ui/card';
 import { LazyLocationFields } from '@/components/shared/location-fields';
+import TextEditor from '@/components/text-editor';
 import {
   Card,
   CardAction,
@@ -46,7 +48,6 @@ import {
   useUpdateCompanyProfile,
 } from '../hooks/use-employers';
 import {
-  FieldCompanyDescription,
   FieldCompanyName,
   FieldCompanyStreetAddressWebsite,
   FieldOrganizationAndIndustry,
@@ -151,7 +152,20 @@ export function CompanyProfileForm() {
             <CardContent className={'space-y-4'}>
               <FieldCompanyName />
 
-              <FieldCompanyDescription />
+              {/* <FieldCompanyDescription /> */}
+
+              <Controller
+                name='companyDescription'
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <TextEditor
+                    field={field}
+                    fieldState={fieldState}
+                    limit={2048}
+                  />
+                )}
+              />
+              {/* <TextEditor limit={2048} /> */}
 
               <FieldTeamSizeAndYear />
 

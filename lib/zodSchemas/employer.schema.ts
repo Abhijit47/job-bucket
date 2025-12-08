@@ -44,6 +44,10 @@ export const applyOptions = [
 
 export type ApplyOption = (typeof applyOptions)[number]['value'];
 
+const applyOptionValues = applyOptions.map(
+  (o) => o.value
+) satisfies readonly ApplyOption[];
+
 export const updateEmployerProfileSchema = z.object({
   name: z
     .string()
@@ -164,7 +168,7 @@ export const createJobSchemaBase = z.object({
   isFeatured: z.boolean('Featured status is required.'),
   isActive: z.boolean('Active status is required.'),
   applyOn: z.enum(
-    applyOptions.map((option) => option.value),
+    applyOptionValues,
     'Please select a valid application method.'
   ),
 });
