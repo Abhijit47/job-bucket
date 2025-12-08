@@ -15,11 +15,9 @@ import {
 } from 'react-hook-form';
 import { toast } from 'sonner';
 
-// import { LazyLocationFields } from '@/components/shared/location-fields';
-import { Button, buttonVariants } from '@/components/ui/button';
-// import { Card, CardContent } from '@/components/ui/card';
 import { LazyLocationFields } from '@/components/shared/location-fields';
-import TextEditor from '@/components/text-editor';
+import { LazyTextEditor } from '@/components/text-editor';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
   Card,
   CardAction,
@@ -152,20 +150,17 @@ export function CompanyProfileForm() {
             <CardContent className={'space-y-4'}>
               <FieldCompanyName />
 
-              {/* <FieldCompanyDescription /> */}
-
               <Controller
                 name='companyDescription'
                 control={form.control}
                 render={({ field, fieldState }) => (
-                  <TextEditor
+                  <LazyTextEditor
                     field={field}
                     fieldState={fieldState}
                     limit={2048}
                   />
                 )}
               />
-              {/* <TextEditor limit={2048} /> */}
 
               <FieldTeamSizeAndYear />
 

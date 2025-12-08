@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils';
 import { useCurrentEditor, useEditorState } from '@tiptap/react';
 import { Item, ItemContent, ItemDescription, ItemMedia } from '../ui/item';
 import { Skeleton } from '../ui/skeleton';
@@ -19,7 +20,10 @@ export default function TextEditorFooter({ limit }: { limit: number }) {
 
   const { charactersCount, wordsCount } = editorState;
 
-  const percentage = editor ? Math.round((100 / limit) * charactersCount!) : 0;
+  const percentage =
+    editor && charactersCount != null
+      ? Math.round((100 / limit) * charactersCount)
+      : 0;
 
   return (
     <Item
@@ -30,7 +34,13 @@ export default function TextEditorFooter({ limit }: { limit: number }) {
         className={'flex flex-row flex-wrap items-center gap-1 lg:gap-2'}>
         <ItemMedia variant={'image'}>
           <svg height='32' width='32' viewBox='0 0 20 20'>
-            <circle r='10' cx='10' cy='10' fill='#e9ecef' />
+            <circle
+              r='10'
+              cx='10'
+              cy='10'
+              fill='currentColor'
+              className={'text-accent'}
+            />
             <circle
               r='5'
               cx='10'
@@ -41,14 +51,24 @@ export default function TextEditorFooter({ limit }: { limit: number }) {
               strokeDasharray={`calc(${percentage} * 31.4 / 100) 31.4`}
               transform='rotate(-90) translate(-20)'
             />
-            <circle r='6' cx='10' cy='10' fill='bg-blue-500' />
+            <circle
+              r='6'
+              cx='10'
+              cy='10'
+              fill='currentColor'
+              className='text-card'
+            />
           </svg>
         </ItemMedia>
         <ItemContent>
           <ItemDescription
-            className={`character-count ${
-              charactersCount === limit ? 'character-count--warning' : ''
-            }`}>
+            // className={`character-count ${
+            //   charactersCount === limit ? 'character-count--warning' : ''
+            // }`}>
+            className={cn(
+              'character-count',
+              charactersCount === limit && 'character-count--warning'
+            )}>
             {charactersCount} / {limit} characters
           </ItemDescription>
           <ItemDescription>{wordsCount} words</ItemDescription>
