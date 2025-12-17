@@ -12,7 +12,8 @@
     "db:push": "pnpm drizzle-kit push --config ./drizzle.config.ts",
     "db:studio": "pnpm drizzle-kit studio --config ./drizzle.config.ts",
     "better-auth:generate": "npx @better-auth/cli generate --config ./lib/auth/server.ts --output ./drizzle/new-auth-schema.ts --yes",
-    "dev:all": "mprocs"
+    "dev:all": "mprocs",
+    "eslint:inspect": "pnpm dlx @eslint/config-inspector@latest"
   },
   "dependencies": {
     "@better-fetch/fetch": "^1.1.18",
@@ -99,6 +100,7 @@
     "sonner": "^2.0.7",
     "spoiled": "^0.4.0",
     "tailwind-merge": "^3.3.1",
+    "typescript-plugin-directives": "^0.0.3",
     "vaul": "^1.1.2",
     "zod": "^4.1.12"
   },

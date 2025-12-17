@@ -169,7 +169,29 @@ export default function TextEditor({
     shouldRerenderOnTransaction: false,
     onUpdate: ({ editor }) => {
       const html = editor.getHTML();
-      const sanitizedHtml = DOMPurify.sanitize(html);
+      const sanitizedHtml = DOMPurify.sanitize(html, {
+        ALLOWED_TAGS: [
+          'p',
+          'br',
+          'strong',
+          'em',
+          'u',
+          'code',
+          'mark',
+          'a',
+          'ul',
+          'ol',
+          'li',
+          'blockquote',
+          'h2',
+          'h3',
+          'h4',
+          'h5',
+          'h6',
+          'hr',
+        ],
+        ALLOWED_ATTR: ['href', 'class'],
+      });
       // const json = editor.getJSON();
       // console.log('Editor content in HTML:', html);
       // console.log('Editor content in JSON:', json);
