@@ -31,6 +31,8 @@ import { Toggle } from '../ui/toggle';
 import LinkButton from './link-button';
 import ToolbarTooltip from './toolbar-tooltip';
 
+export const DEFAULT_HIGHLIGHT_COLOR = '#fdeb80';
+
 export const headingLevels = [1, 2, 3, 4, 5, 6] as const;
 
 type HeadingLevel = (typeof headingLevels)[number];
@@ -184,7 +186,11 @@ export default function TextEditorHeader() {
             size='sm'
             pressed={editorState.isHighlight}
             onPressedChange={() =>
-              editor.chain().focus().toggleHighlight({ color: '#fdeb80' }).run()
+              editor
+                .chain()
+                .focus()
+                .toggleHighlight({ color: DEFAULT_HIGHLIGHT_COLOR })
+                .run()
             }
             aria-label='Toggle highlight'
             className={'aria-pressed:bg-accent'}>
