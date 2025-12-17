@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { CompanyProfileForm } from '@/features/employer/components/company-profile-form';
+import { LazyCompanyProfileForm } from '@/features/employer/components/company-profile-form';
 import { prefetchCompanyProfile } from '@/features/employer/server/prefetch';
 import { withEmployerAuth } from '@/lib/auth/withEmployerAuth';
 import { HydrateClient } from '@/trpc/server';
@@ -21,7 +21,7 @@ export default async function UpdateCompanyProfilePage() {
         }>
         <Suspense fallback={<p>Loading company settings...</p>}>
           <div className='flex flex-col gap-4 px-6 py-4 md:gap-6 md:py-6'>
-            <CompanyProfileForm />
+            <LazyCompanyProfileForm />
           </div>
         </Suspense>
       </ErrorBoundary>
