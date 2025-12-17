@@ -19,6 +19,7 @@ const nextConfig: NextConfig = {
   },
   typedRoutes: true,
   reactCompiler: { compilationMode: 'annotation' },
+  serverExternalPackages: ['jsdom'],
 };
 
 export default nextConfig;
