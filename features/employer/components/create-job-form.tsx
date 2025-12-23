@@ -51,7 +51,7 @@ import {
   JobTypeInput,
   JobVacancyInput,
   JobWorkTypeInput,
-} from './job-form-fields';
+} from './create-job-form-fields';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -104,7 +104,7 @@ export default function CreateJobForm() {
     timeout: 24 * 60 * 60 * 1000, // 24 hours
     onTimeout: () => {
       // console.log('Form data expired');
-      toast.info('Saved job form data has expired.');
+      toast.info('Create Job form data has expired and was cleared.');
     },
     validate: true, // Trigger validation when data is restored
     dirty: true, // Mark form as dirty
