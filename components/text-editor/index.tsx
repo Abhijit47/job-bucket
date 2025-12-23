@@ -9,7 +9,6 @@ import {
   type EditorOptions,
 } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-// import DOMPurify from 'isomorphic-dompurify';
 import DOMPurify from 'dompurify';
 import dynamic from 'next/dynamic';
 import { useMemo } from 'react';
@@ -192,7 +191,7 @@ export default function TextEditor({
           'h6',
           'hr',
         ],
-        ALLOWED_ATTR: ['href', 'class', 'style'],
+        ALLOWED_ATTR: ['href', 'class'],
       });
       // const json = editor.getJSON();
       // console.log('Editor content in HTML:', html);

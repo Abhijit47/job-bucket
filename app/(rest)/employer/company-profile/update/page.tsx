@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { LazyCompanyProfileForm } from '@/features/employer/components/company-profile-form';
+import { LazyCompanyProfileForm } from '@/features/employer/components/lazy-components';
 import { prefetchCompanyProfile } from '@/features/employer/server/prefetch';
 import { withEmployerAuth } from '@/lib/auth/withEmployerAuth';
 import { HydrateClient } from '@/trpc/server';
