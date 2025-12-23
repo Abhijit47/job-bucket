@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { TRPCReactProvider } from '@/trpc/client';
 
+import { DevtoolsBlocker } from '@/components/shared/devtools-provider';
 import './globals.css';
 
 const geistSans = Geist({
@@ -41,6 +42,7 @@ export default function RootLayout({
             <Toaster position='top-center' closeButton richColors />
           </ThemeProvider>
         </TRPCReactProvider>
+        <DevtoolsBlocker />
       </body>
     </html>
   );

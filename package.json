@@ -74,6 +74,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
+    "devtools-blocker": "^1.0.2",
     "dompurify": "^3.3.1",
     "drizzle-orm": "^0.44.7",
     "embla-carousel-auto-scroll": "^8.6.0",
