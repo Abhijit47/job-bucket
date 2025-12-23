@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+
 import AboutSection from '@/components/homepage/about-section';
 import ArticlesSection from '@/components/homepage/articles-section';
 import CompanyLogosSection from '@/components/homepage/company-logos-section';
@@ -7,6 +9,13 @@ import FeaturesSection from '@/components/homepage/features-section';
 import HeroSection from '@/components/homepage/hero-section';
 import JobsBrowseSection from '@/components/homepage/jobs-browse-section';
 import TestimonialsSection from '@/components/homepage/testimonials-section';
+
+export const metadata: Metadata = {
+  title: {
+    default: 'Home', // a default is required when creating a template
+    template: '%s | JobWeez - Find Your Dream Job',
+  },
+};
 
 export default async function Home() {
   // const queryClient = getQueryClient();
