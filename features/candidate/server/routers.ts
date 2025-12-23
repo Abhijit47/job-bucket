@@ -35,6 +35,8 @@ export const candidatesRouter = createTRPCRouter({
           .insert(resume)
           .values({
             applicantId: auth.user.id,
+            title: `${auth.user.name} Resume`,
+            fileName: fileName,
             fileUrl: fileUrl,
             fileSize: fileSize,
             fileType: fileType,

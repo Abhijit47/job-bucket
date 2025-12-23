@@ -1,5 +1,5 @@
 import { headers } from 'next/headers';
-import type { NextRequest } from 'next/server';
+import type { NextRequest, ProxyConfig } from 'next/server';
 import { NextResponse } from 'next/server';
 import { auth } from './lib/auth/server';
 
@@ -34,8 +34,8 @@ export async function proxy(request: NextRequest) {
 }
 
 // See "Matching Paths" below to learn more
-export const config = {
-  runtime: 'nodejs',
+export const config: ProxyConfig = {
+  // runtime: 'nodejs',
   matcher: [
     '/admin/:path*',
     '/employer/:path*',

@@ -44,7 +44,7 @@ import {
   JobTypeInput,
   JobVacancyInput,
   JobWorkTypeInput,
-} from './job-form-fields';
+} from './create-job-form-fields';
 
 export default function UpdateJobForm({ jobId }: { jobId: string }) {
   const {
