@@ -11,7 +11,7 @@ import { Session } from './types';
 // Option 1: Create a single authClient instance and export its methods
 export const authClient = createAuthClient({
   /** The base URL of the server (optional if you're using the same domain) */
-  baseURL: `${process.env.BETTER_AUTH_URL}`,
+  baseURL: `${process.env.BETTER_AUTH_URL!}`,
   plugins: [
     inferAdditionalFields<Session>(),
     adminClient({
@@ -30,7 +30,7 @@ export const authClient = createAuthClient({
 // Option 2: Export commonly used auth methods for easier imports
 export const { signIn, signUp, signOut, useSession } = createAuthClient({
   /** The base URL of the server (optional if you're using the same domain) */
-  baseURL: `${process.env.BETTER_AUTH_URL}`,
+  baseURL: `${process.env.BETTER_AUTH_URL!}`,
   plugins: [
     inferAdditionalFields<Session>(),
     adminClient({

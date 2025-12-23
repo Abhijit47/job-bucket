@@ -35,6 +35,6 @@ export const zodSchema = createSchema({
 });
 
 export const $fetch = createFetch({
-  baseURL: process.env.NEXT_PUBLIC_APP_URL,
+  baseURL: process.env.NEXT_PUBLIC_APP_URL!,
   schema: zodSchema,
 });
