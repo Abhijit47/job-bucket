@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { TRPCReactProvider } from '@/trpc/client';
 
+import Analytics from '@/components/shared/analytics';
 import { DevtoolsBlocker } from '@/components/shared/devtools-provider';
 import siteMetadata from '@/constants/seo';
 import './globals.css';
@@ -99,6 +100,7 @@ export default function RootLayout({
           </ThemeProvider>
         </TRPCReactProvider>
         {!isDev ? <DevtoolsBlocker /> : null}
+        <Analytics />
       </body>
     </html>
   );
